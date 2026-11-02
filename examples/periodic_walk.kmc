@@ -1,0 +1,5 @@
+# One periodic unit cell; parallel self-edges track unwrapped motion.
+KMC1 graph
+1 2 0
+0 0 1.0 1e-9 0 0
+0 0 1.0 -1e-9 0 0

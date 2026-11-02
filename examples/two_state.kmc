@@ -1,0 +1,5 @@
+# Rates in inverse seconds, displacements in metres
+KMC1 graph
+2 2 0
+0 1 2.0 1e-9 0 0
+1 0 1.0 -1e-9 0 0

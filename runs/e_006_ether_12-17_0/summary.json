@@ -1,0 +1,320 @@
+{
+  "system": "e_006_ether_12-17_0",
+  "input_audit": "input_audit.json",
+  "carriers": {
+    "hole": {
+      "lambda_eV": 0.310715784506,
+      "directed_edges": 1100,
+      "positive_directed_edges": 1098,
+      "rate_min_max_s_1": [
+        0.0,
+        7742528173227.453
+      ],
+      "components": [
+        100
+      ],
+      "cross_language": [
+        {
+          "mode": "steps",
+          "language": "python",
+          "events": 10000,
+          "time_s": 8.097348051942477e-09,
+          "visited_sites": 100,
+          "rows": 10001,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 4.675847229000283,
+          "status": "status=step_limit events=10000 time=8.0973480519424771e-09",
+          "passed": true
+        },
+        {
+          "mode": "steps",
+          "language": "cpp",
+          "events": 10000,
+          "time_s": 8.097348051942477e-09,
+          "visited_sites": 100,
+          "rows": 10001,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.403720205999889,
+          "status": "status=step_limit events=10000 time=8.0973480519424771e-09",
+          "passed": true
+        },
+        {
+          "mode": "steps",
+          "language": "rust",
+          "events": 10000,
+          "time_s": 8.097348051942477e-09,
+          "visited_sites": 100,
+          "rows": 10001,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.29744069699972897,
+          "status": "status=step_limit events=10000 time=8.09734805194247708e-9",
+          "passed": true
+        },
+        {
+          "mode": "steps",
+          "language": "fortran",
+          "events": 10000,
+          "time_s": 8.097348051942477e-09,
+          "visited_sites": 100,
+          "rows": 10001,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.41769078800007264,
+          "status": "status=step_limit events=10000 time= 8.09734805194247708E-009",
+          "passed": true
+        },
+        {
+          "mode": "time",
+          "language": "python",
+          "events": 1024,
+          "time_s": 1e-09,
+          "visited_sites": 91,
+          "rows": 1026,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.593333679999887,
+          "status": "status=time_limit events=1024 time=1.0000000000000001e-09",
+          "passed": true
+        },
+        {
+          "mode": "time",
+          "language": "cpp",
+          "events": 1024,
+          "time_s": 1e-09,
+          "visited_sites": 91,
+          "rows": 1026,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.14075591299933876,
+          "status": "status=time_limit events=1024 time=1.0000000000000001e-09",
+          "passed": true
+        },
+        {
+          "mode": "time",
+          "language": "rust",
+          "events": 1024,
+          "time_s": 1e-09,
+          "visited_sites": 91,
+          "rows": 1026,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.03310439100005169,
+          "status": "status=time_limit events=1024 time=1.00000000000000006e-9",
+          "passed": true
+        },
+        {
+          "mode": "time",
+          "language": "fortran",
+          "events": 1024,
+          "time_s": 1e-09,
+          "visited_sites": 91,
+          "rows": 1026,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.06653395699959219,
+          "status": "status=time_limit events=1024 time= 1.00000000000000006E-009",
+          "passed": true
+        }
+      ],
+      "ensemble": {
+        "trajectories": 256,
+        "duration_s": 1e-08,
+        "total_events": 3344800,
+        "hops_min_median_max": [
+          11720,
+          13047.5,
+          14559
+        ],
+        "final_msd_nm2": 3343.45372078891,
+        "final_msd_sem_nm2": 183.5219101356318,
+        "exact_final_msd_nm2": 3236.4255096468464,
+        "final_msd_z_score": 0.5831903725444237,
+        "mean_displacement_nm": [
+          -5.065570027779507,
+          1.822001761693763,
+          1.0213063507933597
+        ],
+        "exact_diffusion_tensor_nm2_s": [
+          [
+            50015554483.191666,
+            13808979865.767971,
+            3483640018.6891327
+          ],
+          [
+            13808979865.767971,
+            57968254630.00666,
+            -68649918.90358761
+          ],
+          [
+            3483640018.6891327,
+            -68649918.90358761,
+            53786420085.418
+          ]
+        ],
+        "exact_model_mobility_cm2_Vs": 0.020858506180696578,
+        "estimated_model_mobility_cm2_Vs": 0.02214065851369002,
+        "mobility_95ci_cm2_Vs": [
+          0.018204906074499993,
+          0.02607641095288005
+        ],
+        "corrector_residual_nm": 1.1657341758564144e-15,
+        "sparse_adapter_2000_events_verified": true,
+        "sampler": "Python standard random.Random; shared stream; universal_kmc.Engine",
+        "passed": true
+      }
+    },
+    "electron": {
+      "lambda_eV": 0.348854567167,
+      "directed_edges": 1100,
+      "positive_directed_edges": 1100,
+      "rate_min_max_s_1": [
+        971.6619423084965,
+        12451989280208.775
+      ],
+      "components": [
+        100
+      ],
+      "cross_language": [
+        {
+          "mode": "steps",
+          "language": "python",
+          "events": 10000,
+          "time_s": 5.690498208254238e-09,
+          "visited_sites": 100,
+          "rows": 10001,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 5.09186291900005,
+          "status": "status=step_limit events=10000 time=5.6904982082542376e-09",
+          "passed": true
+        },
+        {
+          "mode": "steps",
+          "language": "cpp",
+          "events": 10000,
+          "time_s": 5.690498208254238e-09,
+          "visited_sites": 100,
+          "rows": 10001,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.44482135500038567,
+          "status": "status=step_limit events=10000 time=5.6904982082542376e-09",
+          "passed": true
+        },
+        {
+          "mode": "steps",
+          "language": "rust",
+          "events": 10000,
+          "time_s": 5.690498208254238e-09,
+          "visited_sites": 100,
+          "rows": 10001,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.32884356399972603,
+          "status": "status=step_limit events=10000 time=5.69049820825423763e-9",
+          "passed": true
+        },
+        {
+          "mode": "steps",
+          "language": "fortran",
+          "events": 10000,
+          "time_s": 5.690498208254238e-09,
+          "visited_sites": 100,
+          "rows": 10001,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.44401772000037454,
+          "status": "status=step_limit events=10000 time= 5.69049820825423763E-009",
+          "passed": true
+        },
+        {
+          "mode": "time",
+          "language": "python",
+          "events": 1540,
+          "time_s": 1e-09,
+          "visited_sites": 97,
+          "rows": 1542,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.9121705090001342,
+          "status": "status=time_limit events=1540 time=1.0000000000000001e-09",
+          "passed": true
+        },
+        {
+          "mode": "time",
+          "language": "cpp",
+          "events": 1540,
+          "time_s": 1e-09,
+          "visited_sites": 97,
+          "rows": 1542,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.17121890599992184,
+          "status": "status=time_limit events=1540 time=1.0000000000000001e-09",
+          "passed": true
+        },
+        {
+          "mode": "time",
+          "language": "rust",
+          "events": 1540,
+          "time_s": 1e-09,
+          "visited_sites": 97,
+          "rows": 1542,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.055678024000371806,
+          "status": "status=time_limit events=1540 time=1.00000000000000006e-9",
+          "passed": true
+        },
+        {
+          "mode": "time",
+          "language": "fortran",
+          "events": 1540,
+          "time_s": 1e-09,
+          "visited_sites": 97,
+          "rows": 1542,
+          "max_time_difference_vs_python_s": 0.0,
+          "elapsed_seconds": 0.09238743999958388,
+          "status": "status=time_limit events=1540 time= 1.00000000000000006E-009",
+          "passed": true
+        }
+      ],
+      "ensemble": {
+        "trajectories": 256,
+        "duration_s": 1e-08,
+        "total_events": 4290342,
+        "hops_min_median_max": [
+          15349,
+          16741.0,
+          18187
+        ],
+        "final_msd_nm2": 4786.958807387243,
+        "final_msd_sem_nm2": 216.07596730140045,
+        "exact_final_msd_nm2": 5045.885322103877,
+        "final_msd_z_score": -1.198312417389123,
+        "mean_displacement_nm": [
+          -0.7302247915406268,
+          4.01129866471412,
+          0.0170437517666431
+        ],
+        "exact_diffusion_tensor_nm2_s": [
+          [
+            80616132332.4308,
+            6719715928.940962,
+            1083040882.128156
+          ],
+          [
+            6719715928.940962,
+            82029179175.87141,
+            7879741565.81294
+          ],
+          [
+            1083040882.128156,
+            7879741565.81294,
+            89583435007.50577
+          ]
+        ],
+        "exact_model_mobility_cm2_Vs": 0.032522145107984624,
+        "estimated_model_mobility_cm2_Vs": 0.02836681418213121,
+        "mobility_95ci_cm2_Vs": [
+          0.022794004636587397,
+          0.03393962372767502
+        ],
+        "corrector_residual_nm": 1.0061396160665481e-15,
+        "sparse_adapter_2000_events_verified": true,
+        "sampler": "Python standard random.Random; shared stream; universal_kmc.Engine",
+        "passed": true
+      }
+    }
+  },
+  "elapsed_seconds": 153.37131291600053,
+  "passed": true
+}

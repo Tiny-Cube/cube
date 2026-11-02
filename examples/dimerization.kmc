@@ -1,0 +1,6 @@
+# 2A <-> B; propensity c * choose(A,2), reverse c * B.
+KMC1 reaction
+2 2
+40 0
+0.02 2 0 0 1
+0.3 0 1 2 0

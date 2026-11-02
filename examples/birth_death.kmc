@@ -1,0 +1,6 @@
+# Empty -> A at rate 4; A -> Empty at rate 0.5 per particle.
+KMC1 reaction
+1 2
+0
+4.0 0 1
+0.5 1 0

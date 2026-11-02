@@ -1,0 +1,13 @@
+[package]
+name = "universal-kmc"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Generic continuous-time kinetic Monte Carlo reference engine"
+
+[lib]
+name = "universal_kmc"
+
+[[bin]]
+name = "ukmc-rust"
+path = "src/main.rs"
