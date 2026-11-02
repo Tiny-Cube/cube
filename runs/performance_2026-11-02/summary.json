@@ -1,0 +1,975 @@
+{
+  "date": "2026-11-02",
+  "cpu": "Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz",
+  "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+  "pinned_cpu": 0,
+  "repeats": 5,
+  "seed": 42,
+  "versions": {
+    "python": "Python 3.13.11",
+    "cpp": "c++ (GCC) 16.2.1 20260810",
+    "fortran": "GNU Fortran (GCC) 16.2.1 20260810",
+    "rust": "rustc 1.94.1 (e408947bf 2026-03-25)"
+  },
+  "build": "C++/Fortran -O3; Rust cargo release/rustc opt-level=3; no fast-math; Fortran without -fcheck=all",
+  "source_commit": "1aa009c4691e9ea262c25d4bbdbb8e4a94fba5b2",
+  "source_sha256": {
+    "src/universal_kmc/core.py": "bd0c590981f72599a226665900a8d5c0d6caef37f2298480fd8918f31117e2bb",
+    "src/universal_kmc/models.py": "1e325f231f569970bef087d7bf4384aa796919a77b9bb330838eb1d473a60dad",
+    "src/universal_kmc/rates.py": "317f4e10f4ae99f0b7384e65105e239d8697e521ff4f7a7be23d18c0bcec235e",
+    "src/universal_kmc/io.py": "778161c1bccb6159aa6bd9cdeb7aedb6e7128e66f8a7f822ba5b4479fb22f594",
+    "src/universal_kmc/cli.py": "8976fab92fc83b1cbc1a0b7affba9a74151897c00aa5686038eb163b04901197",
+    "src/universal_kmc/__init__.py": "fd08166207888b901d0025ca13da235789c952371872969a50fa64a8b8ec8b09",
+    "src/universal_kmc/__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
+    "src/universal_kmc/events.py": "3090862ecaf2521b5291e3ba14265722e54f7c3544fc279e604a407a6c276561",
+    "cpp/include/ukmc.hpp": "a89f916af0a74f11a87f66b34ee38976e8bd9626ee84b670244a9c2ebfa71073",
+    "cpp/include/ukmc_events.hpp": "b49219910f02db22d074dea40b562a36c93b2fea364246e62d9d5183df85861b",
+    "cpp/include/ukmc_io.hpp": "2d1f0498aa6bf78c53432a105aad25cd67cd808641276618933707ad35e75a6f",
+    "cpp/src/main.cpp": "239f1c64c537698bbeaffb228cd608985ecf9f971654c25f638e1f7f42feae4f",
+    "cpp/tests/test.cpp": "b97c2e7a3f935cabaf171aecc1aad778e855ed20383d88a4b09b21c88cd45e56",
+    "rust/src/lib.rs": "acb363726fdc3125de329b7478cb770281fa259cad1c659629aaebeb586a7dae",
+    "rust/src/rates.rs": "1744a8ce54880dcfc4fa64ae559c9642fdd1a23643db68a1206c98c6bc3a6c32",
+    "rust/src/io.rs": "94cafdcc403fae52122fe01974fbddae1f632a2d7497085d3d74462b0d864290",
+    "rust/src/main.rs": "9e6ddba3d1642e113cc093e45f8a1f2115da6ecf7113bb1d85c34f35a268ed44",
+    "rust/src/events.rs": "7cc26b4480867d1dbbe083543328fa4cb0b3c9a28128f1bf72f1ff7b8a96f76c",
+    "fortran/ukmc.f90": "53062171409be77ecc3d57ec19802257cd30049505c0abac5fedede2596477ce",
+    "fortran/ukmc_io.f90": "12ed1a232e5ec24cdf0db5f0dbce898fbf856abee1aacc95e8d1031895b07f7d",
+    "fortran/main.f90": "a263581127e37554ac3ad4aa63f3878ca43b896d038b24fbb7d3ce39221d1842",
+    "fortran/ukmc_events.f90": "b343ac5970b0bd40a2c93ecdc7b21ee83963aab68aeff03d3688ab08b4643f36",
+    "fortran/test.f90": "2ab272e54e4363561cd30e02727f18b392d2f8cb8a1509a72b4aeb1314279986",
+    "benchmarks/kernel.py": "e4a3121a216f58b961484ffed5c8c71c8ee918d46e100694d3d8f60117dc7b13",
+    "benchmarks/kernel.cpp": "1e06cb01f4078855ec56824d68f60553c74f6c1b1c884c8e5a6af30eb7924421",
+    "benchmarks/kernel.rs": "827d146def09d798becffaf2d62e85c997eb6060fc8824c03c081e8166d76242",
+    "benchmarks/kernel.f90": "f2e66bb8efdf0824a8be3036c6abb23074ab99aaeac17adce560cf85435aac26"
+  },
+  "results": [
+    {
+      "model": "two_state",
+      "input": "examples/two_state.kmc",
+      "events": 200000,
+      "mode": "kernel",
+      "language": "python",
+      "seconds": [
+        1.7902914530004637,
+        1.9782964209998681,
+        1.9917085019997103,
+        1.828147242000341,
+        2.3996240110000144
+      ],
+      "median_s": 1.9782964209998681,
+      "min_s": 1.7902914530004637,
+      "max_s": 2.3996240110000144,
+      "events_per_second": 101097.0842776515,
+      "speedup_vs_python": 1.0,
+      "final_signature": [
+        200000.0,
+        150389.84564598056,
+        300000.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "two_state",
+      "input": "examples/two_state.kmc",
+      "events": 200000,
+      "mode": "kernel",
+      "language": "cpp",
+      "seconds": [
+        0.028116895,
+        0.029980801,
+        0.029329099,
+        0.028255576,
+        0.027233641
+      ],
+      "median_s": 0.028255576,
+      "min_s": 0.027233641,
+      "max_s": 0.029980801,
+      "events_per_second": 7078248.909171061,
+      "speedup_vs_python": 70.01437241979664,
+      "final_signature": [
+        200000.0,
+        150389.84564598056,
+        300000.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "two_state",
+      "input": "examples/two_state.kmc",
+      "events": 200000,
+      "mode": "kernel",
+      "language": "rust",
+      "seconds": [
+        0.034059769,
+        0.039353286,
+        0.036007292,
+        0.033363575,
+        0.040620528
+      ],
+      "median_s": 0.036007292,
+      "min_s": 0.033363575,
+      "max_s": 0.040620528,
+      "events_per_second": 5554430.474804936,
+      "speedup_vs_python": 54.941549644996016,
+      "final_signature": [
+        200000.0,
+        150389.84564598056,
+        300000.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "two_state",
+      "input": "examples/two_state.kmc",
+      "events": 200000,
+      "mode": "kernel",
+      "language": "fortran",
+      "seconds": [
+        0.107120723,
+        0.1372476,
+        0.107870046,
+        0.104237238,
+        0.108101439
+      ],
+      "median_s": 0.107870046,
+      "min_s": 0.104237238,
+      "max_s": 0.1372476,
+      "events_per_second": 1854082.8285175664,
+      "speedup_vs_python": 18.33962711946807,
+      "final_signature": [
+        200000.0,
+        150389.84564598056,
+        300000.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "two_state",
+      "input": "examples/two_state.kmc",
+      "events": 200000,
+      "mode": "cli",
+      "language": "python",
+      "seconds": [
+        3.503270901999713,
+        4.189470424000319,
+        3.3002662940007212,
+        4.761701180000273,
+        3.571978427000431
+      ],
+      "median_s": 3.571978427000431,
+      "min_s": 3.3002662940007212,
+      "max_s": 4.761701180000273,
+      "events_per_second": 55991.37959182749,
+      "speedup_vs_python": 1.0,
+      "final_signature": [
+        200000.0,
+        150389.84564598056,
+        300000.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "two_state",
+      "input": "examples/two_state.kmc",
+      "events": 200000,
+      "mode": "cli",
+      "language": "cpp",
+      "seconds": [
+        1.1300106770004277,
+        0.7443716480001967,
+        0.7687384860000748,
+        0.743805553999664,
+        0.8260381250001956
+      ],
+      "median_s": 0.7687384860000748,
+      "min_s": 0.743805553999664,
+      "max_s": 1.1300106770004277,
+      "events_per_second": 260166.49828558284,
+      "speedup_vs_python": 4.646545596521733,
+      "final_signature": [
+        200000.0,
+        150389.84564598056,
+        300000.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "two_state",
+      "input": "examples/two_state.kmc",
+      "events": 200000,
+      "mode": "cli",
+      "language": "rust",
+      "seconds": [
+        0.46145598300063284,
+        0.27265471999999136,
+        0.2521757770000477,
+        0.2671271630006231,
+        0.28535122199991747
+      ],
+      "median_s": 0.27265471999999136,
+      "min_s": 0.2521757770000477,
+      "max_s": 0.46145598300063284,
+      "events_per_second": 733528.4714675262,
+      "speedup_vs_python": 13.100739378363023,
+      "final_signature": [
+        200000.0,
+        150389.84564598056,
+        300000.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "two_state",
+      "input": "examples/two_state.kmc",
+      "events": 200000,
+      "mode": "cli",
+      "language": "fortran",
+      "seconds": [
+        3.3701501589994223,
+        3.231213416999708,
+        2.8150955179999073,
+        3.1529963390003104,
+        2.8296169110008123
+      ],
+      "median_s": 3.1529963390003104,
+      "min_s": 2.8150955179999073,
+      "max_s": 3.3701501589994223,
+      "events_per_second": 63431.72604615584,
+      "speedup_vs_python": 1.13288378512135,
+      "final_signature": [
+        200000.0,
+        150389.84564598056,
+        300000.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "birth_death",
+      "input": "examples/birth_death.kmc",
+      "events": 200000,
+      "mode": "kernel",
+      "language": "python",
+      "seconds": [
+        2.972558514999946,
+        2.9955605270006345,
+        3.1505232200006503,
+        2.89408063799965,
+        2.898279551000087
+      ],
+      "median_s": 2.972558514999946,
+      "min_s": 2.89408063799965,
+      "max_s": 3.1505232200006503,
+      "events_per_second": 67282.10697645547,
+      "speedup_vs_python": 1.0,
+      "final_signature": [
+        200000.0,
+        25090.779772413418,
+        299995.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "birth_death",
+      "input": "examples/birth_death.kmc",
+      "events": 200000,
+      "mode": "kernel",
+      "language": "cpp",
+      "seconds": [
+        0.047757929,
+        0.048074967,
+        0.051469343,
+        0.048093888,
+        0.049441647
+      ],
+      "median_s": 0.048093888,
+      "min_s": 0.047757929,
+      "max_s": 0.051469343,
+      "events_per_second": 4158532.57694616,
+      "speedup_vs_python": 61.807407107529876,
+      "final_signature": [
+        200000.0,
+        25090.779772413418,
+        299995.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "birth_death",
+      "input": "examples/birth_death.kmc",
+      "events": 200000,
+      "mode": "kernel",
+      "language": "rust",
+      "seconds": [
+        0.050291502,
+        0.049808034,
+        0.057119222,
+        0.048851044,
+        0.051525856
+      ],
+      "median_s": 0.050291502,
+      "min_s": 0.048851044,
+      "max_s": 0.057119222,
+      "events_per_second": 3976815.0094224666,
+      "speedup_vs_python": 59.106576594191715,
+      "final_signature": [
+        200000.0,
+        25090.779772413418,
+        299995.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "birth_death",
+      "input": "examples/birth_death.kmc",
+      "events": 200000,
+      "mode": "kernel",
+      "language": "fortran",
+      "seconds": [
+        0.122510293,
+        0.115977308,
+        0.147281986,
+        0.133747057,
+        0.152467239
+      ],
+      "median_s": 0.133747057,
+      "min_s": 0.115977308,
+      "max_s": 0.152467239,
+      "events_per_second": 1495360.006314008,
+      "speedup_vs_python": 22.22522559879539,
+      "final_signature": [
+        200000.0,
+        25090.779772413418,
+        299995.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "birth_death",
+      "input": "examples/birth_death.kmc",
+      "events": 200000,
+      "mode": "cli",
+      "language": "python",
+      "seconds": [
+        4.346243300999959,
+        4.0609611609997955,
+        4.0573760160004895,
+        4.025772877000236,
+        4.049685259000398
+      ],
+      "median_s": 4.0573760160004895,
+      "min_s": 4.025772877000236,
+      "max_s": 4.346243300999959,
+      "events_per_second": 49292.94184499756,
+      "speedup_vs_python": 1.0,
+      "final_signature": [
+        200000.0,
+        25090.779772413418,
+        299995.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "birth_death",
+      "input": "examples/birth_death.kmc",
+      "events": 200000,
+      "mode": "cli",
+      "language": "cpp",
+      "seconds": [
+        0.9917437660005817,
+        0.7226268679996792,
+        0.7096338900000774,
+        0.7327233199994225,
+        0.7010644189995219
+      ],
+      "median_s": 0.7226268679996792,
+      "min_s": 0.7010644189995219,
+      "max_s": 0.9917437660005817,
+      "events_per_second": 276768.009683372,
+      "speedup_vs_python": 5.6147594224275235,
+      "final_signature": [
+        200000.0,
+        25090.779772413418,
+        299995.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "birth_death",
+      "input": "examples/birth_death.kmc",
+      "events": 200000,
+      "mode": "cli",
+      "language": "rust",
+      "seconds": [
+        0.3320837660003235,
+        0.25871429900053045,
+        0.25778376500056766,
+        0.2532316489996447,
+        0.25144036399979086
+      ],
+      "median_s": 0.25778376500056766,
+      "min_s": 0.25144036399979086,
+      "max_s": 0.3320837660003235,
+      "events_per_second": 775844.0489825245,
+      "speedup_vs_python": 15.73945518249202,
+      "final_signature": [
+        200000.0,
+        25090.779772413418,
+        299995.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "birth_death",
+      "input": "examples/birth_death.kmc",
+      "events": 200000,
+      "mode": "cli",
+      "language": "fortran",
+      "seconds": [
+        3.0730750849998003,
+        3.056887167000241,
+        2.6216109520000828,
+        2.6850061360000836,
+        2.5150906199996825
+      ],
+      "median_s": 2.6850061360000836,
+      "min_s": 2.5150906199996825,
+      "max_s": 3.0730750849998003,
+      "events_per_second": 74487.72549099075,
+      "speedup_vs_python": 1.5111235544678707,
+      "final_signature": [
+        200000.0,
+        25090.779772413418,
+        299995.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "hole",
+      "input": "runs/e_006_ether_12-17_0/hole.kmc",
+      "events": 20000,
+      "mode": "kernel",
+      "language": "python",
+      "seconds": [
+        9.193336960000124,
+        9.293213871999797,
+        8.486373910000111,
+        7.97363498499999,
+        8.735240526999405
+      ],
+      "median_s": 8.735240526999405,
+      "min_s": 7.97363498499999,
+      "max_s": 9.293213871999797,
+      "events_per_second": 2289.57633601305,
+      "speedup_vs_python": 1.0,
+      "final_signature": [
+        20000.0,
+        1.5553377671614814e-08,
+        12198939.0,
+        -5.656418094692981e-08,
+        -1.1050373285675726e-08,
+        -2.3620769738210442e-08,
+        97.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "hole",
+      "input": "runs/e_006_ether_12-17_0/hole.kmc",
+      "events": 20000,
+      "mode": "kernel",
+      "language": "cpp",
+      "seconds": [
+        0.169285995,
+        0.181635384,
+        0.183971872,
+        0.21323244,
+        0.176482404
+      ],
+      "median_s": 0.181635384,
+      "min_s": 0.169285995,
+      "max_s": 0.21323244,
+      "events_per_second": 110110.70398045349,
+      "speedup_vs_python": 48.0921741933246,
+      "final_signature": [
+        20000.0,
+        1.5553377671614814e-08,
+        12198939.0,
+        -5.656418094692981e-08,
+        -1.1050373285675726e-08,
+        -2.3620769738210442e-08,
+        97.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "hole",
+      "input": "runs/e_006_ether_12-17_0/hole.kmc",
+      "events": 20000,
+      "mode": "kernel",
+      "language": "rust",
+      "seconds": [
+        0.257777014,
+        0.240578481,
+        0.394471433,
+        0.348631058,
+        0.379314826
+      ],
+      "median_s": 0.348631058,
+      "min_s": 0.240578481,
+      "max_s": 0.394471433,
+      "events_per_second": 57367.23548020785,
+      "speedup_vs_python": 25.05583001443149,
+      "final_signature": [
+        20000.0,
+        1.5553377671614814e-08,
+        12198939.0,
+        -5.656418094692981e-08,
+        -1.1050373285675726e-08,
+        -2.3620769738210442e-08,
+        97.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "hole",
+      "input": "runs/e_006_ether_12-17_0/hole.kmc",
+      "events": 20000,
+      "mode": "kernel",
+      "language": "fortran",
+      "seconds": [
+        0.176011595,
+        0.155117222,
+        0.19147447,
+        0.171578124,
+        0.20305347
+      ],
+      "median_s": 0.176011595,
+      "min_s": 0.155117222,
+      "max_s": 0.20305347,
+      "events_per_second": 113628.8776884273,
+      "speedup_vs_python": 49.62877887107043,
+      "final_signature": [
+        20000.0,
+        1.5553377671614814e-08,
+        12198939.0,
+        -5.656418094692981e-08,
+        -1.1050373285675726e-08,
+        -2.3620769738210442e-08,
+        97.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "hole",
+      "input": "runs/e_006_ether_12-17_0/hole.kmc",
+      "events": 20000,
+      "mode": "cli",
+      "language": "python",
+      "seconds": [
+        10.702905461000228,
+        7.7891768819999925,
+        9.614890421999917,
+        8.184574863999842,
+        9.504629023999769
+      ],
+      "median_s": 9.504629023999769,
+      "min_s": 7.7891768819999925,
+      "max_s": 10.702905461000228,
+      "events_per_second": 2104.237835006372,
+      "speedup_vs_python": 1.0,
+      "final_signature": [
+        20000.0,
+        1.5553377671614814e-08,
+        12198939.0,
+        -5.656418094692981e-08,
+        -1.1050373285675726e-08,
+        -2.3620769738210442e-08,
+        97.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "hole",
+      "input": "runs/e_006_ether_12-17_0/hole.kmc",
+      "events": 20000,
+      "mode": "cli",
+      "language": "cpp",
+      "seconds": [
+        0.37366816000030667,
+        0.34190211899931455,
+        0.3432991130002847,
+        0.3486128530003043,
+        0.344692034000218
+      ],
+      "median_s": 0.344692034000218,
+      "min_s": 0.34190211899931455,
+      "max_s": 0.37366816000030667,
+      "events_per_second": 58022.808847353146,
+      "speedup_vs_python": 27.574263651227167,
+      "final_signature": [
+        20000.0,
+        1.5553377671614814e-08,
+        12198939.0,
+        -5.656418094692981e-08,
+        -1.1050373285675726e-08,
+        -2.3620769738210442e-08,
+        97.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "hole",
+      "input": "runs/e_006_ether_12-17_0/hole.kmc",
+      "events": 20000,
+      "mode": "cli",
+      "language": "rust",
+      "seconds": [
+        0.28250267899966275,
+        0.2951265889996648,
+        0.2517322460007563,
+        0.2621473170001991,
+        0.26059770499978185
+      ],
+      "median_s": 0.2621473170001991,
+      "min_s": 0.2517322460007563,
+      "max_s": 0.2951265889996648,
+      "events_per_second": 76292.97995060087,
+      "speedup_vs_python": 36.25682357829567,
+      "final_signature": [
+        20000.0,
+        1.5553377671614814e-08,
+        12198939.0,
+        -5.656418094692981e-08,
+        -1.1050373285675726e-08,
+        -2.3620769738210442e-08,
+        97.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "hole",
+      "input": "runs/e_006_ether_12-17_0/hole.kmc",
+      "events": 20000,
+      "mode": "cli",
+      "language": "fortran",
+      "seconds": [
+        0.4675972909999473,
+        0.42395144999954937,
+        0.4354519850003271,
+        0.4275007819996972,
+        0.4402544320000743
+      ],
+      "median_s": 0.4354519850003271,
+      "min_s": 0.42395144999954937,
+      "max_s": 0.4675972909999473,
+      "events_per_second": 45929.28885141028,
+      "speedup_vs_python": 21.827042593439156,
+      "final_signature": [
+        20000.0,
+        1.5553377671614814e-08,
+        12198939.0,
+        -5.656418094692981e-08,
+        -1.1050373285675726e-08,
+        -2.3620769738210442e-08,
+        97.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "electron",
+      "input": "runs/e_006_ether_12-17_0/electron.kmc",
+      "events": 20000,
+      "mode": "kernel",
+      "language": "python",
+      "seconds": [
+        7.173985887000526,
+        7.469125675999749,
+        7.414939633999893,
+        7.101050053000108,
+        6.65570936199947
+      ],
+      "median_s": 7.173985887000526,
+      "min_s": 6.65570936199947,
+      "max_s": 7.469125675999749,
+      "events_per_second": 2787.850480196872,
+      "speedup_vs_python": 1.0,
+      "final_signature": [
+        20000.0,
+        1.195800149956925e-08,
+        10282997.0,
+        -1.9063993998657052e-08,
+        3.1613566527296745e-08,
+        4.852099976580612e-08,
+        12.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "electron",
+      "input": "runs/e_006_ether_12-17_0/electron.kmc",
+      "events": 20000,
+      "mode": "kernel",
+      "language": "cpp",
+      "seconds": [
+        0.167946026,
+        0.159057552,
+        0.166275157,
+        0.147077213,
+        0.140111866
+      ],
+      "median_s": 0.159057552,
+      "min_s": 0.140111866,
+      "max_s": 0.167946026,
+      "events_per_second": 125740.6501515879,
+      "speedup_vs_python": 45.10308248048811,
+      "final_signature": [
+        20000.0,
+        1.195800149956925e-08,
+        10282997.0,
+        -1.9063993998657052e-08,
+        3.1613566527296745e-08,
+        4.852099976580612e-08,
+        12.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "electron",
+      "input": "runs/e_006_ether_12-17_0/electron.kmc",
+      "events": 20000,
+      "mode": "kernel",
+      "language": "rust",
+      "seconds": [
+        0.21941801,
+        0.249706618,
+        0.227377364,
+        0.212124077,
+        0.206243998
+      ],
+      "median_s": 0.21941801,
+      "min_s": 0.206243998,
+      "max_s": 0.249706618,
+      "events_per_second": 91150.22053112231,
+      "speedup_vs_python": 32.69551978436285,
+      "final_signature": [
+        20000.0,
+        1.195800149956925e-08,
+        10282997.0,
+        -1.9063993998657052e-08,
+        3.1613566527296745e-08,
+        4.852099976580612e-08,
+        12.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "electron",
+      "input": "runs/e_006_ether_12-17_0/electron.kmc",
+      "events": 20000,
+      "mode": "kernel",
+      "language": "fortran",
+      "seconds": [
+        0.159633776,
+        0.152740011,
+        0.187935582,
+        0.149698474,
+        0.144393434
+      ],
+      "median_s": 0.152740011,
+      "min_s": 0.144393434,
+      "max_s": 0.187935582,
+      "events_per_second": 130941.4597331671,
+      "speedup_vs_python": 46.968609207449425,
+      "final_signature": [
+        20000.0,
+        1.195800149956925e-08,
+        10282997.0,
+        -1.9063993998657052e-08,
+        3.1613566527296745e-08,
+        4.852099976580612e-08,
+        12.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "electron",
+      "input": "runs/e_006_ether_12-17_0/electron.kmc",
+      "events": 20000,
+      "mode": "cli",
+      "language": "python",
+      "seconds": [
+        7.410432200000287,
+        7.241036402999271,
+        7.409243035000145,
+        7.409542035000413,
+        7.3554204880001635
+      ],
+      "median_s": 7.409243035000145,
+      "min_s": 7.241036402999271,
+      "max_s": 7.410432200000287,
+      "events_per_second": 2699.3310795074503,
+      "speedup_vs_python": 1.0,
+      "final_signature": [
+        20000.0,
+        1.195800149956925e-08,
+        10282997.0,
+        -1.9063993998657052e-08,
+        3.1613566527296745e-08,
+        4.852099976580612e-08,
+        12.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "electron",
+      "input": "runs/e_006_ether_12-17_0/electron.kmc",
+      "events": 20000,
+      "mode": "cli",
+      "language": "cpp",
+      "seconds": [
+        0.3425147960006143,
+        0.3383862650007359,
+        0.35639416499998333,
+        0.34150623599998653,
+        0.347313430000213
+      ],
+      "median_s": 0.3425147960006143,
+      "min_s": 0.3383862650007359,
+      "max_s": 0.35639416499998333,
+      "events_per_second": 58391.63806507247,
+      "speedup_vs_python": 21.631891881794374,
+      "final_signature": [
+        20000.0,
+        1.195800149956925e-08,
+        10282997.0,
+        -1.9063993998657052e-08,
+        3.1613566527296745e-08,
+        4.852099976580612e-08,
+        12.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "electron",
+      "input": "runs/e_006_ether_12-17_0/electron.kmc",
+      "events": 20000,
+      "mode": "cli",
+      "language": "rust",
+      "seconds": [
+        0.2685143500002596,
+        0.237352849000672,
+        0.26703716599968175,
+        0.24432942099974753,
+        0.26041991999954917
+      ],
+      "median_s": 0.26041991999954917,
+      "min_s": 0.237352849000672,
+      "max_s": 0.2685143500002596,
+      "events_per_second": 76799.04056507898,
+      "speedup_vs_python": 28.451137820075253,
+      "final_signature": [
+        20000.0,
+        1.195800149956925e-08,
+        10282997.0,
+        -1.9063993998657052e-08,
+        3.1613566527296745e-08,
+        4.852099976580612e-08,
+        12.0
+      ],
+      "correctness_passed": true
+    },
+    {
+      "model": "electron",
+      "input": "runs/e_006_ether_12-17_0/electron.kmc",
+      "events": 20000,
+      "mode": "cli",
+      "language": "fortran",
+      "seconds": [
+        0.43704382499981875,
+        0.39702365700031805,
+        0.4148365699993519,
+        0.4292841570004384,
+        0.42118161100006546
+      ],
+      "median_s": 0.42118161100006546,
+      "min_s": 0.39702365700031805,
+      "max_s": 0.43704382499981875,
+      "events_per_second": 47485.45396488569,
+      "speedup_vs_python": 17.591563452657464,
+      "final_signature": [
+        20000.0,
+        1.195800149956925e-08,
+        10282997.0,
+        -1.9063993998657052e-08,
+        3.1613566527296745e-08,
+        4.852099976580612e-08,
+        12.0
+      ],
+      "correctness_passed": true
+    }
+  ]
+}

@@ -17,5 +17,5 @@ ukmc = "universal_kmc.cli:main"
 
 [tool.uv.build-backend]
 module-name = "universal_kmc"
-source-include = ["docs/**", "examples/**", "cpp/**", "fortran/**", "rust/Cargo.toml", "rust/Cargo.lock", "rust/src/**", "rust/tests/**", "rust/examples/**", "tests/**", "scripts/**", "CMakeLists.txt", "Makefile", "uv.lock"]
+source-include = ["benchmarks/**", "docs/**", "examples/**", "cpp/**", "fortran/**", "rust/Cargo.toml", "rust/Cargo.lock", "rust/src/**", "rust/tests/**", "rust/examples/**", "tests/**", "scripts/**", "CMakeLists.txt", "Makefile", "uv.lock"]
 source-exclude = ["build/**", "dist/**", "rust/target/**", "**/__pycache__/**", "**/*.pyc"]

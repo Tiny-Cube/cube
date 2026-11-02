@@ -116,3 +116,7 @@ cargo run --quiet --manifest-path rust/Cargo.toml --release --bin ukmc-rust -- e
 [体系报告与复现方法](runs/e_006_ether_12-17_0/README.md) · [机器可读结果](runs/e_006_ether_12-17_0/summary.json)
 
 ![真实体系 MSD 与精确 CTMC 对照](runs/e_006_ether_12-17_0/kmc_validation.png)
+
+## 速度实测
+
+[四语言计算速度报告](runs/performance_2026-11-02/README.md) 分别比较纯计算和含 CSV 输出的端到端耗时，覆盖两态模型、反应网络及真实分子体系。完整测速驱动及复现命令见 [benchmarks](benchmarks/README.md)。
