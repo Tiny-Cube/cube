@@ -4,6 +4,8 @@
 
 依据：[软件调研](../research/software-survey.md)、[源码审读](../research/source-review.md)、[理论契约](../research/transport-theory.md)。这些文档描述当前已查阅的证据，不表示完整复刻任何上游程序。
 
+后续需求与首版范围以[构建讨论](2026-11-05-cube-construction-discussion.md)和[MD/量化/GPU 工作流](2026-11-05-cube-md-quantum-gpu-workflow.md)为准：输入适合 GROMACS/LAMMPS；按指定共轭原子筛选 dimer；计算转移积分及 GPU QM/MM 重组能；GPU 也用于 KMC。用户已确认首个 QM/MM 案例固定 MM 坐标、只优化 QM 分子，KMC 首版先验证独立单载流子轨迹。下文保留总体路线；不能用早期里程碑把这些后续要求排除在当前目标之外。
+
 ## 1. 路线选择
 
 | 路线 | 收益 | 主要成本 | 结论 |

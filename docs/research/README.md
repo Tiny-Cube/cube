@@ -18,6 +18,6 @@
 
 ## 后续构建讨论
 
-用户已补充要求从 GROMACS/LAMMPS 单帧出发，按所选共轭区域提取 dimer、计算转移积分与 QM/MM 重组能，并同时支持量化和 KMC 的 GPU 路线。见 [构建讨论稿](../plans/2026-11-05-cube-construction-discussion.md)、[更新后的 MD/量化/GPU 工作流](../plans/2026-11-05-cube-md-quantum-gpu-workflow.md)。这是新增的目标设计，相关代码尚未实现；具体筛选默认值和物理浓度范围尚待确认。
+用户已补充要求从 GROMACS/LAMMPS 单帧出发，按所选共轭区域提取 dimer、计算转移积分与 QM/MM 重组能，并同时支持量化和 KMC 的 GPU 路线。见 [构建讨论稿](../plans/2026-11-05-cube-construction-discussion.md)、[更新后的 MD/量化/GPU 工作流](../plans/2026-11-05-cube-md-quantum-gpu-workflow.md)。已确认首个 QM/MM 验证固定 MM 坐标、只优化 QM 分子，KMC 首版先验证独立单载流子轨迹。这是目标设计，相关新代码尚未实现；几何筛选规则/阈值及具体量化和力场参数在实际运行前显式配置。
 
 [共轭区域距离示意与数值](dimer-distance-examples/README.md)为讨论用合成例子；[GPU4PySCF 补充源码证据](gpu-qmmm-sources.json)记录了选定实现的版本与哈希，不代表已完成 GPU 量化运行验证。
