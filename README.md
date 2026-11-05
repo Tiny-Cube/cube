@@ -1,4 +1,10 @@
-# Universal KMC — 通用动力学蒙特卡洛方法库
+# cube — 有机分子载流子输运计算软件
+
+cube 面向有机分子晶体、非晶和聚合物的载流子输运研究。当前可用基础为下面的四语言通用 KMC、速率函数和真实体系验证；完整材料工作流正在规划中，现有 Python 分发名仍为 `universal-kmc`、命令仍为 `ukmc`。
+
+[软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)
+
+## 当前基础：通用 KMC
 
 四套**独立实现**：Python、C++17、Rust、Fortran 2008。Python 用 **uv** 构建。
 

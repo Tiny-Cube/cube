@@ -1,5 +1,7 @@
 # 参考来源与独立设计
 
+当前 cube 材料级输运方案见 [2026-11-05 软件调研与源码证据](research/README.md)。下面保留 2026-11-02 通用 KMC 内核的历史设计依据。
+
 查阅日期：2026-11-02。上游页面与 master 分支会变化。本项目独立编写，没有复制上游实现，也不宣称与其文件格式/完整功能兼容。
 
 - [VOTCA 源码仓库](https://github.com/votca/votca)：参考速率计算与事件图/模拟层的分离。具体阅读了 [KMCCalculator](https://github.com/votca/votca/blob/master/xtp/src/libxtp/kmccalculator.cc) 与 [Rate_Engine](https://github.com/votca/votca/blob/master/xtp/src/libxtp/rate_engine.cc)。没有引入其拓扑、量子化学、Eigen/Boost 或数据库依赖。

@@ -1,0 +1,99 @@
+{
+  "date": "2026-11-05",
+  "system": "e_006_ether_12-17_0",
+  "upstream_commit": "282d0145c0509a967c4a8d8b6505d08cfcb9050b",
+  "upstream_function_sha256": "95653e27ee13cb99d2db9b372c5f8e4cb877ed82afab333f4dd3949cdc831b87",
+  "python": "3.14.7",
+  "numpy": "2.5.3",
+  "scope": "same imported rates; symmetric static network; no disorder or field; analytic tensor only",
+  "not_tested": [
+    "upstream quantum parameter calculation",
+    "complete upstream CLI",
+    "non-symmetric or finite-field network",
+    "full upstream test suite"
+  ],
+  "input_sha256": {
+    "input_audit.json": "068911039d33e153742c74baa32bf71bf757e82359773921cbdfbfddd9d60c57",
+    "summary.json": "aabf37ab4cc9a1128f6c3b63693ec2d54c112c13f9d7c845b1036f3b050a0aa2",
+    "rates_and_geometry.csv": "feeed439a015fddad9fc37580e8c808ed80c371d12f3e13241760558b73d6f29"
+  },
+  "carriers": {
+    "hole": {
+      "relative_frobenius_error": 2.5410265340049533e-13,
+      "mcal_diffusion_nm2_per_s": [
+        [
+          50015554483.19133,
+          13808979865.767792,
+          3483640018.688081
+        ],
+        [
+          13808979865.767792,
+          57968254630.00719,
+          -68649918.90290527
+        ],
+        [
+          3483640018.688081,
+          -68649918.90290527,
+          53786420085.39375
+        ]
+      ],
+      "cube_diffusion_nm2_per_s": [
+        [
+          50015554483.191666,
+          13808979865.767971,
+          3483640018.6891327
+        ],
+        [
+          13808979865.767971,
+          57968254630.00666,
+          -68649918.90358761
+        ],
+        [
+          3483640018.6891327,
+          -68649918.90358761,
+          53786420085.418
+        ]
+      ],
+      "passed": true
+    },
+    "electron": {
+      "relative_frobenius_error": 1.9910628828767666e-14,
+      "mcal_diffusion_nm2_per_s": [
+        [
+          80616132332.43344,
+          6719715928.941591,
+          1083040882.1286132
+        ],
+        [
+          6719715928.941591,
+          82029179175.8714,
+          7879741565.813335
+        ],
+        [
+          1083040882.1286132,
+          7879741565.813335,
+          89583435007.50563
+        ]
+      ],
+      "cube_diffusion_nm2_per_s": [
+        [
+          80616132332.4308,
+          6719715928.940962,
+          1083040882.128156
+        ],
+        [
+          6719715928.940962,
+          82029179175.87141,
+          7879741565.81294
+        ],
+        [
+          1083040882.128156,
+          7879741565.81294,
+          89583435007.50577
+        ]
+      ],
+      "passed": true
+    }
+  },
+  "passed": true
+}

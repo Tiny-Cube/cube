@@ -1,0 +1,307 @@
+{
+  "review_date": "2026-11-05",
+  "baseline_cube_commit": "3ce0922053d8584efca6fefc3ff1daffe0d51ae2",
+  "repositories": [
+    {
+      "name": "votca",
+      "url": "https://github.com/votca/votca.git",
+      "commit": "e2852159efc2c616ce3c99497caa05ec1e9f34ae",
+      "license_observed": "Apache-2.0",
+      "review": "selected source routines and documentation, not whole-code formal verification",
+      "executed": "not built or executed",
+      "files": [
+        {
+          "path": "xtp/src/libxtp/rate_engine.cc",
+          "sha256": "c1a6a0ca0a4aa328d9d5a5e6418444e7ea225e14f7c827e2959f28981ed340a7",
+          "review_scope": "Rate_Engine::Rate/Marcusrate; pair energy and field conventions",
+          "url": "https://github.com/votca/votca/blob/e2852159efc2c616ce3c99497caa05ec1e9f34ae/xtp/src/libxtp/rate_engine.cc"
+        },
+        {
+          "path": "xtp/src/libxtp/kmcwaitingtime.cc",
+          "sha256": "e3e50bb58a082561345ebd0eb3a87cbffb329d71c961ad85f8beb2de221c91c1",
+          "review_scope": "ExponentialWaitingTime and static-rate contract; thinning interface",
+          "url": "https://github.com/votca/votca/blob/e2852159efc2c616ce3c99497caa05ec1e9f34ae/xtp/src/libxtp/kmcwaitingtime.cc"
+        },
+        {
+          "path": "xtp/src/libxtp/kmcengine.cc",
+          "sha256": "f2dd096cb668d3faab88f5b89f3410a1d2d5279f6133b569ebf7f5aff79b4117",
+          "review_scope": "carrier pending-event queue, occupancy and stopping limits",
+          "url": "https://github.com/votca/votca/blob/e2852159efc2c616ce3c99497caa05ec1e9f34ae/xtp/src/libxtp/kmcengine.cc"
+        },
+        {
+          "path": "xtp/src/libxtp/bulksimulation.cc",
+          "sha256": "83e64d0ebd65727245bbd1dcf963643d72ece40e225112c3619af14c5eb16072",
+          "review_scope": "occupation-time sampling and Exact stationary/corrector solve",
+          "url": "https://github.com/votca/votca/blob/e2852159efc2c616ce3c99497caa05ec1e9f34ae/xtp/src/libxtp/bulksimulation.cc"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+          "review_scope": "Apache-2.0",
+          "url": "https://github.com/votca/votca/blob/e2852159efc2c616ce3c99497caa05ec1e9f34ae/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "morphct",
+      "url": "https://github.com/cmelab/morphct.git",
+      "commit": "cae0166d73994506f90645d33ede4cbe42a7be2d",
+      "license_observed": "GPL-3.0",
+      "review": "selected source routines and documentation, not whole-code formal verification",
+      "executed": "not built or executed",
+      "files": [
+        {
+          "path": "morphct/mobility_kmc.py",
+          "sha256": "a6a59188944d6a3f60a600589b8260ffa99a84ecda2ff4a648fbb0e4b77c22b7",
+          "review_scope": "Carrier hop: per-neighbor exponential competition, image, intra/inter choices",
+          "url": "https://github.com/cmelab/morphct/blob/cae0166d73994506f90645d33ede4cbe42a7be2d/morphct/mobility_kmc.py"
+        },
+        {
+          "path": "morphct/helper_functions.py",
+          "sha256": "1e33fbcb365b62c9dc4ecfd82ed7fcf11f060ebcd7e6912ecd236e27138c2f71",
+          "review_scope": "get_hop_rate/get_event_tau",
+          "url": "https://github.com/cmelab/morphct/blob/cae0166d73994506f90645d33ede4cbe42a7be2d/morphct/helper_functions.py"
+        },
+        {
+          "path": "morphct/kmc_analyze.py",
+          "sha256": "f45c705e6ee6afcaa947343dee6715dbf93f6c3d87842894827e888a12bce69f",
+          "review_scope": "calc_mobility/get_times_msds",
+          "url": "https://github.com/cmelab/morphct/blob/cae0166d73994506f90645d33ede4cbe42a7be2d/morphct/kmc_analyze.py"
+        },
+        {
+          "path": "README.md",
+          "sha256": "1f89096d03b06f370d940a33c5370ea2bcf31adf1081f9065f7a8612ce5e5746",
+          "review_scope": "chromophore workflow, scope and license",
+          "url": "https://github.com/cmelab/morphct/blob/cae0166d73994506f90645d33ede4cbe42a7be2d/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "589ed823e9a84c56feb95ac58e7cf384626b9cbf4fda2a907bc36e103de1bad2",
+          "review_scope": "GPL-3.0",
+          "url": "https://github.com/cmelab/morphct/blob/cae0166d73994506f90645d33ede4cbe42a7be2d/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "excimontec",
+      "url": "https://github.com/MikeHeiber/Excimontec.git",
+      "commit": "19a568f3a5871efad0db54f5bb950bb9e2bc6b65",
+      "license_observed": "MIT",
+      "review": "selected source routines and documentation, not whole-code formal verification",
+      "executed": "not built or executed",
+      "files": [
+        {
+          "path": "src/Polaron.h",
+          "sha256": "1541448f3d75764d281adffd0ec3c1fee4576824029eae8590d5d722178921fd",
+          "review_scope": "Hop::calculateRateConstant MA/Marcus parameter conventions",
+          "url": "https://github.com/MikeHeiber/Excimontec/blob/19a568f3a5871efad0db54f5bb950bb9e2bc6b65/src/Polaron.h"
+        },
+        {
+          "path": "src/OSC_Sim.cpp",
+          "sha256": "ffc0bc181f20f18f71c2c53a30f9b96347b1effa5b139b6bb31f03ae8e07e017",
+          "review_scope": "calculateMobilityData, event rate setup and ToF/steady-state application",
+          "url": "https://github.com/MikeHeiber/Excimontec/blob/19a568f3a5871efad0db54f5bb950bb9e2bc6b65/src/OSC_Sim.cpp"
+        },
+        {
+          "path": "README.md",
+          "sha256": "735b0d8f35c350e73f444e1bf1cd54a2e1f60ca16913162018c00e1446a17dbf",
+          "review_scope": "capabilities and KMC_Lattice dependency",
+          "url": "https://github.com/MikeHeiber/Excimontec/blob/19a568f3a5871efad0db54f5bb950bb9e2bc6b65/README.md"
+        },
+        {
+          "path": ".gitmodules",
+          "sha256": "4b1aac5a9482244a83ebc9bd03675a03e550d5faf412ec7fe2b17324b565a309",
+          "review_scope": "upstream engine submodule identity",
+          "url": "https://github.com/MikeHeiber/Excimontec/blob/19a568f3a5871efad0db54f5bb950bb9e2bc6b65/.gitmodules"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "c2996dfc4a9e66d7697fc8ab93559e5062fcb92f1bbc6b948322dc5f594a668e",
+          "review_scope": "MIT",
+          "url": "https://github.com/MikeHeiber/Excimontec/blob/19a568f3a5871efad0db54f5bb950bb9e2bc6b65/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "charted-kmc",
+      "url": "https://github.com/thomasjamespope/CharTED-KMC.git",
+      "commit": "8624fbde8cd56b85c37f37c9894f0a8a6267594a",
+      "license_observed": "GPL-3.0",
+      "review": "selected source routines and documentation, not whole-code formal verification",
+      "executed": "not built or executed",
+      "files": [
+        {
+          "path": "code/CharTED-KMC.f90",
+          "sha256": "660b064fefd901d51980bd4ab708e97ac2c2235bc86da3a31c6c71666c296898",
+          "review_scope": "main event loop and total-rate clock",
+          "url": "https://github.com/thomasjamespope/CharTED-KMC/blob/8624fbde8cd56b85c37f37c9894f0a8a6267594a/code/CharTED-KMC.f90"
+        },
+        {
+          "path": "code/modules/event.f",
+          "sha256": "cbf84ff2d149934be69eceeaac0b2318a9d778740d9f4d22519b43368787b7c8",
+          "review_scope": "myrate Marcus/MA branching",
+          "url": "https://github.com/thomasjamespope/CharTED-KMC/blob/8624fbde8cd56b85c37f37c9894f0a8a6267594a/code/modules/event.f"
+        },
+        {
+          "path": "code/modules/printings.f",
+          "sha256": "7b070c03a03a72c276150cd40197076b3ca7ba35f9f99292b7a667166e8005ed",
+          "review_scope": "flux mobility and recent-window statistics",
+          "url": "https://github.com/thomasjamespope/CharTED-KMC/blob/8624fbde8cd56b85c37f37c9894f0a8a6267594a/code/modules/printings.f"
+        },
+        {
+          "path": "README.md",
+          "sha256": "5e6da25533c0688df1fbfa2a621d4222d1ae96008b0bd3688a7fa11421f150c3",
+          "review_scope": "transport capabilities",
+          "url": "https://github.com/thomasjamespope/CharTED-KMC/blob/8624fbde8cd56b85c37f37c9894f0a8a6267594a/README.md"
+        },
+        {
+          "path": "LICENSE.md",
+          "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+          "review_scope": "GPL-3.0",
+          "url": "https://github.com/thomasjamespope/CharTED-KMC/blob/8624fbde8cd56b85c37f37c9894f0a8a6267594a/LICENSE.md"
+        }
+      ]
+    },
+    {
+      "name": "mcal",
+      "url": "https://github.com/matsui-lab-yamagata/mcal.git",
+      "commit": "282d0145c0509a967c4a8d8b6505d08cfcb9050b",
+      "license_observed": "MIT",
+      "review": "selected source routines and documentation, not whole-code formal verification",
+      "executed": "analytic tensor function only",
+      "files": [
+        {
+          "path": "src/mcal/calculations/hopping_mobility_model.py",
+          "sha256": "95653e27ee13cb99d2db9b372c5f8e4cb877ed82afab333f4dd3949cdc831b87",
+          "review_scope": "marcus_rate, mobility_tensor, analytic diffusion, standardization and MC reference",
+          "url": "https://github.com/matsui-lab-yamagata/mcal/blob/282d0145c0509a967c4a8d8b6505d08cfcb9050b/src/mcal/calculations/hopping_mobility_model.py"
+        },
+        {
+          "path": "src/mcal/calculations/rcal.py",
+          "sha256": "e6fec529e9a520a7eb24bd63191da08bc96aa059fb67cfe545c595bd0ced2cc2",
+          "review_scope": "four-point calculation driver and energy combination",
+          "url": "https://github.com/matsui-lab-yamagata/mcal/blob/282d0145c0509a967c4a8d8b6505d08cfcb9050b/src/mcal/calculations/rcal.py"
+        },
+        {
+          "path": "README.md",
+          "sha256": "290eda27942e712a97bd1499a71acb35d742b8763056d599c086460c83967981",
+          "review_scope": "input and quantum backends",
+          "url": "https://github.com/matsui-lab-yamagata/mcal/blob/282d0145c0509a967c4a8d8b6505d08cfcb9050b/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "24ff2f9bb81813bde32e09cc15338b368fd19c7f3c46b0781a8ca1ec7fe6bada",
+          "review_scope": "MIT",
+          "url": "https://github.com/matsui-lab-yamagata/mcal/blob/282d0145c0509a967c4a8d8b6505d08cfcb9050b/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "amset",
+      "url": "https://github.com/hackingmaterials/amset.git",
+      "commit": "562904077533fba1de5d41a81930a84602590e67",
+      "license_observed": "BSD-style; full LICENSE includes enhancement terms",
+      "review": "selected source routines and documentation, not whole-code formal verification",
+      "executed": "not built or executed",
+      "files": [
+        {
+          "path": "amset/core/transport.py",
+          "sha256": "2a70d1c4dad4ee881f96f40fc8c86cba03974d049eb85d682bf7642bb8a4c061",
+          "review_scope": "solve_boltzman_transport_equation, _calculate_mobility and scattering lifetimes",
+          "url": "https://github.com/hackingmaterials/amset/blob/562904077533fba1de5d41a81930a84602590e67/amset/core/transport.py"
+        },
+        {
+          "path": "README.md",
+          "sha256": "efb5b2b4b32b184b3e80254f7e0ce2c2cf20fdb07a19db8a9c1f18b0747cd810",
+          "review_scope": "software identity and theory paper",
+          "url": "https://github.com/hackingmaterials/amset/blob/562904077533fba1de5d41a81930a84602590e67/README.md"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "4d23fac7c80a54720d448aa43503c800cac54215a851c0b1e3ed6c352821edf9",
+          "review_scope": "BSD-style redistribution plus enhancement clause",
+          "url": "https://github.com/hackingmaterials/amset/blob/562904077533fba1de5d41a81930a84602590e67/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "tofet",
+      "url": "https://github.com/jfcoker/tofet.git",
+      "commit": "332a7d818e1a8722c41d1e06b87c573628d506d7",
+      "license_observed": "core source headers LGPL-3.0-or-later; COPYING and COPYING.LESSER both shipped",
+      "review": "selected source routines and documentation, not whole-code formal verification",
+      "executed": "not built or executed",
+      "files": [
+        {
+          "path": "source/kmc.cc",
+          "sha256": "8bec2f6d6fe3555f4c6a9e7d33285aa46d70e0b9f175a238c606e2fdf32f7a16",
+          "review_scope": "FRM/FRM_FET, drift mobility and time/output protocol",
+          "url": "https://github.com/jfcoker/tofet/blob/332a7d818e1a8722c41d1e06b87c573628d506d7/source/kmc.cc"
+        },
+        {
+          "path": "source/graph.cc",
+          "sha256": "4e01aa78277b7b369fab277687d67a4c99eb0ddcd5164ec8022f5d34245f1328",
+          "review_scope": "paired edges, field and static vs interacting rate updates",
+          "url": "https://github.com/jfcoker/tofet/blob/332a7d818e1a8722c41d1e06b87c573628d506d7/source/graph.cc"
+        },
+        {
+          "path": "source/vertex.cc",
+          "sha256": "fa971e4427ec05ca2a45e65e6c0a9e4d19f6ac959992a123e8fd38765ecdfe8b",
+          "review_scope": "Marcus/MA rates, occupied destinations and residence-time weighting",
+          "url": "https://github.com/jfcoker/tofet/blob/332a7d818e1a8722c41d1e06b87c573628d506d7/source/vertex.cc"
+        },
+        {
+          "path": "source/kmc.h",
+          "sha256": "0f70233f6e18b18370f706e395a75477109dcb3b723617efe207acde7ace8a0d",
+          "review_scope": "transport state/observables",
+          "url": "https://github.com/jfcoker/tofet/blob/332a7d818e1a8722c41d1e06b87c573628d506d7/source/kmc.h"
+        },
+        {
+          "path": "README.md",
+          "sha256": "cfd58efc47f47404ec0689d257871553eca5e9c48c855ba460b92ca1e1e1a857",
+          "review_scope": "ToF/FET scope",
+          "url": "https://github.com/jfcoker/tofet/blob/332a7d818e1a8722c41d1e06b87c573628d506d7/README.md"
+        },
+        {
+          "path": "COPYING",
+          "sha256": "0ae0485a5bd37a63e63603596417e4eb0e653334fa6c7f932ca3a0e85d4af227",
+          "review_scope": "GPL-3.0 text shipped with LGPL",
+          "url": "https://github.com/jfcoker/tofet/blob/332a7d818e1a8722c41d1e06b87c573628d506d7/COPYING"
+        },
+        {
+          "path": "COPYING.LESSER",
+          "sha256": "463fe509b4d4a34c4eaf5d19eb3855660df37c7253f310ace3a3cfecf65b42ff",
+          "review_scope": "LGPL-3.0 terms; source headers say version 3 or later",
+          "url": "https://github.com/jfcoker/tofet/blob/332a7d818e1a8722c41d1e06b87c573628d506d7/COPYING.LESSER"
+        }
+      ]
+    }
+  ],
+  "documentation_only": [
+    {
+      "name": "MOMAP",
+      "url": "https://www.hzw.ai/momap/index",
+      "access": "public theory/product pages; no core source obtained"
+    },
+    {
+      "name": "LightForge",
+      "url": "https://people.bath.ac.uk/pysabw/extmosmanual/extmos/LightForge/LightForgeDocu.html",
+      "access": "public manual/author paper; no core source obtained"
+    },
+    {
+      "name": "Bumblebee",
+      "url": "https://www.scm.com/doc.2026/Bumblebee/General.html",
+      "access": "public vendor docs; no core source obtained"
+    },
+    {
+      "name": "EPW",
+      "url": "https://docs.epw-code.org/Inputs/Inputs.html",
+      "access": "public official docs; core source not reviewed"
+    },
+    {
+      "name": "Perturbo",
+      "url": "https://perturbo-code.github.io/mydoc_installation.html",
+      "access": "official docs; core source access requires request, not requested"
+    }
+  ]
+}
