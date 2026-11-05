@@ -1,0 +1,54 @@
+{
+  "review_date": "2026-11-05",
+  "repository": "https://github.com/pyscf/gpu4pyscf",
+  "commit": "6beecbded4993d67cc4fc42c2c91c149bab70bf1",
+  "license_observed": "Apache-2.0",
+  "scope": "selected source routines, GPU QM/MM tests and examples; no quantum runtime validation performed",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "bea0fc395b4744aa687c5b12ae67bd133772ad59ab1ccd9369c8302da75aa0c5",
+      "url": "https://github.com/pyscf/gpu4pyscf/blob/6beecbded4993d67cc4fc42c2c91c149bab70bf1/README.md"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "url": "https://github.com/pyscf/gpu4pyscf/blob/6beecbded4993d67cc4fc42c2c91c149bab70bf1/LICENSE"
+    },
+    {
+      "path": "gpu4pyscf/qmmm/itrf.py",
+      "sha256": "9acc9b224f8dc229ef7872bcf772bcbd51fc54dfd2cfcaa7aee7928264af4ce4",
+      "url": "https://github.com/pyscf/gpu4pyscf/blob/6beecbded4993d67cc4fc42c2c91c149bab70bf1/gpu4pyscf/qmmm/itrf.py"
+    },
+    {
+      "path": "gpu4pyscf/qmmm/tests/test_itrf.py",
+      "sha256": "3170a62b4f122f4b94a0c4c9ad68c7332955821dfb7060d52db8a6bc44dfe074",
+      "url": "https://github.com/pyscf/gpu4pyscf/blob/6beecbded4993d67cc4fc42c2c91c149bab70bf1/gpu4pyscf/qmmm/tests/test_itrf.py"
+    },
+    {
+      "path": "examples/24-qmmm_pbc.py",
+      "sha256": "53fc8ac4fb22548ddab39b91faa2b049570a9e3a28093be3d0d31a9f838f7f23",
+      "url": "https://github.com/pyscf/gpu4pyscf/blob/6beecbded4993d67cc4fc42c2c91c149bab70bf1/examples/24-qmmm_pbc.py"
+    },
+    {
+      "path": "examples/geometry_optimization/02-h2o_geomopt.py",
+      "sha256": "394635f9122ce9a8c2700ea95434f67600f856517d32939b3577dcaccfa233d0",
+      "url": "https://github.com/pyscf/gpu4pyscf/blob/6beecbded4993d67cc4fc42c2c91c149bab70bf1/examples/geometry_optimization/02-h2o_geomopt.py"
+    }
+  ],
+  "official_documentation": [
+    "https://pyscf.org/user/gpu.html",
+    "https://pyscf.org/user/qmmm.html",
+    "https://docs.mdanalysis.org/stable/documentation_pages/topology/LAMMPSParser.html",
+    "https://docs.mdanalysis.org/stable/documentation_pages/topology/TPRParser.html",
+    "https://docs.openmm.org/latest/userguide/theory/01_introduction.html",
+    "https://manual.cp2k.org/trunk/CP2K_INPUT/FORCE_EVAL/QMMM.html"
+  ],
+  "runtime_status": {
+    "pyscf_installed_in_checked_system_python": false,
+    "gpu4pyscf_installed_in_checked_system_python": false,
+    "quantum_gpu_tested": false,
+    "gpu_kmc_implemented": false,
+    "host_gpu_query": "NVIDIA GeForce GTX 1650 with Max-Q Design, 4096 MiB, 615.71.09"
+  }
+}

@@ -14,3 +14,10 @@
 研究范围：7 个公开软件读取选定源码；mcal 的解析张量函数在已有真实体系上实际执行。其他程序的完整计算流程未安装或复现；MOMAP、LightForge、Bumblebee、Perturbo 核心源码本次未取得，EPW 仅研究官方文档。没有将文档功能说明当作完整源码验证或数值一致性结论。
 
 源码检出目录为被 Git 忽略的 `build/research_sources/`。发行物保留研究证据、固定上游链接与 cube 自写脚本，不附带这些上游仓库。
+
+
+## 后续构建讨论
+
+用户已补充要求从 GROMACS/LAMMPS 单帧出发，按所选共轭区域提取 dimer、计算转移积分与 QM/MM 重组能，并同时支持量化和 KMC 的 GPU 路线。见 [构建讨论稿](../plans/2026-11-05-cube-construction-discussion.md)、[更新后的 MD/量化/GPU 工作流](../plans/2026-11-05-cube-md-quantum-gpu-workflow.md)。这是新增的目标设计，相关代码尚未实现；具体筛选默认值和物理浓度范围尚待确认。
+
+[共轭区域距离示意与数值](dimer-distance-examples/README.md)为讨论用合成例子；[GPU4PySCF 补充源码证据](gpu-qmmm-sources.json)记录了选定实现的版本与哈希，不代表已完成 GPU 量化运行验证。
