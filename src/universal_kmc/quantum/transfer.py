@@ -10,78 +10,18 @@ DOI:10.1063/1.4940920, Sec. II (preprint Sec. II.3.1),
 https://arxiv.org/html/1512.00200, and FHI-aims manual, Sec. 3.48.
 Original abstract excerpt: "the construction of the Hamiltonian".
 """
-from dataclasses import asdict, dataclass
+from dataclasses import asdict
 import hashlib
 import importlib.metadata
 import json
 import math
-from pathlib import Path
 import time
 
 import numpy as np
 
 from .coupling import ApplicabilityError, energy_splitting, gmh, host, lowdin
-
-METHODS = ('dipro', 'frozen_density', 'esid', 'orbital_gmh')
-
-
-@dataclass(frozen=True)
-class SCFConfig:
-    backend: str = 'cpu'
-    basis: str = 'def2-svp'
-    xc: str = 'b3lyp'  # 'hf' selects restricted Hartree-Fock
-    auxbasis: str = 'def2-universal-jkfit'
-    unit: str = 'Angstrom'
-    conv_tol: float = 1e-10
-    max_cycle: int = 100
-    grid_level: int = 3
-    threads: int = 4
-    max_memory_mb: int = 4000
-    degeneracy_tolerance_ev: float = 0.01
-    site_tolerance_ev: float = 0.001
-    max_pair_leakage: float = 0.15
-
-    def validate(self):
-        if self.backend not in ('cpu', 'gpu') or self.unit not in ('Angstrom', 'Bohr'):
-            raise ValueError('backend must be cpu/gpu and unit Angstrom/Bohr')
-        for name in ('basis', 'xc', 'auxbasis'):
-            if not isinstance(getattr(self, name), str) or not getattr(self, name).strip():
-                raise ValueError(f'{name} must be a nonempty string')
-        for name in ('max_cycle', 'threads', 'max_memory_mb'):
-            if type(getattr(self, name)) is not int or getattr(self, name) <= 0:
-                raise ValueError(f'{name} must be a positive integer')
-        if type(self.grid_level) is not int or not 0 <= self.grid_level <= 9:
-            raise ValueError('grid_level must be an integer in [0,9]')
-        for name in ('conv_tol', 'degeneracy_tolerance_ev', 'site_tolerance_ev'):
-            if not math.isfinite(getattr(self, name)) or getattr(self, name) <= 0:
-                raise ValueError(f'{name} must be positive and finite')
-        if not math.isfinite(self.max_pair_leakage) or not 0 <= self.max_pair_leakage < 1:
-            raise ValueError('max_pair_leakage must be in [0,1)')
-
-
-def read_xyz(path):
-    """Read exactly one XYZ frame, retaining its atom ordering."""
-    lines = Path(path).read_text().splitlines()
-    if len(lines) < 3:
-        raise ValueError('XYZ needs an atom count, comment line, and atoms')
-    n = int(lines[0])
-    if n <= 0 or len(lines) < n+2 or any(s.strip() for s in lines[n+2:]):
-        raise ValueError('XYZ must contain exactly one complete, nonempty frame')
-    atoms = []
-    for line in lines[2:n+2]:
-        fields = line.split()
-        if len(fields) != 4:
-            raise ValueError('XYZ atom rows must contain element x y z')
-        atoms.append((fields[0], tuple(map(float, fields[1:]))))
-    return atoms
-
-
-def _atoms(value):
-    value = read_xyz(value) if isinstance(value, (str, Path)) else value
-    atoms = [(str(symbol), tuple(float(x) for x in xyz)) for symbol, xyz in value]
-    if not atoms or any(len(xyz) != 3 or not all(map(math.isfinite, xyz)) for _, xyz in atoms):
-        raise ValueError('each fragment needs atoms with finite three-dimensional coordinates')
-    return atoms
+from .config import METHODS, SCFConfig  # retain the existing transfer.py public imports
+from .geometry import normalize_fragment as _atoms, read_xyz
 
 
 def _versions():
@@ -206,6 +146,26 @@ def calculate_transfer(fragment_a, fragment_b, *, config=None, methods=('dipro',
         sync()
         timings['frozen_density_fock'] = time.perf_counter()-t
 
+    return _evaluate_transfer(mfa, mfb, mfd, operators, s, config=config,
+                              methods=methods, carriers=carriers,
+                              assume_equivalent=assume_equivalent, orbital_indices=orbital_indices,
+                              xp=xp, scf_records=scf_records, timings=timings, started=started,
+                              device=device, gpu_runtime=gpu_runtime, a=a, b=b)
+
+
+def _evaluate_transfer(mfa, mfb, mfd, operators, s, *, config, methods, carriers,
+                       assume_equivalent, orbital_indices, xp, scf_records, timings,
+                       started, device, gpu_runtime, a, b, ao_order=None):
+    """Shared projection algebra for live SCF and saved complete MO data."""
+    from pyscf.data.nist import HARTREE2EV
+    md = mfd.mol
+    na, nb = mfa.mol.nao_nr(), mfb.mol.nao_nr()
+    need_dimer = any(m != 'frozen_density' for m in methods)
+
+    def sync():
+        if config.backend == 'gpu':
+            xp.cuda.get_current_stream().synchronize()
+
     def select(mf, carrier, explicit=None):
         energies, occupied = host(mf.mo_energy), host(mf.mo_occ) > 0
         sector = np.flatnonzero(occupied if carrier == 'hole' else ~occupied)
@@ -281,6 +241,8 @@ def calculate_transfer(fragment_a, fragment_b, *, config=None, methods=('dipro',
                     # when requested. Nuclear dipole is a common diagonal offset and
                     # cancels in the GMH expression for orthonormal orbital states.
                     ao_dipole = -xp.asarray(md.intor('int1e_r', comp=3, hermi=1))
+                    if ao_order is not None:
+                        ao_dipole = ao_dipole[:, ao_order, :][:, :, ao_order]
                     dipoles = xp.einsum('pi,xpq,qj->xij', pair_coeff, ao_dipole, pair_coeff)
                     details = gmh(energies, host(dipoles))
                     value = details.pop('magnitude')

@@ -72,6 +72,8 @@ GPU 工作流的 `orbital_gmh` 使用所选 KS/HF 轨道的能量与单电子偶
 
 ## 实现与安装
 
+**已有结果后处理入口**：独立 `scripts/run_pyscf.py` 先把 A/B/AB 的 XYZ 算成 `.chk`，再通过 `scripts/calculate_transfer.py transfer.toml` 或 `cube-transfer transfer.toml` 读取结果，不重新运行 SCF。控制文件和输出模板详见[两阶段工作流](pyscf-transfer-workflow.md)。此入口支持 DIPRO/ESID/orbital-GMH；frozen-density 需要另一种 Hamiltonian，不能用收敛 dimer checkpoint 替代。
+
 代码在 `src/universal_kmc/quantum/`，不改变通用 KMC 核心。方法旁的注释包含原论文 DOI、公式/章节和短原文摘句。发行物不包含论文全文或上游程序源码。
 
 CPU 环境：

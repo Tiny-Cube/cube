@@ -10,6 +10,19 @@ cube 面向有机分子晶体、非晶和聚合物的载流子输运研究。当
 
 提供收敛二聚体投影 DIPRO、中性 frozen-density 近似、受适用性检查约束的 ESID，以及明确标注单电子近似的 orbital GMH。支持空穴/电子与多轨道耦合块；SCF 失败不会输出伪有效参数。代码注释引用各方法原论文。量化依赖可选，通用 KMC 仍可独立安装。
 
+支持你指定的两阶段流程：**单体/dimer XYZ → 独立 PySCF 脚本 → `.chk` 输出 → TOML 控制文件与独立转移积分脚本 → JSON**。详见[完整使用说明](docs/pyscf-transfer-workflow.md)。CPU 示例：
+
+```bash
+uv run --locked --extra quantum python scripts/run_pyscf.py \
+  examples/quantum/ethylene_a.xyz examples/quantum/ethylene_b.xyz \
+  examples/quantum/ethylene_ab.xyz --output-dir examples/quantum/results
+uv run --locked --extra quantum python scripts/calculate_transfer.py examples/quantum/transfer.toml
+```
+
+第二阶段只读取已有结果，不重新运行 SCF。两阶段可分别选择 CPU/GPU，控制文件指定三份 checkpoint、计算方法、载流子和输出路径。标准 `.log` 通常没有完整轨道矩阵，不能替代 `.chk`。
+
+原有 XYZ 直接计算命令仍可使用：
+
 ```bash
 uv sync --locked --extra quantum-cuda13
 uv run --locked --extra quantum-cuda13 cube-transfer \
