@@ -1,8 +1,25 @@
 # cube — 有机分子载流子输运计算软件
 
-cube 面向有机分子晶体、非晶和聚合物的载流子输运研究。当前可用基础为下面的四语言通用 KMC、速率函数和真实体系验证；完整材料工作流正在规划中，现有 Python 分发名仍为 `universal-kmc`、命令仍为 `ukmc`。
+cube 面向有机分子晶体、非晶和聚合物的载流子输运研究。当前可用功能包括四语言通用 KMC、速率函数、真实体系验证，以及可选的 CPU/GPU 转移积分计算；完整 MD→QM/MM→输运材料工作流仍待实现。Python 分发名仍为 `universal-kmc`，KMC 命令为 `ukmc`，新增量化命令为 `cube-transfer`。
 
 [软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)
+
+## 新增：GPU 转移积分
+
+[理论公式、原始论文与使用方法](docs/transfer-integrals.md) · [RTX 5090 实测](runs/transfer_gpu_2026-11-06/README.md)
+
+提供收敛二聚体投影 DIPRO、中性 frozen-density 近似、受适用性检查约束的 ESID，以及明确标注单电子近似的 orbital GMH。支持空穴/电子与多轨道耦合块；SCF 失败不会输出伪有效参数。代码注释引用各方法原论文。量化依赖可选，通用 KMC 仍可独立安装。
+
+```bash
+uv sync --locked --extra quantum-cuda13
+uv run --locked --extra quantum-cuda13 cube-transfer \
+  --fragment-a examples/quantum/ethylene_a.xyz \
+  --fragment-b examples/quantum/ethylene_b.xyz \
+  --backend gpu --basis def2-svp --xc b3lyp \
+  --method dipro --method frozen_density --output build/transfer.json
+```
+
+CPU 使用 `--extra quantum` 和 `--backend cpu`。GPU 量化适配器不等于已经实现 GPU KMC；当前也不包含 QM/MM 量化任务。
 
 ## 当前基础：通用 KMC
 
@@ -109,7 +126,7 @@ cargo run --quiet --manifest-path rust/Cargo.toml --release --bin ukmc-rust -- e
 
 检查涵盖：任意状态与动态事件、禁用事件、指数等待时间与分支概率、截止时间、吸收态、非法输入、跨语言轨迹、通用排队例子、两态时间占据、反应守恒、固定时间扩散和出生死亡解析结果。
 
-当前支持有限事件目录、分段恒定速率的 CTMC。持续随时间变化的 hazard、非指数等待时间、无限速率/Zeno 过程需要不同算法，不能直接套此内核。未实现 dependency graph/Fenwick tree 加速、MPI/GPU、通用检查点或 VOTCA 数据库导入。
+当前支持有限事件目录、分段恒定速率的 CTMC。持续随时间变化的 hazard、非指数等待时间、无限速率/Zeno 过程需要不同算法，不能直接套此内核。KMC 核心尚未实现 dependency graph/Fenwick tree 加速、MPI/GPU、通用检查点或 VOTCA 数据库导入；GPU 电子结构适配器为上述独立可选模块。
 
 默认 MINSTD 随机流主要用于四语言回归，可替换随机源；其周期和精度有限，长程生产模拟或并行独立流请接入合适的随机数生成器。Fortran 参数错误目前 `error stop 2`，其他版本分别使用异常或 `Result`。详见算法文档。
 

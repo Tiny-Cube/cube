@@ -1,0 +1,510 @@
+{
+  "schema": "cube-transfer-1",
+  "status": "completed",
+  "input": {
+    "fragment_a": [
+      [
+        "C",
+        [
+          3.33,
+          -2.0,
+          1.0
+        ]
+      ],
+      [
+        "C",
+        [
+          4.67,
+          -2.0,
+          1.0
+        ]
+      ],
+      [
+        "H",
+        [
+          2.768,
+          -2.0,
+          1.928
+        ]
+      ],
+      [
+        "H",
+        [
+          2.768,
+          -2.0,
+          0.07199999999999995
+        ]
+      ],
+      [
+        "H",
+        [
+          5.232,
+          -2.0,
+          1.928
+        ]
+      ],
+      [
+        "H",
+        [
+          5.232,
+          -2.0,
+          0.07199999999999995
+        ]
+      ]
+    ],
+    "fragment_b": [
+      [
+        "C",
+        [
+          3.33,
+          -5.5,
+          1.0
+        ]
+      ],
+      [
+        "C",
+        [
+          4.67,
+          -5.5,
+          1.0
+        ]
+      ],
+      [
+        "H",
+        [
+          2.768,
+          -5.5,
+          1.928
+        ]
+      ],
+      [
+        "H",
+        [
+          2.768,
+          -5.5,
+          0.07199999999999995
+        ]
+      ],
+      [
+        "H",
+        [
+          5.232,
+          -5.5,
+          1.928
+        ]
+      ],
+      [
+        "H",
+        [
+          5.232,
+          -5.5,
+          0.07199999999999995
+        ]
+      ]
+    ],
+    "config": {
+      "backend": "cpu",
+      "basis": "def2-svp",
+      "xc": "b3lyp",
+      "auxbasis": "def2-universal-jkfit",
+      "unit": "Angstrom",
+      "conv_tol": 1e-10,
+      "max_cycle": 100,
+      "grid_level": 3,
+      "threads": 4,
+      "max_memory_mb": 4000,
+      "degeneracy_tolerance_ev": 0.01,
+      "site_tolerance_ev": 0.001,
+      "max_pair_leakage": 0.15
+    },
+    "methods": [
+      "dipro",
+      "frozen_density",
+      "esid",
+      "orbital_gmh"
+    ],
+    "carriers": [
+      "hole",
+      "electron"
+    ],
+    "assume_equivalent": true,
+    "orbital_indices": null
+  },
+  "input_sha256": "e09412950cf4f39e6fb382a56f9c7bb327fe84bb890539eede652d46254fed52",
+  "backend": "cpu",
+  "device": null,
+  "gpu_runtime": null,
+  "versions": {
+    "numpy": "2.5.4",
+    "pyscf": "2.15.0",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "cupy-cuda13x": "13.6.0"
+  },
+  "scf": {
+    "fragment_a": {
+      "converged": true,
+      "energy_hartree": -78.53128605568922,
+      "cycles": 7,
+      "class": "pyscf.df.df_jk.DFRKS"
+    },
+    "fragment_b": {
+      "converged": true,
+      "energy_hartree": -78.53128605568918,
+      "cycles": 7,
+      "class": "pyscf.df.df_jk.DFRKS"
+    },
+    "dimer": {
+      "converged": true,
+      "energy_hartree": -157.05924628555934,
+      "cycles": 7,
+      "class": "pyscf.df.df_jk.DFRKS"
+    }
+  },
+  "timings_seconds": {
+    "fragment_a": 0.7289667259901762,
+    "fragment_b": 0.7671741060912609,
+    "dimer": 3.051199725829065,
+    "frozen_density_fock": 0.38095421507023275,
+    "total": 5.230696564074606
+  },
+  "maximum_complete_mo_projection_residual_hartree": 2.78715400611404e-08,
+  "results": {
+    "hole": {
+      "orbital_indices_a": [
+        7
+      ],
+      "orbital_indices_b": [
+        7
+      ],
+      "fragment_overlap": [
+        [
+          0.9999999999999986,
+          -0.06669861529385253
+        ],
+        [
+          -0.06669861529385253,
+          0.9999999999999989
+        ]
+      ],
+      "methods": {
+        "dipro": {
+          "status": "ok",
+          "coupling_ev": [
+            [
+              0.4220006115125204
+            ]
+          ],
+          "coupling_mev": [
+            [
+              422.0006115125204
+            ]
+          ],
+          "scalar_magnitude_ev": 0.4220006115125204,
+          "frobenius_norm_ev": 0.4220006115125204,
+          "singular_values_ev": [
+            0.4220006115125204
+          ],
+          "raw_hamiltonian_hartree": [
+            [
+              -0.270473369515965,
+              0.033479444206269304
+            ],
+            [
+              0.033479444206269304,
+              -0.27047336951594725
+            ]
+          ],
+          "orthogonal_hamiltonian_hartree": [
+            [
+              -0.2694389916117911,
+              0.015508236559591477
+            ],
+            [
+              0.015508236559591517,
+              -0.26943899161177315
+            ]
+          ],
+          "density": "converged_dimer"
+        },
+        "frozen_density": {
+          "status": "ok",
+          "coupling_ev": [
+            [
+              0.47812710694882943
+            ]
+          ],
+          "coupling_mev": [
+            [
+              478.1271069488294
+            ]
+          ],
+          "scalar_magnitude_ev": 0.47812710694882943,
+          "frobenius_norm_ev": 0.47812710694882943,
+          "singular_values_ev": [
+            0.47812710694882943
+          ],
+          "raw_hamiltonian_hartree": [
+            [
+              -0.26926872105090205,
+              0.0354525305552141
+            ],
+            [
+              0.03545253055521411,
+              -0.26926872105090105
+            ]
+          ],
+          "orthogonal_hamiltonian_hartree": [
+            [
+              -0.26809676987044784,
+              0.017570847240100614
+            ],
+            [
+              0.017570847240100655,
+              -0.2680967698704467
+            ]
+          ],
+          "density": "sum_isolated_neutral_fragments"
+        },
+        "esid": {
+          "status": "ok",
+          "scalar_magnitude_ev": 0.4219568844290151,
+          "scalar_magnitude_mev": 421.9568844290151,
+          "dimer_orbital_indices": [
+            14,
+            15
+          ],
+          "pair_subspace_leakage": 0.0015326811572738963,
+          "equivalent_fragment_assumption": true
+        },
+        "orbital_gmh": {
+          "status": "ok",
+          "scalar_magnitude_ev": 0.4219568844290151,
+          "scalar_magnitude_mev": 421.9568844290151,
+          "dimer_orbital_indices": [
+            14,
+            15
+          ],
+          "pair_subspace_leakage": 0.0015326811572738963,
+          "axis": [
+            -3.800407663390273e-14,
+            -1.0,
+            -9.721595372533158e-16
+          ],
+          "projected_dipoles": [
+            [
+              -7.0864729671171895,
+              3.310958012888627
+            ],
+            [
+              3.3109580128886344,
+              -7.086472967120166
+            ]
+          ],
+          "approximation": "single_particle_orbital_GMH_not_many_electron_GMH",
+          "dipoles_au": [
+            [
+              [
+                -7.5589044982603175,
+                -1.2582990205345368e-13
+              ],
+              [
+                -9.255443633726657e-14,
+                -7.558904498260327
+              ]
+            ],
+            [
+              [
+                7.086472967117478,
+                -3.310958012888627
+              ],
+              [
+                -3.3109580128886344,
+                7.0864729671204545
+              ]
+            ],
+            [
+              [
+                -1.8897261245650552,
+                -3.2187794096749656e-15
+              ],
+              [
+                -5.819997261902188e-16,
+                -1.8897261245650598
+              ]
+            ]
+          ],
+          "ao_dipole_integrals_backend": "cpu_libcint"
+        }
+      }
+    },
+    "electron": {
+      "orbital_indices_a": [
+        8
+      ],
+      "orbital_indices_b": [
+        8
+      ],
+      "fragment_overlap": [
+        [
+          1.0000000000000007,
+          -0.07914312548490655
+        ],
+        [
+          -0.07914312548490657,
+          1.0
+        ]
+      ],
+      "methods": {
+        "dipro": {
+          "status": "ok",
+          "coupling_ev": [
+            [
+              0.48518069653954976
+            ]
+          ],
+          "coupling_mev": [
+            [
+              485.1806965395498
+            ]
+          ],
+          "scalar_magnitude_ev": 0.48518069653954976,
+          "frobenius_norm_ev": 0.48518069653954976,
+          "singular_values_ev": [
+            0.48518069653954976
+          ],
+          "raw_hamiltonian_hartree": [
+            [
+              0.007724838721509173,
+              0.017107013010970385
+            ],
+            [
+              0.017107013010970385,
+              0.007724838721527459
+            ]
+          ],
+          "orthogonal_hamiltonian_hartree": [
+            [
+              0.009135965546172225,
+              0.017830061878617597
+            ],
+            [
+              0.017830061878617597,
+              0.009135965546190571
+            ]
+          ],
+          "density": "converged_dimer"
+        },
+        "frozen_density": {
+          "status": "ok",
+          "coupling_ev": [
+            [
+              0.4845940592817427
+            ]
+          ],
+          "coupling_mev": [
+            [
+              484.5940592817427
+            ]
+          ],
+          "scalar_magnitude_ev": 0.4845940592817427,
+          "frobenius_norm_ev": 0.4845940592817427,
+          "singular_values_ev": [
+            0.4845940592817427
+          ],
+          "raw_hamiltonian_hartree": [
+            [
+              0.008933625371816346,
+              0.016989922370351268
+            ],
+            [
+              0.01698992237035126,
+              0.008933625371823989
+            ]
+          ],
+          "orthogonal_hamiltonian_hartree": [
+            [
+              0.010343045987685982,
+              0.01780850335685116
+            ],
+            [
+              0.017808503356851153,
+              0.010343045987693655
+            ]
+          ],
+          "density": "sum_isolated_neutral_fragments"
+        },
+        "esid": {
+          "status": "ok",
+          "scalar_magnitude_ev": 0.47992230696906757,
+          "scalar_magnitude_mev": 479.92230696906756,
+          "dimer_orbital_indices": [
+            16,
+            17
+          ],
+          "pair_subspace_leakage": 0.006603857108629985,
+          "equivalent_fragment_assumption": true
+        },
+        "orbital_gmh": {
+          "status": "ok",
+          "scalar_magnitude_ev": 0.47992230696906757,
+          "scalar_magnitude_mev": 479.92230696906756,
+          "dimer_orbital_indices": [
+            16,
+            17
+          ],
+          "pair_subspace_leakage": 0.006603857108629985,
+          "axis": [
+            -8.649379860757854e-14,
+            1.0,
+            -1.4781232283856706e-14
+          ],
+          "projected_dipoles": [
+            [
+              7.086472967118679,
+              3.27791980501427
+            ],
+            [
+              3.277919805014276,
+              7.086472967120724
+            ]
+          ],
+          "approximation": "single_particle_orbital_GMH_not_many_electron_GMH",
+          "dipoles_au": [
+            [
+              [
+                -7.558904498260187,
+                -2.835197354666974e-13
+              ],
+              [
+                -2.9726915373728957e-13,
+                -7.558904498260188
+              ]
+            ],
+            [
+              [
+                7.086472967117998,
+                3.27791980501427
+              ],
+              [
+                3.277919805014276,
+                7.086472967120042
+              ]
+            ],
+            [
+              [
+                -1.889726124565063,
+                -4.845169404577021e-14
+              ],
+              [
+                -4.8563583709970715e-14,
+                -1.8897261245650683
+              ]
+            ]
+          ],
+          "ao_dipole_integrals_backend": "cpu_libcint"
+        }
+      }
+    }
+  },
+  "scope": "neutral_closed_shell_frozen_geometry_no_MM_embedding"
+}
