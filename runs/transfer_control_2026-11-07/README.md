@@ -2,7 +2,7 @@
 
 验证对象：`scripts/run_pyscf.py` 接受单体 A/B 和 dimer AB 的 XYZ，生成 `.chk/.log/.status.json`；`scripts/calculate_transfer.py transfer.toml` 按控制文件读取结果，计算转移积分，不执行 SCF。
 
-使用仓库乙烯冻结二聚体，B 相对于 A 沿 z 方向平移 3.5 Å。RKS/B3LYP、def2-SVP、def2-universal-jkfit 密度拟合、grid level 3、conv_tol 1e-10、4 线程。依赖为锁文件中的 PySCF 2.15.0 / NumPy 2.5.4。本报告是 **CPU** 实测，新控制文件接口的 GPU 交叉验证尚未执行。本机 NVIDIA 驱动不可用；之前直接计算接口的 GPU 验证独立记录于 `../transfer_gpu_2026-11-06/`。
+使用仓库乙烯冻结二聚体，B 相对于 A 沿 z 方向平移 3.5 Å。RKS/B3LYP、def2-SVP、def2-universal-jkfit 密度拟合、grid level 3、conv_tol 1e-10、4 线程。依赖为锁文件中的 PySCF 2.15.0 / NumPy 2.5.4。本报告是 **CPU** 实测，生成本报告时尚未执行新接口的 GPU 交叉验证。本机 NVIDIA 驱动不可用；后续已完成的验证见 [RTX 5090 两阶段报告](../transfer_control_gpu_2026-11-07/README.md)。之前直接计算接口的 GPU 验证独立记录于 `../transfer_gpu_2026-11-06/`。
 
 ## 结果
 

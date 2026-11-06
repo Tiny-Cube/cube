@@ -1,0 +1,192 @@
+#INFO: **** input file is /home/codex/cube-transfer-validation-20261106/scripts/run_pyscf.py ****
+#!/usr/bin/env python3
+"""Stage 1: arbitrary monomer/dimer XYZ files -> PySCF .chk and .log files.
+
+Example (each XYZ keeps its coordinates in the same dimer frame):
+  uv run --extra quantum python scripts/run_pyscf.py A.xyz B.xyz AB.xyz \
+      --output-dir qc_results --basis def2-svp --xc b3lyp --backend cpu
+
+Use --extra quantum-cuda13 and --backend gpu for the validated CUDA 13 stack.
+This script does NOT compute transfer integrals or optimize structures.
+"""
+import argparse
+from pathlib import Path
+import sys
+
+from universal_kmc.quantum.config import SCFConfig
+from universal_kmc.quantum.control import validate_output
+from universal_kmc.quantum.geometry import read_xyz
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('xyz', nargs='+', type=Path, help='one or more monomer/dimer XYZ files')
+    parser.add_argument('--output-dir', required=True, type=Path)
+    parser.add_argument('--backend', choices=('cpu', 'gpu'), default='cpu')
+    parser.add_argument('--basis', default='def2-svp')
+    parser.add_argument('--xc', default='b3lyp', help='RKS functional or hf for RHF')
+    parser.add_argument('--auxbasis', default='def2-universal-jkfit')
+    parser.add_argument('--unit', choices=('Angstrom', 'Bohr'), default='Angstrom')
+    parser.add_argument('--threads', type=int, default=4)
+    parser.add_argument('--grid-level', type=int, default=3)
+    parser.add_argument('--conv-tol', type=float, default=1e-10)
+    parser.add_argument('--max-cycle', type=int, default=100)
+    parser.add_argument('--max-memory-mb', type=int, default=4000)
+    args = parser.parse_args(argv)
+    try:
+        config = SCFConfig(**{key: value for key, value in vars(args).items() if key not in ('xyz', 'output_dir')})
+        config.validate()
+        sources = [path.expanduser().resolve() for path in args.xyz]
+        if len({p.stem for p in sources}) != len(sources):
+            raise ValueError('XYZ basenames must be unique because they name the output files')
+        atoms = [read_xyz(path) for path in sources]
+        destinations = [[validate_output((args.output_dir.expanduser()/f'{path.stem}{suffix}').resolve(), sources)
+                         for suffix in ('.chk', '.log', '.status.json')] for path in sources]
+        from pyscf import gto, lib
+        from universal_kmc.quantum.checkpoints import save_transfer_checkpoint
+        from universal_kmc.quantum.cli import _write_result
+        from dataclasses import asdict
+        lib.num_threads(config.threads)
+        for source, geometry, (checkpoint, log, status) in zip(sources, atoms, destinations):
+            # An old successful checkpoint must never survive a failed rerun.
+            checkpoint.unlink(missing_ok=True)
+            checkpoint.parent.mkdir(parents=True, exist_ok=True)
+            record = {'source': str(source), 'checkpoint': str(checkpoint), 'log': str(log),
+                      'settings': asdict(config), 'status': 'running'}
+            _write_result(status, record)
+            try:
+                mol = gto.M(atom=geometry, basis=config.basis, unit=config.unit,
+                            charge=0, spin=0, cart=False, output=str(log), verbose=4,
+                            max_memory=config.max_memory_mb)
+                mf = mol.RHF() if config.xc.lower() == 'hf' else mol.RKS(xc=config.xc)
+                mf = mf.density_fit(auxbasis=config.auxbasis)
+                mf.conv_tol, mf.max_cycle, mf.direct_scf_tol = config.conv_tol, config.max_cycle, 1e-13
+                if hasattr(mf, 'grids'):
+                    mf.grids.level = config.grid_level
+                if config.backend == 'gpu':
+                    import gpu4pyscf
+                    mf = mf.to_gpu()
+                mf.kernel()
+                # Reusable output template for your own PySCF scripts:
+                # after a converged mf.kernel(), call this function.
+                save_transfer_checkpoint(mf, checkpoint)
+                record.update(status='completed', energy_hartree=float(mf.e_tot), converged=True,
+                              source_class=type(mf).__module__+'.'+type(mf).__name__)
+                _write_result(status, record)
+                print(f'{source.name} -> {checkpoint}')
+            except (ImportError, ValueError, RuntimeError, OSError) as exc:
+                checkpoint.unlink(missing_ok=True)
+                record.update(status='failed', error={'type': type(exc).__name__, 'message': str(exc)})
+                _write_result(status, record)
+                raise
+        return 0
+    except (ImportError, ValueError, RuntimeError, OSError) as exc:
+        print(f'PySCF calculation failed: {exc}', file=sys.stderr)
+        return 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
+#INFO: ******************** input file end ********************
+
+
+System: uname_result(system='Linux', node='localhost.localdomain', release='6.12.0-211.64.1.el10_2.x86_64', version='#1 SMP PREEMPT_DYNAMIC Thu Oct  8 15:54:45 UTC 2026', machine='x86_64')  Threads 4
+Python 3.12.15 (main, Oct  1 2026, 00:00:00) [GCC 14.3.1 20251022 (Red Hat 14.3.1-4)]
+numpy 2.5.4  scipy 1.18.1  h5py 3.16.0
+Date: Sat Nov  7 00:16:00 2026
+PySCF version 2.15.0
+PySCF path  /home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/pyscf/__init__.py
+CUDA Environment
+    CuPy 13.6.0
+    CUDA Path /usr/local/cuda
+    CUDA Build Version 13000
+    CUDA Driver Version 13040
+    CUDA Runtime Version 13000
+CUDA toolkit
+    cuSolver (12, 3, 5)
+    cuBLAS 130800
+    cuTENSOR None
+Device info
+    Device name b'NVIDIA GeForce RTX 5090'
+    Device global memory 31.44 GB
+    CuPy memory fraction 0.9
+    Num. Devices 1
+GPU4PySCF 1.9.1
+GPU4PySCF path  /home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/gpu4pyscf
+
+[CONFIG] conf_file None
+[INPUT] verbose = 4
+[INPUT] num. atoms = 12
+[INPUT] num. electrons = 32
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 0
+[INPUT] symmetry False subgroup None
+[INPUT] Mole.unit = Angstrom
+[INPUT] Symbol           X                Y                Z      unit          X                Y                Z       unit  Magmom
+[INPUT]  1 C     -0.670000000000   0.000000000000   0.000000000000 AA   -1.266116503459   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  2 C      0.670000000000   0.000000000000   0.000000000000 AA    1.266116503459   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  3 H     -1.232000000000   0.928000000000   0.000000000000 AA   -2.328142585464   1.753665843596   0.000000000000 Bohr   0.0
+[INPUT]  4 H     -1.232000000000  -0.928000000000   0.000000000000 AA   -2.328142585464  -1.753665843596   0.000000000000 Bohr   0.0
+[INPUT]  5 H      1.232000000000   0.928000000000   0.000000000000 AA    2.328142585464   1.753665843596   0.000000000000 Bohr   0.0
+[INPUT]  6 H      1.232000000000  -0.928000000000   0.000000000000 AA    2.328142585464  -1.753665843596   0.000000000000 Bohr   0.0
+[INPUT]  7 C     -0.670000000000   0.000000000000   3.500000000000 AA   -1.266116503459   0.000000000000   6.614041435978 Bohr   0.0
+[INPUT]  8 C      0.670000000000   0.000000000000   3.500000000000 AA    1.266116503459   0.000000000000   6.614041435978 Bohr   0.0
+[INPUT]  9 H     -1.232000000000   0.928000000000   3.500000000000 AA   -2.328142585464   1.753665843596   6.614041435978 Bohr   0.0
+[INPUT] 10 H     -1.232000000000  -0.928000000000   3.500000000000 AA   -2.328142585464  -1.753665843596   6.614041435978 Bohr   0.0
+[INPUT] 11 H      1.232000000000   0.928000000000   3.500000000000 AA    2.328142585464   1.753665843596   6.614041435978 Bohr   0.0
+[INPUT] 12 H      1.232000000000  -0.928000000000   3.500000000000 AA    2.328142585464  -1.753665843596   6.614041435978 Bohr   0.0
+
+nuclear repulsion = 102.815601219474
+number of shells = 48
+number of NR pGTOs = 152
+number of NR cGTOs = 96
+basis = def2-svp
+ecp = {}
+CPU time:        15.23
+
+
+******** <class 'gpu4pyscf.df.df_jk.DFRKS'> ********
+method = DFRKS
+initial guess = minao
+damping factor = None
+level_shift factor = None
+DIIS = <class 'gpu4pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-10
+SCF conv_tol_grad = None
+SCF max_cycles = 100
+direct_scf = False
+chkfile to save SCF result = /tmp/tmpet2zp3ws
+XC library gpu4pyscf.dft.libxc version 7.1.2 (CUDA)
+    unable to decode the reference due to https://github.com/NVIDIA/cuda-python/issues/29
+XC functionals = b3lyp
+radial grids:
+    Treutler-Ahlrichs [JCP 102, 346 (1995); DOI:10.1063/1.469408] (M4) radial grids
+
+becke partition: Becke, JCP 88, 2547 (1988); DOI:10.1063/1.454033
+pruning grids: <function nwchem_prune at 0x7fed4695aca0>
+grids dens level: 3
+symmetrized grids: False
+atomic radii adjust function: <function treutler_atomic_radii_adjust at 0x7fed4695ad40>
+small_rho_cutoff = 0
+Set gradient conv threshold to 1e-05
+Initial guess from minao
+tot grids = 135168
+init E= -157.033426025568
+  HOMO = -0.310373792783882  LUMO = -0.097260464983575  gap/eV = 5.79911
+cycle= 1 E= -157.019403395075  delta_E= 0.014  |g|= 0.366  |ddm|= 3.14
+  HOMO = -0.190293556618486  LUMO = 0.0391266761519771  gap/eV = 6.24284
+cycle= 2 E= -157.016390989642  delta_E= 0.00301  |g|= 0.39  |ddm|= 0.753
+  HOMO = -0.253340836077224  LUMO = -0.00859345265028246  gap/eV = 6.65992
+cycle= 3 E= -157.059243003645  delta_E= -0.0429  |g|= 0.00287  |ddm|= 0.376
+  HOMO = -0.253594030320613  LUMO = -0.00873131952824979  gap/eV = 6.66305
+cycle= 4 E= -157.059246184427  delta_E= -3.18e-06  |g|= 0.000615  |ddm|= 0.00458
+  HOMO = -0.253614094145418  LUMO = -0.00877766818456806  gap/eV = 6.66234
+cycle= 5 E= -157.05924627739  delta_E= -9.3e-08  |g|= 0.000176  |ddm|= 0.000861
+  HOMO = -0.253602291617035  LUMO = -0.00876471322462025  gap/eV = 6.66237
+cycle= 6 E= -157.059246285527  delta_E= -8.14e-09  |g|= 1.16e-05  |ddm|= 0.000195
+  HOMO = -0.253601421916828  LUMO = -0.00876362150657936  gap/eV = 6.66238
+cycle= 7 E= -157.05924628556  delta_E= -3.33e-11  |g|= 1.49e-06  |ddm|= 1.29e-05
+converged SCF energy = -157.05924628556

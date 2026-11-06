@@ -122,7 +122,7 @@ save_transfer_checkpoint(mf, "A.chk")
 
 ## 验证
 
-[两阶段 CPU 实测报告](../runs/transfer_control_2026-11-07/README.md)包含实际输出和拒绝用例。本次新接口的 GPU 验证尚未执行，不能把之前直接计算接口的 GPU 报告视为新接口的完整验证。可复现命令：
+[两阶段 CPU 实测报告](../runs/transfer_control_2026-11-07/README.md)与[RTX 5090 两阶段交叉验证报告](../runs/transfer_control_gpu_2026-11-07/README.md)包含实际输出和拒绝用例。GPU SCF、CPU/GPU checkpoint 交叉读取、GPU 投影、交错原子映射及非收敛失败路径均已实测。可复现命令：
 
 ```bash
 uv run --locked --extra quantum python scripts/validate_transfer_control.py \

@@ -1,0 +1,18 @@
+test_bad_settings_rejected_before_import_or_output (test_quantum_control.TransferControlTests.test_bad_settings_rejected_before_import_or_output) ... ok
+test_no_ambiguous_flags_and_check_does_not_write_output (test_quantum_control.TransferControlTests.test_no_ambiguous_flags_and_check_does_not_write_output) ... ok
+test_output_cannot_overwrite_inputs_control_or_hardlink (test_quantum_control.TransferControlTests.test_output_cannot_overwrite_inputs_control_or_hardlink) ... ok
+test_paths_indices_and_dependency_free_check_from_other_cwd (test_quantum_control.TransferControlTests.test_paths_indices_and_dependency_free_check_from_other_cwd) ... ok
+test_plain_logs_are_not_accepted_as_complete_checkpoint (test_quantum_control.TransferControlTests.test_plain_logs_are_not_accepted_as_complete_checkpoint) ... ok
+test_esid_requires_equivalence_and_site_check (test_quantum_coupling.CouplingAlgebraTests.test_esid_requires_equivalence_and_site_check) ... ok
+test_gmh_recovers_known_diabatic_hamiltonian (test_quantum_coupling.CouplingAlgebraTests.test_gmh_recovers_known_diabatic_hamiltonian) ... ok
+test_gmh_symmetric_limit_and_undefined_dipoles (test_quantum_coupling.CouplingAlgebraTests.test_gmh_symmetric_limit_and_undefined_dipoles) ... ok
+test_gpu_lowdin_matches_numpy (test_quantum_coupling.CouplingAlgebraTests.test_gpu_lowdin_matches_numpy) ... ok
+test_input_and_config_validation (test_quantum_coupling.CouplingAlgebraTests.test_input_and_config_validation) ... ok
+test_multistate_phase_permutation_and_generalized_spectrum (test_quantum_coupling.CouplingAlgebraTests.test_multistate_phase_permutation_and_generalized_spectrum) ... ok
+test_singular_invalid_and_nonsymmetric_metrics_rejected (test_quantum_coupling.CouplingAlgebraTests.test_singular_invalid_and_nonsymmetric_metrics_rejected) ... ok
+test_two_state_overlap_formula_and_energy_origin (test_quantum_coupling.CouplingAlgebraTests.test_two_state_overlap_formula_and_energy_origin) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.682s
+
+OK

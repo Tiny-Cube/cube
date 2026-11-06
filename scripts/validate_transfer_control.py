@@ -72,6 +72,19 @@ def main():
         else:
             report['stage1'][backend] = command([ROOT/'scripts/run_pyscf.py', *xyz,
                 '--output-dir', output/backend, '--backend', backend])
+        records = {name: json.loads((output/backend/f'ethylene_{name}.status.json').read_text())
+                   for name in ('a', 'b', 'ab')}
+        expected_module = 'gpu4pyscf.' if backend == 'gpu' else 'pyscf.'
+        for record in records.values():
+            assert record['status'] == 'completed' and record['converged'] is True
+            assert record['source_class'].startswith(expected_module), record['source_class']
+        report['stage1'][backend]['scf_records'] = records
+    if args.gpu:
+        differences = {name: abs(report['stage1']['cpu']['scf_records'][name]['energy_hartree']-
+                                 report['stage1']['gpu']['scf_records'][name]['energy_hartree'])
+                       for name in ('a', 'b', 'ab')}
+        assert max(differences.values()) < 1e-6
+        report['cpu_gpu_scf_energy_differences_hartree'] = differences
     if args.reuse:
         reference = json.loads((output/'direct_reference.json').read_text())
     else:
@@ -88,6 +101,9 @@ def main():
             result = json.loads(control.with_suffix('.json').read_text())
             if result['status'] != 'completed' or result['scf_executed'] is not False:
                 raise AssertionError('saved-result workflow reported SCF or did not complete')
+            assert result['backend'] == backend
+            if backend == 'gpu':
+                assert result['device'] and result['gpu_runtime']['projection_array_module'] == 'cupy'
             values = couplings(result)
             np.testing.assert_allclose(values, reference_values, atol=2e-5, rtol=2e-4)
             report['postprocess'][control.stem] = {'maximum_coupling_difference_ev': float(np.max(abs(values-reference_values))),
@@ -98,6 +114,25 @@ def main():
         result = calculate_from_checkpoints(load_control(control))
     np.testing.assert_allclose(couplings(result), reference_values, atol=2e-5, rtol=2e-4)
     report['scf_kernel_blocked_during_postprocessing'] = True
+    if args.gpu:
+        from universal_kmc.quantum import checkpoints
+        import cupy as cp
+        import gpu4pyscf.scf.hf as gpu_hf
+        original_evaluate = checkpoints._evaluate_transfer
+
+        def require_gpu_arrays(*values, **settings):
+            assert isinstance(values[4], cp.ndarray)  # AO overlap
+            assert all(isinstance(matrix, cp.ndarray) for matrix in values[3].values())
+            assert settings['xp'] is cp
+            return original_evaluate(*values, **settings)
+
+        control = write_control(output/'no-scf-gpu.toml', inputs, backend='gpu')
+        with patch('pyscf.scf.hf.SCF.kernel', side_effect=AssertionError('CPU SCF forbidden')), \
+             patch.object(gpu_hf.SCF, 'kernel', side_effect=AssertionError('GPU SCF forbidden')), \
+             patch.object(checkpoints, '_evaluate_transfer', side_effect=require_gpu_arrays):
+            gpu_result = calculate_from_checkpoints(load_control(control))
+        np.testing.assert_allclose(couplings(gpu_result), couplings(result), atol=1e-11, rtol=0)
+        report['gpu_arrays_verified_and_both_scf_kernels_blocked'] = True
 
     # Permute dimer atoms and all corresponding AO rows; no fresh SCF.
     mol, data = chkfile.load_scf(str(inputs[2]))
@@ -150,6 +185,23 @@ def main():
     np.testing.assert_allclose(couplings(native_dimer_result), couplings(result), atol=2e-5, rtol=2e-4)
     assert native_dimer_result['operator_source'] == 'complete_saved_dimer_MO_eigenoperator'
     report['native_dimer_eigenoperator_maximum_difference_ev'] = float(np.max(abs(couplings(native_dimer_result)-couplings(result))))
+    if args.gpu:
+        report['gpu_additional_postprocess'] = {}
+        cases = (
+            ('permuted', [*inputs[:2], permuted], {'atoms': (list(range(1, 13, 2)), list(range(2, 13, 2)))}),
+            ('explicit-orbitals', inputs, {'orbitals': orbital_table}),
+            ('native-dimer-confirmed', [*inputs[:2], native_dimer], {'assume': True}),
+        )
+        for label, checkpoint_paths, settings in cases:
+            control = write_control(output/f'gpu-{label}.toml', checkpoint_paths, backend='gpu', **settings)
+            command([ROOT/'scripts/calculate_transfer.py', control])
+            gpu_case = json.loads(control.with_suffix('.json').read_text())
+            cpu_case = json.loads((output/f'{label}.json').read_text())
+            difference = float(np.max(abs(couplings(gpu_case)-couplings(cpu_case))))
+            np.testing.assert_allclose(couplings(gpu_case), couplings(cpu_case), atol=1e-11, rtol=0)
+            assert gpu_case['device'] and gpu_case['gpu_runtime']['projection_array_module'] == 'cupy'
+            report['gpu_additional_postprocess'][label] = {'maximum_cpu_gpu_difference_ev': difference,
+                                                          'device': gpu_case['device']}
     for kind in ('unconverged', 'bad_metric', 'truncated', 'wrong_frame', 'wrong_model', 'bad_fock'):
         bad = output/f'{kind}.chk'
         shutil.copyfile(inputs[0], bad)
@@ -191,6 +243,15 @@ def main():
         '--output-dir', failed_dir, '--max-cycle', '1'], expected=1)
     assert not stale.exists()
     assert json.loads((failed_dir/'ethylene_a.status.json').read_text())['status'] == 'failed'
+    if args.gpu:
+        failed_gpu = output/'nonconverged-gpu'
+        failed_gpu.mkdir(exist_ok=True)
+        stale_gpu = failed_gpu/'ethylene_a.chk'
+        shutil.copyfile(output/'gpu/ethylene_a.chk', stale_gpu)
+        report['rejections']['stage1_gpu_nonconvergence'] = command([ROOT/'scripts/run_pyscf.py', xyz[0],
+            '--output-dir', failed_gpu, '--backend', 'gpu', '--max-cycle', '1'], expected=1)
+        assert not stale_gpu.exists()
+        assert json.loads((failed_gpu/'ethylene_a.status.json').read_text())['status'] == 'failed'
     report['status'] = 'passed'
     report['reference_couplings_ev_order'] = 'hole dipro/esid/orbital_gmh; electron dipro/esid/orbital_gmh'
     report['reference_couplings_ev'] = reference_values.tolist()
