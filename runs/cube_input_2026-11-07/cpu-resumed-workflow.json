@@ -1,0 +1,228 @@
+{
+  "schema": "cube-workflow-1",
+  "status": "completed",
+  "control": "/home/dav/Documents/code/codex/cube/build/cube-workflow-cpu/cpu/input",
+  "control_sha256": "81aba6b425587b83fd0b81d76727664bd6133e435fbf502dc0b27e3d342ca052",
+  "tasks": {
+    "one-mol": {
+      "status": "completed",
+      "count": 2,
+      "outputs": {
+        "1": {
+          "fingerprint": "7c1a36fce5da04d77a6df099afd615b4c10de07fd45ade9993563c6f1ff4c276",
+          "request": {
+            "atoms": [
+              [
+                "C",
+                [
+                  -0.67,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "C",
+                [
+                  0.67,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "H",
+                [
+                  -1.232,
+                  0.928,
+                  0.0
+                ]
+              ],
+              [
+                "H",
+                [
+                  -1.232,
+                  -0.928,
+                  0.0
+                ]
+              ],
+              [
+                "H",
+                [
+                  1.232,
+                  0.928,
+                  0.0
+                ]
+              ],
+              [
+                "H",
+                [
+                  1.232,
+                  -0.928,
+                  0.0
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "cpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 0,
+            "spin_2s": 0,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0"
+            },
+            "implementation_sha256": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5"
+          },
+          "status": "completed",
+          "checkpoint": "/home/dav/Documents/code/codex/cube/build/cube-workflow-cpu/cpu/one/1.chk",
+          "log": "/home/dav/Documents/code/codex/cube/build/cube-workflow-cpu/cpu/one/1.log",
+          "converged": true,
+          "energy_hartree": -78.5918543030812,
+          "backend": "cpu",
+          "device": null,
+          "source_class": "pyscf.df.df_jk.DFRKS",
+          "charge": 0,
+          "spin_2s": 0,
+          "spin_square": 0.0,
+          "checkpoint_sha256": "fd93b950fd2f6ddb9050486a8432e1c9f3841d0e95cea850fcd4e13f9b5f478f",
+          "elapsed_seconds": 2.9918966160003038,
+          "reused": true
+        },
+        "2": {
+          "fingerprint": "7c1a36fce5da04d77a6df099afd615b4c10de07fd45ade9993563c6f1ff4c276",
+          "request": {
+            "atoms": [
+              [
+                "C",
+                [
+                  -0.67,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "C",
+                [
+                  0.67,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "H",
+                [
+                  -1.232,
+                  0.928,
+                  0.0
+                ]
+              ],
+              [
+                "H",
+                [
+                  -1.232,
+                  -0.928,
+                  0.0
+                ]
+              ],
+              [
+                "H",
+                [
+                  1.232,
+                  0.928,
+                  0.0
+                ]
+              ],
+              [
+                "H",
+                [
+                  1.232,
+                  -0.928,
+                  0.0
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "cpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 0,
+            "spin_2s": 0,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0"
+            },
+            "implementation_sha256": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5"
+          },
+          "status": "completed",
+          "checkpoint": "/home/dav/Documents/code/codex/cube/build/cube-workflow-cpu/cpu/one/2.chk",
+          "log": "/home/dav/Documents/code/codex/cube/build/cube-workflow-cpu/cpu/one/2.log",
+          "converged": true,
+          "energy_hartree": -78.591854303081,
+          "backend": "cpu",
+          "device": null,
+          "source_class": "pyscf.df.df_jk.DFRKS",
+          "charge": 0,
+          "spin_2s": 0,
+          "spin_square": 0.0,
+          "checkpoint_sha256": "3f0ace05b9b12a6f0503d147a85ded1a1d572e3c17df3e7177fec0138f712fa8",
+          "elapsed_seconds": 2.3587556769998628,
+          "reused": true
+        }
+      }
+    },
+    "two-mol": {
+      "status": "completed",
+      "count": 1,
+      "csv": "/home/dav/Documents/code/codex/cube/build/cube-workflow-cpu/cpu/two/transfer_integrals.csv",
+      "outputs": {
+        "1_2": {
+          "status": "completed",
+          "output": "/home/dav/Documents/code/codex/cube/build/cube-workflow-cpu/cpu/two/1_2/transfer.json",
+          "reused": true
+        }
+      }
+    },
+    "reorganization-energy": {
+      "status": "completed",
+      "environment": "vacuum",
+      "count": 1,
+      "outputs": {
+        "F2": {
+          "output": "/home/dav/Documents/code/codex/cube/build/cube-workflow-cpu/cpu/reorganization/F2/reorganization.json",
+          "reorganization_ev": {
+            "hole": 0.40551531466925617,
+            "electron": 5.706538025021241
+          },
+          "reused": true
+        }
+      }
+    }
+  },
+  "task_order": [
+    "one-mol",
+    "two-mol",
+    "reorganization-energy"
+  ]
+}

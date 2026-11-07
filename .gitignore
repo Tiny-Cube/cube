@@ -7,3 +7,5 @@ rust/target/
 *.mod
 *.o
 examples/quantum/results/
+/mol/
+/cube-results/

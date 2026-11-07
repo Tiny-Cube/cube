@@ -1,0 +1,20 @@
+{
+  "0": {
+    "analytic_hartree_per_bohr": 0.0541685700656771,
+    "finite_difference_hartree_per_bohr": 0.05418201715201576,
+    "absolute_error": 1.344708633865821e-05,
+    "step_bohr": 0.001
+  },
+  "1": {
+    "analytic_hartree_per_bohr": 0.10581151716660564,
+    "finite_difference_hartree_per_bohr": 0.10584933451696088,
+    "absolute_error": 3.7817350355240364e-05,
+    "step_bohr": 0.001
+  },
+  "-1": {
+    "analytic_hartree_per_bohr": -0.2307439389020356,
+    "finite_difference_hartree_per_bohr": -0.23073147708885244,
+    "absolute_error": 1.2461813183151094e-05,
+    "step_bohr": 0.001
+  }
+}

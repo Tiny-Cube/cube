@@ -1,0 +1,30 @@
+{
+  "python": "3.13.11",
+  "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+  "versions": {
+    "numpy": "2.5.4",
+    "pyscf": "2.15.0",
+    "MDAnalysis": "2.11.0",
+    "geometric": "1.1.1",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "cupy-cuda13x": "13.6.0"
+  },
+  "local_gpu_observed": "NVIDIA GeForce GTX 1650 with Max-Q Design, 4096 MiB, driver 615.71.09",
+  "local_gpu4pyscf_outcome": "stock CUDA13 wheel fails: no kernel image is available for execution on the device",
+  "remote_new_workflow_test": "not_run_pending_code_upload_authorization",
+  "source_sha256": {
+    "cube": "3622c7012f80cd341caafd733dde24557270419e564ede8261f25d233727c502",
+    "input": "1db7030544b92c583b04b95fdc29070b2818db555997a3ae4a60f33273f0c34c",
+    "src/universal_kmc/workflow/__init__.py": "70d325203eff477a0431accca96075bea70cf588b4997f02f11639767cd9cc91",
+    "src/universal_kmc/workflow/control.py": "fec6c5a0871d936d1c424119469bb598ca25c0e28be099226f599b6dd9d6034b",
+    "src/universal_kmc/workflow/dimers.py": "dabf027213702171dc4519fad034f26e1bb2cd3c446b1e28f3128449a88363e0",
+    "src/universal_kmc/workflow/scf.py": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5",
+    "src/universal_kmc/workflow/reorganization.py": "9ac1533cf570c9cf2f10bb0a9f8a4a1da4e49d2fa54d810cf4bf68ae56f0c953",
+    "src/universal_kmc/workflow/runner.py": "0dd3310687dcd872785f4ffb232306b9731a97e253580b0779d2155b0760c92f",
+    "src/universal_kmc/workflow/cli.py": "94cb08171cfa4ddb142c8d1bebd147892d5eb5b4e03f86e96396485c7186a881",
+    "src/universal_kmc/workflow/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "scripts/validate_cube_workflow.py": "d3fe80af678664898f12aec22298b739ea47ce07c36a5b86aa7ece1232e391d3",
+    "tests/test_workflow.py": "65fe878c1a9a29a4701917ae1a855641d3f0dac5f83e6675caa34ebd19eb85c1"
+  },
+  "wheel_sha256": "1fd43aac4c7814cfc45241c7644e66bb8056b03bb0f9b39fb70b72353c917097"
+}

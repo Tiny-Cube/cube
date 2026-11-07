@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "backends": {
+    "cpu": {
+      "elapsed_seconds_observation": 61.07145106200187,
+      "resume_seconds_observation": 1.0212305299974105,
+      "couplings_ev": {
+        "hole": 0.4217644734552772,
+        "electron": 0.4740213579087353
+      },
+      "reorganization_ev": {
+        "hole": 0.40551531466925617,
+        "electron": 5.706538025021241
+      },
+      "neutral_optimization": {
+        "converged": true,
+        "evaluations": 6,
+        "gradient_class": "pyscf.grad.rhf.Gradients_Scanner",
+        "final_gradient_rms": 5.732580267355552e-08,
+        "final_gradient_max": 9.929120281526593e-08,
+        "charge": 0,
+        "spin_2s": 0
+      },
+      "resume_no_recomputation": "passed"
+    }
+  },
+  "failed_optimization_no_reorganization": "passed",
+  "coupling_tolerance": {
+    "atol_ev": 2e-05,
+    "rtol": 0.0002
+  },
+  "reorganization_cpu_gpu_atol_ev": 0.005,
+  "scope": "ethylene DIPRO and F2 vacuum four-point; timings are observations, not a general speedup benchmark"
+}

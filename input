@@ -1,0 +1,32 @@
+# Paths are relative to this input file. frame is zero-based; -1 = last.
+# First inspect: ./cube input --plan
+# Extract only: ./cube input --only get_dimer
+$get_dimer
+tpr = ../anneal_a.tpr
+gro = ../anneal_a_fix.gro
+xtc = ../anneal_a.xtc
+frame = -1
+cutoff = 6  # Angstrom; strict minimum core-atom distance
+fragment-file = ../core.txt
+output = mol
+format = xyz,gjf
+$end
+
+$two-mol
+method = b3lyp
+basis-set = 6-31G(d,p)
+transfer-integrals-method = DIPRO
+$end
+
+$one-mol
+qc-engine = gpu-pyscf
+method = b3lyp
+basis-set = 6-31G(d,p)
+$end
+
+$reorganization-energy
+method = b3lyp
+basis-set = 6-31G(d,p)
+re-method = 4-points
+environment = vacuum
+$end

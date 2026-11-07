@@ -4,6 +4,18 @@ cube 面向有机分子晶体、非晶和聚合物的载流子输运研究。当
 
 [软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)
 
+## cube input 统一入口
+
+提供可执行脚本 `cube`，默认读取 `$get_dimer/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 帧的 core 距离 dimer 提取、按 `format` 选择 XYZ/GJF、CPU/GPU 单体与 dimer 量化、DIPRO，以及明确标记 vacuum 的四点法重组能。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
+
+```bash
+uv sync --locked --extra workflow
+./cube input --plan
+./cube input --only get_dimer
+```
+
+[控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。运行 `./cube input --resume` 会继续控制文件中选定的量化/重组能任务；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。
+
 ## 新增：GPU 转移积分
 
 [理论公式、原始论文与使用方法](docs/transfer-integrals.md) · [RTX 5090 实测](runs/transfer_gpu_2026-11-06/README.md)
