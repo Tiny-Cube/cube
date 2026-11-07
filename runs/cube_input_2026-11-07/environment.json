@@ -11,7 +11,7 @@
   },
   "local_gpu_observed": "NVIDIA GeForce GTX 1650 with Max-Q Design, 4096 MiB, driver 615.71.09",
   "local_gpu4pyscf_outcome": "stock CUDA13 wheel fails: no kernel image is available for execution on the device",
-  "remote_new_workflow_test": "not_run_pending_code_upload_authorization",
+  "remote_new_workflow_test": "passed_RTX5090_see_../cube_input_gpu_2026-11-07",
   "source_sha256": {
     "cube": "3622c7012f80cd341caafd733dde24557270419e564ede8261f25d233727c502",
     "input": "1db7030544b92c583b04b95fdc29070b2818db555997a3ae4a60f33273f0c34c",

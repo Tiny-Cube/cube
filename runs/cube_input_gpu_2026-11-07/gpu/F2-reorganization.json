@@ -1,0 +1,652 @@
+{
+  "schema": "cube-reorganization-1",
+  "status": "completed",
+  "fingerprint": "00a4501040205e80940eb444ea425dcf25af8c1c2898ace1a293cfc45554e364",
+  "input": {
+    "atoms": [
+      [
+        "F",
+        [
+          -0.75,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        "F",
+        [
+          0.75,
+          0.0,
+          0.0
+        ]
+      ]
+    ],
+    "settings": {
+      "backend": "gpu",
+      "basis": "6-31G(d,p)",
+      "xc": "b3lyp",
+      "auxbasis": "def2-universal-jkfit",
+      "unit": "Angstrom",
+      "conv_tol": 1e-10,
+      "max_cycle": 100,
+      "grid_level": 3,
+      "threads": 4,
+      "max_memory_mb": 4000,
+      "degeneracy_tolerance_ev": 0.01,
+      "site_tolerance_ev": 0.001,
+      "max_pair_leakage": 0.15
+    },
+    "carriers": [
+      "hole",
+      "electron"
+    ],
+    "environment": "vacuum",
+    "opt_maxsteps": 60,
+    "versions": {
+      "numpy": "2.5.4",
+      "pyscf": "2.15.0",
+      "gpu4pyscf-cuda13x": "1.9.1",
+      "cupy-cuda13x": "13.6.0"
+    },
+    "implementation_sha256": "9ac1533cf570c9cf2f10bb0a9f8a4a1da4e49d2fa54d810cf4bf68ae56f0c953"
+  },
+  "environment": "vacuum",
+  "method": "4-points",
+  "scope": "intramolecular_vacuum_no_MM_no_outer_sphere",
+  "results": {
+    "hole": {
+      "energies_hartree": {
+        "E0_R0": -199.49548205818283,
+        "Eq_R0": -198.92372702712177,
+        "Eq_Rq": -198.93074799269561,
+        "E0_Rq": -199.48760065641682
+      },
+      "relaxation_hartree": {
+        "charged_relaxation": 0.007020965573843796,
+        "neutral_relaxation": 0.007881401766013596,
+        "total": 0.014902367339857392
+      },
+      "relaxation_ev": {
+        "charged_relaxation": 0.19105020446299434,
+        "neutral_relaxation": 0.21446386583370566,
+        "total": 0.4055140702967
+      },
+      "reorganization_energy_ev": 0.4055140702967,
+      "charged_optimization": {
+        "converged": true,
+        "evaluations": 6,
+        "gradient_class": "gpu4pyscf.grad.rhf.Gradients_Scanner",
+        "final_gradient_rms": 1.247087859866729e-06,
+        "final_gradient_max": 2.1600197328552895e-06,
+        "charge": 1,
+        "spin_2s": 1
+      },
+      "single_points": {
+        "E0_R0": {
+          "fingerprint": "bdf3762c4bc9b1b0ce234948af9eddbf6a23b81ea575d0f87c9ffb0a31042837",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.7029093603937208,
+                  1.3035837941022212e-13,
+                  1.620673960622608e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.7029093604045543,
+                  1.2300308704433276e-13,
+                  -4.332333882223975e-14
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "gpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 0,
+            "spin_2s": 0,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/E0_R0.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/E0_R0.log",
+          "converged": true,
+          "energy_hartree": -199.49548205818283,
+          "backend": "gpu",
+          "device": "NVIDIA GeForce RTX 5090",
+          "source_class": "gpu4pyscf.df.df_jk.DFRKS",
+          "charge": 0,
+          "spin_2s": 0,
+          "spin_square": 0.0,
+          "checkpoint_sha256": "73a9733c9595c6b7f2572c554e05dca68a0c39e138657b4f4b02d123d11e4cb0",
+          "elapsed_seconds": 0.3004446318373084,
+          "reused": false
+        },
+        "Eq_R0": {
+          "fingerprint": "f1b6779d5e1ec45ec55d6c8cedfb2dc446be9cb621a5f45559f14212d320d907",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.7029093603937208,
+                  1.3035837941022212e-13,
+                  1.620673960622608e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.7029093604045543,
+                  1.2300308704433276e-13,
+                  -4.332333882223975e-14
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "gpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 1,
+            "spin_2s": 1,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/hole_Eq_R0.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/hole_Eq_R0.log",
+          "converged": true,
+          "energy_hartree": -198.92372702712177,
+          "backend": "gpu",
+          "device": "NVIDIA GeForce RTX 5090",
+          "source_class": "gpu4pyscf.df.df_jk.DFUKS",
+          "charge": 1,
+          "spin_2s": 1,
+          "spin_square": 0.7522681796191106,
+          "checkpoint_sha256": "50540b51da17165fa124c5b0164d13a60fbf974e8962f4eebd6b8ce9f764e8fb",
+          "elapsed_seconds": 0.3530759809073061,
+          "reused": false
+        },
+        "Eq_Rq": {
+          "fingerprint": "9b625fd9d441eb3a3e8fda4db9d48496d5fd78fa1c970ba89abd99257bb61b36",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.6552129428074489,
+                  5.55492412144048e-14,
+                  1.7729202869831856e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.6552129428007237,
+                  1.6951642240225504e-13,
+                  -5.5133805664756567e-14
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "gpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 1,
+            "spin_2s": 1,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/hole_Eq_Rq.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/hole_Eq_Rq.log",
+          "converged": true,
+          "energy_hartree": -198.93074799269561,
+          "backend": "gpu",
+          "device": "NVIDIA GeForce RTX 5090",
+          "source_class": "gpu4pyscf.df.df_jk.DFUKS",
+          "charge": 1,
+          "spin_2s": 1,
+          "spin_square": 0.7522402477438979,
+          "checkpoint_sha256": "40f0bf04aee8a490967ce271ed9c33231285ef2cd88e888f517e4b410efe11a4",
+          "elapsed_seconds": 0.3470743310172111,
+          "reused": false
+        },
+        "E0_Rq": {
+          "fingerprint": "ef9c83474cd3a3e32074d9faa25f7ae2af95f5147a2a68d93d04ecc6757af340",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.6552129428074489,
+                  5.55492412144048e-14,
+                  1.7729202869831856e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.6552129428007237,
+                  1.6951642240225504e-13,
+                  -5.5133805664756567e-14
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "gpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 0,
+            "spin_2s": 0,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/hole_E0_Rq.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/hole_E0_Rq.log",
+          "converged": true,
+          "energy_hartree": -199.48760065641682,
+          "backend": "gpu",
+          "device": "NVIDIA GeForce RTX 5090",
+          "source_class": "gpu4pyscf.df.df_jk.DFRKS",
+          "charge": 0,
+          "spin_2s": 0,
+          "spin_square": 0.0,
+          "checkpoint_sha256": "29afb8a33394b90dc812315735bea45ab8afc331383e61a7b6a4c616d83a83c0",
+          "elapsed_seconds": 0.29331073514185846,
+          "reused": false
+        }
+      }
+    },
+    "electron": {
+      "energies_hartree": {
+        "E0_R0": -199.49548205818283,
+        "Eq_R0": -199.4461994577275,
+        "Eq_Rq": -199.56728909647052,
+        "E0_Rq": -199.40686030168564
+      },
+      "relaxation_hartree": {
+        "charged_relaxation": 0.12108963874302958,
+        "neutral_relaxation": 0.08862175649719006,
+        "total": 0.20971139524021964
+      },
+      "relaxation_ev": {
+        "charged_relaxation": 3.2950169028589253,
+        "neutral_relaxation": 2.4115208258154817,
+        "total": 5.706537728674407
+      },
+      "reorganization_energy_ev": 5.706537728674407,
+      "charged_optimization": {
+        "converged": true,
+        "evaluations": 9,
+        "gradient_class": "gpu4pyscf.grad.rhf.Gradients_Scanner",
+        "final_gradient_rms": 7.789130804917417e-07,
+        "final_gradient_max": 1.3491172676793894e-06,
+        "charge": -1,
+        "spin_2s": 1
+      },
+      "single_points": {
+        "E0_R0": {
+          "fingerprint": "bdf3762c4bc9b1b0ce234948af9eddbf6a23b81ea575d0f87c9ffb0a31042837",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.7029093603937208,
+                  1.3035837941022212e-13,
+                  1.620673960622608e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.7029093604045543,
+                  1.2300308704433276e-13,
+                  -4.332333882223975e-14
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "gpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 0,
+            "spin_2s": 0,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/E0_R0.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/E0_R0.log",
+          "converged": true,
+          "energy_hartree": -199.49548205818283,
+          "backend": "gpu",
+          "device": "NVIDIA GeForce RTX 5090",
+          "source_class": "gpu4pyscf.df.df_jk.DFRKS",
+          "charge": 0,
+          "spin_2s": 0,
+          "spin_square": 0.0,
+          "checkpoint_sha256": "73a9733c9595c6b7f2572c554e05dca68a0c39e138657b4f4b02d123d11e4cb0",
+          "elapsed_seconds": 0.3004446318373084,
+          "reused": false
+        },
+        "Eq_R0": {
+          "fingerprint": "c10beeb442afde067dda62357f5f1869e67bf6cfc40f44fdca795854a129db6e",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.7029093603937208,
+                  1.3035837941022212e-13,
+                  1.620673960622608e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.7029093604045543,
+                  1.2300308704433276e-13,
+                  -4.332333882223975e-14
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "gpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": -1,
+            "spin_2s": 1,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/electron_Eq_R0.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/electron_Eq_R0.log",
+          "converged": true,
+          "energy_hartree": -199.4461994577275,
+          "backend": "gpu",
+          "device": "NVIDIA GeForce RTX 5090",
+          "source_class": "gpu4pyscf.df.df_jk.DFUKS",
+          "charge": -1,
+          "spin_2s": 1,
+          "spin_square": 0.7517500572200024,
+          "checkpoint_sha256": "0abff55803f0e9c4e32f560b9a7b0206309ed279d290ae40b1c1f448dc1de4e9",
+          "elapsed_seconds": 0.3560227118432522,
+          "reused": false
+        },
+        "Eq_Rq": {
+          "fingerprint": "2ebaca0a9071e6d5cde2d6c21c611695302f92cf14eaf8ec5b829ec62ef66568",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.9990972277017578,
+                  -8.949965093478435e-14,
+                  9.500581876377787e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.9990972276950465,
+                  3.1741338706605627e-13,
+                  7.711364708954402e-14
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "gpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": -1,
+            "spin_2s": 1,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/electron_Eq_Rq.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/electron_Eq_Rq.log",
+          "converged": true,
+          "energy_hartree": -199.56728909647052,
+          "backend": "gpu",
+          "device": "NVIDIA GeForce RTX 5090",
+          "source_class": "gpu4pyscf.df.df_jk.DFUKS",
+          "charge": -1,
+          "spin_2s": 1,
+          "spin_square": 0.7527689307627021,
+          "checkpoint_sha256": "2ec4f96fc625c59200b5996ae61a62352cb372877b764bd904d665a9941268f8",
+          "elapsed_seconds": 0.3537628687918186,
+          "reused": false
+        },
+        "E0_Rq": {
+          "fingerprint": "09485802fe735edbeedbcc1b09feab3aee0dc18770529c9fd90a127763b6f62b",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.9990972277017578,
+                  -8.949965093478435e-14,
+                  9.500581876377787e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.9990972276950465,
+                  3.1741338706605627e-13,
+                  7.711364708954402e-14
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "gpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 0,
+            "spin_2s": 0,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/electron_E0_Rq.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization/F2/electron_E0_Rq.log",
+          "converged": true,
+          "energy_hartree": -199.40686030168564,
+          "backend": "gpu",
+          "device": "NVIDIA GeForce RTX 5090",
+          "source_class": "gpu4pyscf.df.df_jk.DFRKS",
+          "charge": 0,
+          "spin_2s": 0,
+          "spin_square": 0.0,
+          "checkpoint_sha256": "39a9e8726d122c13faccc9bb59bab5a79dbab1a08d3fdaf7c2e85d66606d67be",
+          "elapsed_seconds": 0.29979135002940893,
+          "reused": false
+        }
+      }
+    }
+  },
+  "neutral_optimization": {
+    "converged": true,
+    "evaluations": 6,
+    "gradient_class": "gpu4pyscf.grad.rhf.Gradients_Scanner",
+    "final_gradient_rms": 1.6184263204970273e-08,
+    "final_gradient_max": 2.8033980470354436e-08,
+    "charge": 0,
+    "spin_2s": 0
+  },
+  "elapsed_seconds": 17.43243756587617,
+  "reused": false,
+  "output_sha256": {
+    "neutral.optimization.json": "7d5bc999912788e42c165fdbd5e74e7f105cfec487dedb64426267adc7421422",
+    "neutral.optimization.log": "57f748d13f36bfd77c528e6a91c3784d23323be97a7c99f897e1273dc44ad4cd",
+    "neutral.trace.json": "05b2101a4beb2ff5847e150ca4b34ab34a301fa83fc95ee9501a89beef1cd858",
+    "neutral.optimized.xyz": "88622225cce229abbc5f2716edce1dd7a8b5b72596d222806813f6101c17f293",
+    "E0_R0.status.json": "735120ae248a0c57c20900d1dce7aa7fac7d8c81d76158f66838d219b51cb226",
+    "E0_R0.log": "77590f45e2f91b41d90e3e3366994227fe73e1137182d0aab47ffbe5871fe702",
+    "E0_R0.chk": "73a9733c9595c6b7f2572c554e05dca68a0c39e138657b4f4b02d123d11e4cb0",
+    "cation.optimization.json": "c6c31fc8a717997fe517f319d794b6de3724a54eaab8936f91e64c76b3a08324",
+    "cation.optimization.log": "6cfb6adafe42630e2f69a3fbe5068b5ce33e7451019e59e15642fc51a1602233",
+    "cation.trace.json": "41801409ed040f24f58c5786d3b87fd16eb74f5c39ed682323d2b3687c59b1c4",
+    "cation.optimized.xyz": "349aafe2b5ed359cfe42076180dacaa305854981fa8bb596271ff6f1db2999b6",
+    "hole_Eq_R0.status.json": "696e02c96952d1b4e89d365d62b3b76ddcbeb134b9016ba2388efdbb2cf78eba",
+    "hole_Eq_R0.log": "60b431afadba293333732091c13af1bf56f5cf42dc6afe71e6eb9232e088adcd",
+    "hole_Eq_R0.chk": "50540b51da17165fa124c5b0164d13a60fbf974e8962f4eebd6b8ce9f764e8fb",
+    "hole_Eq_Rq.status.json": "f12be1ea1df251963a446a73a85550bfb203e4d8b272025b56608684668d787f",
+    "hole_Eq_Rq.log": "ab53d346fc8666f381b8e116e18f57feb43120105f492f14a524221bf9507fb8",
+    "hole_Eq_Rq.chk": "40f0bf04aee8a490967ce271ed9c33231285ef2cd88e888f517e4b410efe11a4",
+    "hole_E0_Rq.status.json": "417c7f7d4009ceca3e365447e142e5359bc7306c2071354caf9769871b21f7d7",
+    "hole_E0_Rq.log": "40646e0be23ae379fbb01250c1a30bada0228d25e23dcaeefaa6f2e9250cc846",
+    "hole_E0_Rq.chk": "29afb8a33394b90dc812315735bea45ab8afc331383e61a7b6a4c616d83a83c0",
+    "anion.optimization.json": "ae2c840b0d39ac4d4de1168f50cddd667ed4af005cdc30b8d7f11c073ac75a83",
+    "anion.optimization.log": "d6d94b9d0c98f07b69a5ca0ee0b93a3b2e4acbd51ae8b3e263abe403fb5f3170",
+    "anion.trace.json": "58ac245295d8be32b21cad65fa59cee18d91a9aad87bae27c68f20904861cc45",
+    "anion.optimized.xyz": "aa300cf2e66d8472283d37f942df59a642a106a8c88d970e48edbe8720a7dee2",
+    "electron_Eq_R0.status.json": "d957560d8a0a966149c5a55e7865c94f8975c5999232570791f929c7693ec58a",
+    "electron_Eq_R0.log": "f3fcae2eb31a74632929055257c76c34aeeadb8f697051d6192e8c95b806ff4f",
+    "electron_Eq_R0.chk": "0abff55803f0e9c4e32f560b9a7b0206309ed279d290ae40b1c1f448dc1de4e9",
+    "electron_Eq_Rq.status.json": "ea69e806b5d6d87a2078e865cda1aa474b1c56dc8c89d85b5a1c152da34dcd88",
+    "electron_Eq_Rq.log": "5c863402137feb04ea8eaf381e4898c46d85030ad6808bdf6dbf5c7e7365521f",
+    "electron_Eq_Rq.chk": "2ec4f96fc625c59200b5996ae61a62352cb372877b764bd904d665a9941268f8",
+    "electron_E0_Rq.status.json": "b183fc9c565500a9525b2419a06272662e932f39510db11c62e5a5d5ada9e0d5",
+    "electron_E0_Rq.log": "a478ed8024fd224cd7ad1ffe46627ddafc5cda87b14b1f66c12013c2de8a63e3",
+    "electron_E0_Rq.chk": "39a9e8726d122c13faccc9bb59bab5a79dbab1a08d3fdaf7c2e85d66606d67be"
+  }
+}

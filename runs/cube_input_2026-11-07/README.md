@@ -34,7 +34,7 @@
 
 本轮本机检测到 GTX 1650 Max-Q、4 GB、驱动 615.71.09。安装锁定的 GPU 可选依赖后，CuPy 设备初始化/数组计算成功；**GPU4PySCF 1.9.1 的 CUDA 13 wheel 实际运行报 `no kernel image is available for execution on the device`**，失败在 `block_diag` 内核。因此这台机器没有完成新调度器的 GPU SCF/梯度/四点法验证，程序也没有回退 CPU 或产生伪成功 checkpoint。日志与失败状态为 `local-gpu-failure.log/json`。
 
-此前 RTX 5090 的直接计算与 checkpoint 控制接口已经通过验证，见 `../transfer_control_gpu_2026-11-07/`；这不替代本轮新增四点法 GPU 验证。远程测试因自动审批要求明确允许上传新代码制品而暂未执行。此处不把本机 CuPy 测试成功声称为 GPU4PySCF 全流程通过。
+后续已在 RTX 5090 上完成本轮新增调度器的 GPU SCF、梯度优化、DIPRO 和 vacuum 四点法验证，详见 [GPU 完整报告](../cube_input_gpu_2026-11-07/README.md)。同机 CPU/GPU 耦合最大差 1.48e-7 eV，重组能最大差 3.71e-7 eV；续算与失败处理检查通过。本机 GTX 1650 的上述兼容性失败记录仍保留。
 
 ## 测试和使用
 

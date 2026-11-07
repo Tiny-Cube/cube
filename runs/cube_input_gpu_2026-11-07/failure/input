@@ -1,0 +1,11 @@
+$reorganization-energy
+xyz = ../F2.xyz
+output = reorg
+qc-engine = pyscf
+method = b3lyp
+basis-set = 6-31G(d,p)
+re-method = 4-points
+environment = vacuum
+opt-maxsteps = 1
+carriers = hole
+$end

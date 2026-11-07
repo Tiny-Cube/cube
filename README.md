@@ -16,6 +16,8 @@ uv sync --locked --extra workflow
 
 [控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。运行 `./cube input --resume` 会继续控制文件中选定的量化/重组能任务；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。
 
+`cube input` 的小分子流程已在 RTX 5090 通过 CPU/GPU 对照，包括 DIPRO、GPU 梯度优化、vacuum 四点重组能及断点续算，见 [GPU 工作流实测](runs/cube_input_gpu_2026-11-07/README.md)。实际 MD 的全部量化任务尚未运行。
+
 ## 新增：GPU 转移积分
 
 [理论公式、原始论文与使用方法](docs/transfer-integrals.md) · [RTX 5090 实测](runs/transfer_gpu_2026-11-06/README.md)

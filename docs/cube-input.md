@@ -116,4 +116,4 @@ uv run --locked --extra workflow --extra quantum-cuda13 python scripts/validate_
   --output build/cube-workflow-gpu --gpu
 ```
 
-本次验证记录见 [cube input 报告](../runs/cube_input_2026-11-07/README.md)。
+本次真实 MD 提取与 CPU 验证记录见 [cube input 报告](../runs/cube_input_2026-11-07/README.md)；新增 GPU 梯度/四点法及安装后的 `cube` 命令已在 RTX 5090 实测通过，见 [GPU 工作流报告](../runs/cube_input_gpu_2026-11-07/README.md)。GPU 报告使用乙烯/F2 小体系验证接口与数值一致性，不代表已完成真实 MD 的全部量化任务，也不是大分子加速比测试。
