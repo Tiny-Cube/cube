@@ -14,7 +14,8 @@ ALLOWED = {
     'get_dimer': {'tpr', 'gro', 'xtc', 'frame', 'cutoff', 'fragment-file', 'output', 'format'},
     'one-mol': COMMON | {'molecules', 'xyz'},
     'two-mol': COMMON | {'dimers', 'transfer-integrals-method', 'carriers', 'assume-equivalent'},
-    'reorganization-energy': COMMON | {'molecules', 'xyz', 're-method', 'environment', 'carriers', 'opt-maxsteps'},
+    'reorganization-energy': COMMON | {'molecules', 'xyz', 're-method', 'environment', 'carriers', 'opt-maxsteps',
+                                      'mm-source', 'mm-charges', 'mm-cutoff', 'mm-frozen'},
 }
 
 
@@ -189,8 +190,30 @@ def load_input(filename='input'):
             n['environment'] = s.get('environment', 'vacuum').lower()
             n['re-method'] = s.get('re-method', '4-points').lower()
             n['opt-maxsteps'] = _integer(s.get('opt-maxsteps', '100'), 'opt-maxsteps')
-            if n['environment'] != 'vacuum' or n['re-method'] != '4-points':
-                raise ValueError('this workflow supports environment=vacuum and re-method=4-points')
+            if n['environment'] not in ('vacuum', 'qmmm') or n['re-method'] != '4-points':
+                raise ValueError('use environment=vacuum or qmmm and re-method=4-points')
+            mm_keys = {'mm-source', 'mm-charges', 'mm-cutoff', 'mm-frozen'}
+            if n['environment'] == 'vacuum' and mm_keys.intersection(s):
+                raise ValueError('MM settings require environment=qmmm')
+            if n['environment'] == 'qmmm':
+                n['mm-frozen'] = _boolean(s.get('mm-frozen', 'true'), 'mm-frozen')
+                if not n['mm-frozen']:
+                    raise ValueError('QM/MM four-point currently requires mm-frozen=true')
+                source = s.get('mm-source', 'file' if 'mm-charges' in s else 'manifest').lower()
+                if source not in ('manifest', 'file'):
+                    raise ValueError('mm-source must be manifest or file')
+                n['mm-source'] = source
+                if source == 'file':
+                    if 'mm-cutoff' in s:
+                        raise ValueError('mm-cutoff applies only to mm-source=manifest; file charges are all included')
+                    n['mm-charges'] = str(resolve_path(s.get('mm-charges', ''), path.parent,
+                                                       'mm-charges', required_file=True))
+                    if 'xyz' not in n or len(n['xyz']) != 1:
+                        raise ValueError('explicit mm-charges requires exactly one xyz in the same coordinate frame')
+                else:
+                    if 'mm-charges' in s or 'xyz' in n:
+                        raise ValueError('mm-source=manifest requires a GROMACS extraction manifest, without xyz/mm-charges')
+                    n['mm-cutoff'] = _positive(s.get('mm-cutoff', '12'), 'mm-cutoff')
         normalized[name] = n
     if 'two-mol' in normalized and 'one-mol' in normalized:
         for key in ('method', 'basis-set', 'auxbasis', 'grid-level', 'conv-tol'):

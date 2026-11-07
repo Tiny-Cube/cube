@@ -1,0 +1,52 @@
+{
+  "fingerprint": "bec1dc67265e308768d11a3dfb780a08a4b054a561cc89a45eb0e65e42d69f3c",
+  "status": "completed",
+  "atoms": [
+    [
+      "F",
+      [
+        -0.7026351306389647,
+        8.161236080096e-14,
+        6.976454181740343e-14
+      ]
+    ],
+    [
+      "F",
+      [
+        0.7026351243408941,
+        -5.0019074307382126e-14,
+        7.588135788272395e-15
+      ]
+    ]
+  ],
+  "optimization": {
+    "converged": true,
+    "evaluations": 6,
+    "gradient_class": "gpu4pyscf.grad.rhf.QMMMGradients_Scanner",
+    "final_gradient_rms": 1.2227682821618732e-06,
+    "final_gradient_max": 2.1186229908209953e-06,
+    "charge": 0,
+    "spin_2s": 0,
+    "gradient_mro": [
+      "gpu4pyscf.grad.rhf.QMMMGradients_Scanner",
+      "gpu4pyscf.grad.rhf.SCF_GradScanner",
+      "pyscf.lib.misc.GradScanner",
+      "pyscf.lib.misc.QMMMGradients",
+      "gpu4pyscf.qmmm.itrf.QMMMGrad",
+      "gpu4pyscf.df.grad.rks.Gradients",
+      "gpu4pyscf.grad.rks.Gradients",
+      "gpu4pyscf.grad.rhf.Gradients",
+      "gpu4pyscf.grad.rhf.GradientsBase",
+      "pyscf.lib.misc.StreamObject",
+      "builtins.object"
+    ],
+    "mm_frozen": true,
+    "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+    "optimized_region": "QM_atoms_only",
+    "qm_mm_gradient_verified": true
+  },
+  "output_sha256": {
+    "neutral.trace.json": "37ac413aa3fa4d694571fcdb6100484321d811c59ed866dc28e6664ee6ef92ec",
+    "neutral.optimized.xyz": "4fe9596e2acfee08cee6f9b773a8cc6977dbf099c04fdd1d1ddeea647c639536"
+  }
+}

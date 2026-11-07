@@ -65,8 +65,11 @@ def _load_checkpoint(path, assume_converged):
     try:
         mol, data = chkfile.load_scf(str(path))
         metadata = chkfile.load(str(path), 'cube_transfer')
+        reorganization = chkfile.load(str(path), 'cube_reorganization')
     except (OSError, KeyError, TypeError, ValueError) as exc:
         raise ValueError(f'cannot read PySCF SCF checkpoint {path}: {exc}') from exc
+    if reorganization and _text(reorganization.get('environment', '')) == 'qmmm':
+        raise ValueError('QM/MM reorganization checkpoints cannot be used as vacuum transfer checkpoints')
     if not isinstance(data, dict) or not {'e_tot', 'mo_coeff', 'mo_energy', 'mo_occ'} <= data.keys():
         raise ValueError(f'{path}: missing complete SCF orbital data')
     if mol.charge != 0 or mol.spin != 0 or mol.cart or mol._ecp or getattr(mol, '_pseudo', {}):

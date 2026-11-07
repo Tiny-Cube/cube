@@ -1,12 +1,12 @@
 # cube — 有机分子载流子输运计算软件
 
-cube 面向有机分子晶体、非晶和聚合物的载流子输运研究。当前可用功能包括四语言通用 KMC、速率函数、真实体系验证，以及可选的 CPU/GPU 转移积分计算；完整 MD→QM/MM→输运材料工作流仍待实现。Python 分发名仍为 `universal-kmc`，KMC 命令为 `ukmc`，新增量化命令为 `cube-transfer`。
+cube 面向有机分子晶体、非晶和聚合物的载流子输运研究。当前可用功能包括四语言通用 KMC、速率函数、真实体系验证，以及可选的 CPU/GPU 转移积分、vacuum 与冻结 MM 静电嵌入四点法重组能；完整材料输运工作流仍在建设。Python 分发名仍为 `universal-kmc`，KMC 命令为 `ukmc`，独立量化命令为 `cube-transfer`。
 
 [软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)
 
 ## cube input 统一入口
 
-提供可执行脚本 `cube`，默认读取 `$get_dimer/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 帧的 core 距离 dimer 提取、按 `format` 选择 XYZ/GJF、CPU/GPU 单体与 dimer 量化、DIPRO，以及明确标记 vacuum 的四点法重组能。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
+提供可执行脚本 `cube`，默认读取 `$get_dimer/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 帧的 core 距离 dimer 提取、按 `format` 选择 XYZ/GJF、CPU/GPU 单体与 dimer 量化、DIPRO，以及 vacuum / 冻结 MM 静电嵌入四点法。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
 
 ```bash
 uv sync --locked --extra workflow
@@ -17,6 +17,8 @@ uv sync --locked --extra workflow
 [控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。运行 `./cube input --resume` 会继续控制文件中选定的量化/重组能任务；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。
 
 `cube input` 的小分子流程已在 RTX 5090 通过 CPU/GPU 对照，包括 DIPRO、GPU 梯度优化、vacuum 四点重组能及断点续算，见 [GPU 工作流实测](runs/cube_input_gpu_2026-11-07/README.md)。实际 MD 的全部量化任务尚未运行。
+
+新增冻结 MM 的 QM/MM 四点法：环境坐标、电荷固定，只优化 QM 分子；可从 GROMACS 帧自动选取完整邻近分子，或读取外部点电荷文件。CPU/GPU 优化、梯度、四点能量及续算已实测，见 [QM/MM 实现与验证](runs/qmmm_frozen_mm_2026-11-07/README.md)。当前为静电嵌入，未包含 QM–MM van der Waals 或可极化 MM。
 
 ## 新增：GPU 转移积分
 
@@ -46,7 +48,7 @@ uv run --locked --extra quantum-cuda13 cube-transfer \
   --method dipro --method frozen_density --output build/transfer.json
 ```
 
-CPU 使用 `--extra quantum` 和 `--backend cpu`。GPU 量化适配器不等于已经实现 GPU KMC；当前也不包含 QM/MM 量化任务。
+CPU 使用 `--extra quantum` 和 `--backend cpu`。GPU 量化适配器不等于已经实现 GPU KMC；QM/MM 重组能使用 `cube input`，详见[冻结 MM 控制说明](docs/cube-input.md#冻结-mm-的-qmmm-四点法)。独立转移积分仍使用真空模型。
 
 ## 当前基础：通用 KMC
 

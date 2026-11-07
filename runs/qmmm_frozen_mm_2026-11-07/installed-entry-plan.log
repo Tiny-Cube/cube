@@ -1,0 +1,36 @@
+{
+  "schema": "cube-workflow-1",
+  "control": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/input",
+  "control_sha256": "905576b00b46abcaaee2ee20386fa80eb8c64b46deb206b703e8effe970f1c2d",
+  "tasks": [
+    "reorganization-energy"
+  ],
+  "sections": {
+    "reorganization-energy": {
+      "qc-engine": "gpu-pyscf",
+      "method": "b3lyp",
+      "basis-set": "6-31G(d,p)",
+      "threads": 4,
+      "grid-level": 3,
+      "conv-tol": 1e-10,
+      "max-cycle": 100,
+      "max-memory-mb": 4000,
+      "auxbasis": "def2-universal-jkfit",
+      "output": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/reorganization",
+      "xyz": [
+        "/home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/F2.xyz"
+      ],
+      "carriers": [
+        "hole",
+        "electron"
+      ],
+      "environment": "qmmm",
+      "re-method": "4-points",
+      "opt-maxsteps": 60,
+      "mm-frozen": true,
+      "mm-source": "file",
+      "mm-charges": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/mm.pc"
+    }
+  },
+  "note": "plan only; no trajectory extraction, SCF, optimization or GPU probe performed"
+}

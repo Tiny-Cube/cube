@@ -1,0 +1,380 @@
+[
+  {
+    "evaluation": 1,
+    "energy_hartree": -199.44653679292736,
+    "coordinates_angstrom": [
+      [
+        -0.7026351306389647,
+        8.161236080096e-14,
+        6.976454181740343e-14
+      ],
+      [
+        0.7026351243408941,
+        -5.0019074307382126e-14,
+        7.588135788272395e-15
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        0.37311982987054826,
+        -3.385817782845078e-14,
+        -1.6175152315838805e-14
+      ],
+      [
+        -0.37311982986603276,
+        3.50618756439257e-14,
+        1.683498538298621e-14
+      ]
+    ],
+    "gradient_rms": 0.21542083421444488,
+    "gradient_max": 0.37311982987054826,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.44653679292736,
+      "backend": "gpu",
+      "device": "NVIDIA GeForce RTX 5090",
+      "source_class": "pyscf.scf.hf.QMMMDFUKS_Scanner",
+      "charge": -1,
+      "spin_2s": 1,
+      "spin_square": 0.7517472128804918,
+      "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+      "mm_frozen": true
+    }
+  },
+  {
+    "evaluation": 2,
+    "energy_hartree": -199.53480737947945,
+    "coordinates_angstrom": [
+      [
+        -0.8026351306447266,
+        8.989932433063301e-14,
+        7.37637972846457e-14
+      ],
+      [
+        0.8026351243415571,
+        -5.924588133354303e-14,
+        2.7475159908674915e-15
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        0.13009179009729444,
+        -1.0029820227220785e-14,
+        -4.550425943728825e-15
+      ],
+      [
+        -0.1300917900923242,
+        1.1228651052586998e-14,
+        6.392842218909044e-15
+      ]
+    ],
+    "gradient_rms": 0.07510853003059845,
+    "gradient_max": 0.13009179009729444,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.53480737947945,
+      "backend": "gpu",
+      "device": "NVIDIA GeForce RTX 5090",
+      "source_class": "pyscf.scf.hf.QMMMDFUKS_Scanner",
+      "charge": -1,
+      "spin_2s": 1,
+      "spin_square": 0.7521369210501678,
+      "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+      "mm_frozen": true
+    }
+  },
+  {
+    "evaluation": 3,
+    "energy_hartree": -199.55427727058168,
+    "coordinates_angstrom": [
+      [
+        -0.8561646700170812,
+        2.1926522874021806e-14,
+        3.8126796230723715e-14
+      ],
+      [
+        0.8561646636008232,
+        -2.0449069149762925e-14,
+        -1.4155522485872621e-14
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        0.06772308915835001,
+        -1.829583493027321e-15,
+        -1.4487379456499539e-15
+      ],
+      [
+        -0.06772308917509662,
+        2.5869664906762496e-15,
+        2.650461246765491e-15
+      ]
+    ],
+    "gradient_rms": 0.03909994376076074,
+    "gradient_max": 0.06772308917509662,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.55427727058168,
+      "backend": "gpu",
+      "device": "NVIDIA GeForce RTX 5090",
+      "source_class": "pyscf.scf.hf.QMMMDFUKS_Scanner",
+      "charge": -1,
+      "spin_2s": 1,
+      "spin_square": 0.7523354266467059,
+      "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+      "mm_frozen": true
+    }
+  },
+  {
+    "evaluation": 4,
+    "energy_hartree": -199.56441224089357,
+    "coordinates_angstrom": [
+      [
+        -0.9142897501839409,
+        -4.706710553240113e-14,
+        2.918469861171696e-14
+      ],
+      [
+        0.9142897444985092,
+        1.0868967067385063e-14,
+        -7.269383767154112e-14
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        0.02832157192114515,
+        1.779790402577347e-15,
+        -3.1152738248652767e-15
+      ],
+      [
+        -0.028321569195889573,
+        -8.717355996180937e-16,
+        2.2221526461443614e-15
+      ]
+    ],
+    "gradient_rms": 0.016351466385832996,
+    "gradient_max": 0.02832157192114515,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.56441224089357,
+      "backend": "gpu",
+      "device": "NVIDIA GeForce RTX 5090",
+      "source_class": "pyscf.scf.hf.QMMMDFUKS_Scanner",
+      "charge": -1,
+      "spin_2s": 1,
+      "spin_square": 0.7525362443773016,
+      "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+      "mm_frozen": true
+    }
+  },
+  {
+    "evaluation": 5,
+    "energy_hartree": -199.56745762150436,
+    "coordinates_angstrom": [
+      [
+        -0.9560697519620923,
+        -1.254095207153968e-13,
+        1.1036047254092602e-13
+      ],
+      [
+        0.9560696473973056,
+        4.061125829131126e-14,
+        -1.5156563647348013e-13
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        0.011440129915723851,
+        -4.341171731447338e-16,
+        -2.854515893977501e-16
+      ],
+      [
+        -0.011440129834992874,
+        -5.451156486548617e-16,
+        2.008308293600837e-15
+      ]
+    ],
+    "gradient_rms": 0.006604962063102431,
+    "gradient_max": 0.011440129915723851,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.56745762150436,
+      "backend": "gpu",
+      "device": "NVIDIA GeForce RTX 5090",
+      "source_class": "pyscf.scf.hf.QMMMDFUKS_Scanner",
+      "charge": -1,
+      "spin_2s": 1,
+      "spin_square": 0.7526618521432908,
+      "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+      "mm_frozen": true
+    }
+  },
+  {
+    "evaluation": 6,
+    "energy_hartree": -199.56824579874169,
+    "coordinates_angstrom": [
+      [
+        -0.9843829954664797,
+        -7.79083474883882e-14,
+        7.168398244146324e-14
+      ],
+      [
+        0.9843828601189237,
+        7.981336470182462e-15,
+        -1.8533311399298622e-13
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        0.003662264930860637,
+        7.637666469422584e-16,
+        -8.047385355351759e-16
+      ],
+      [
+        -0.0036622646535757752,
+        -2.4614469637430893e-16,
+        3.321114805022854e-16
+      ]
+    ],
+    "gradient_rms": 0.0021144095636308714,
+    "gradient_max": 0.003662264930860637,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.56824579874169,
+      "backend": "gpu",
+      "device": "NVIDIA GeForce RTX 5090",
+      "source_class": "pyscf.scf.hf.QMMMDFUKS_Scanner",
+      "charge": -1,
+      "spin_2s": 1,
+      "spin_square": 0.752733336477931,
+      "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+      "mm_frozen": true
+    }
+  },
+  {
+    "evaluation": 7,
+    "energy_hartree": -199.56835706961633,
+    "coordinates_angstrom": [
+      [
+        -0.9977144976428455,
+        -1.0965632663565578e-13,
+        8.39392240566848e-14
+      ],
+      [
+        0.9977143399726944,
+        2.0858149748526663e-14,
+        -1.9981578612662312e-13
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        0.0007845864208597675,
+        -1.3841952562299974e-15,
+        -2.4918015418930876e-16
+      ],
+      [
+        -0.0007845689453258586,
+        1.448268754225436e-15,
+        1.755192105793989e-16
+      ]
+    ],
+    "gradient_rms": 0.0004529761365619,
+    "gradient_max": 0.0007845864208597675,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.56835706961633,
+      "backend": "gpu",
+      "device": "NVIDIA GeForce RTX 5090",
+      "source_class": "pyscf.scf.hf.QMMMDFUKS_Scanner",
+      "charge": -1,
+      "spin_2s": 1,
+      "spin_square": 0.7527622182699609,
+      "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+      "mm_frozen": true
+    }
+  },
+  {
+    "evaluation": 8,
+    "energy_hartree": -199.56836328846555,
+    "coordinates_angstrom": [
+      [
+        -1.0013494564621552,
+        -2.8102492890883044e-14,
+        9.166787921625752e-14
+      ],
+      [
+        1.0013488235481103,
+        -6.457891774001964e-14,
+        -2.088957844913287e-13
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        7.511357323775059e-05,
+        -5.271150731326888e-16,
+        2.199550516259731e-16
+      ],
+      [
+        -7.511309053320758e-05,
+        -4.1059920069984047e-16,
+        9.071318088018054e-16
+      ]
+    ],
+    "gradient_rms": 4.336670238403492e-05,
+    "gradient_max": 7.511357323775059e-05,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.56836328846555,
+      "backend": "gpu",
+      "device": "NVIDIA GeForce RTX 5090",
+      "source_class": "pyscf.scf.hf.QMMMDFUKS_Scanner",
+      "charge": -1,
+      "spin_2s": 1,
+      "spin_square": 0.7527694992544589,
+      "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+      "mm_frozen": true
+    }
+  },
+  {
+    "evaluation": 9,
+    "energy_hartree": -199.56836338235274,
+    "coordinates_angstrom": [
+      [
+        -1.0017342876146031,
+        -1.2622233135591529e-14,
+        9.565554650126162e-14
+      ],
+      [
+        1.001733632248901,
+        -5.837660999284396e-14,
+        -2.395745310894978e-13
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        1.7633698332630843e-06,
+        3.696454445110885e-16,
+        3.344526830186836e-16
+      ],
+      [
+        -1.7628763728794183e-06,
+        1.5777082190390953e-16,
+        1.1818582017902734e-15
+      ]
+    ],
+    "gradient_rms": 1.017939608139793e-06,
+    "gradient_max": 1.7633698332630843e-06,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.56836338235274,
+      "backend": "gpu",
+      "device": "NVIDIA GeForce RTX 5090",
+      "source_class": "pyscf.scf.hf.QMMMDFUKS_Scanner",
+      "charge": -1,
+      "spin_2s": 1,
+      "spin_square": 0.7527702859495093,
+      "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+      "mm_frozen": true
+    }
+  }
+]

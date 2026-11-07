@@ -15,7 +15,7 @@ from universal_kmc.workflow.control import load_input, scf_config
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def check_gradients(settings, directory):
+def check_gradients(settings, directory, *, embedding=None):
     """Check neutral/cation/anion forces against actual central energy differences."""
     from pyscf.data.nist import BOHR
     from universal_kmc.quantum.coupling import host
@@ -30,7 +30,7 @@ def check_gradients(settings, directory):
         for offset in (0,h,-h):
             atoms=[('F',(-.75,0.,0.)),('F',(.75+offset*BOHR,0.,0.))]
             mf=make_mean_field(atoms,config,charge=charge,spin=0 if charge==0 else 1,
-                               log=directory/f'q{charge}_{offset:+g}.log')
+                               log=directory/f'q{charge}_{offset:+g}.log', embedding=embedding)
             try:
                 mf.kernel()
                 scf_record(mf,config.backend)

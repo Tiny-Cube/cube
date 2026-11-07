@@ -1,0 +1,13 @@
+$reorganization-energy
+xyz = F2.xyz
+output = results
+qc-engine = pyscf  # change to gpu-pyscf on a compatible GPU
+method = b3lyp
+basis-set = 6-31G(d,p)
+re-method = 4-points
+environment = qmmm
+mm-charges = environment.pc
+mm-frozen = true
+carriers = hole,electron
+opt-maxsteps = 60
+$end

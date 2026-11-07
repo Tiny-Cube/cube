@@ -161,13 +161,23 @@ def run_workflow(control, *, only=None, resume=False):
                 directory = Path(settings.get('output', data['root']/'reorganization'))
                 records = _select(data['monomers'], settings.get('molecules'), 'molecules')
                 outputs = {}
+                frame = fixed_environment = None
+                if settings['environment'] == 'qmmm':
+                    from .embedding import read_charges, load_gromacs_environment, cluster_from_frame
+                    if settings['mm-source'] == 'file':
+                        fixed_environment = read_charges(settings['mm-charges'])
+                    else:
+                        frame = load_gromacs_environment(data)
                 for record in records:
-                    print(f'cube: vacuum four-point reorganization {record["id"]}', flush=True)
-                    result = calculate_reorganization(_atoms(record), settings, directory/record['id'], resume=resume)
+                    environment = (cluster_from_frame(frame, record, settings['mm-cutoff'])
+                                   if frame is not None else fixed_environment)
+                    print(f'cube: {settings["environment"]} four-point reorganization {record["id"]}', flush=True)
+                    result = calculate_reorganization(_atoms(record), settings, directory/record['id'], resume=resume,
+                                                      embedding=environment)
                     outputs[record['id']] = {'output': str(directory/record['id']/'reorganization.json'),
                         'reorganization_ev': {c:v['reorganization_energy_ev'] for c,v in result['results'].items()},
                         'reused': result['reused']}
-                report['tasks'][task] = {'status': 'completed', 'environment': 'vacuum', 'count': len(outputs), 'outputs': outputs}
+                report['tasks'][task] = {'status': 'completed', 'environment': settings['environment'], 'count': len(outputs), 'outputs': outputs}
             _write_result(summary_path, report)
         complete = all(t['status'] == 'completed' for t in report['tasks'].values())
         report['status'] = 'completed' if complete else 'partial'

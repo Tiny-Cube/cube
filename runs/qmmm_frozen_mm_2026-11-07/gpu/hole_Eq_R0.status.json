@@ -1,0 +1,67 @@
+{
+  "fingerprint": "1045af555c643af3ed0da4bb63c70e27c0a6c1532a931c0c0126582f79f3e79e",
+  "request": {
+    "atoms": [
+      [
+        "F",
+        [
+          -0.7026351306389647,
+          8.161236080096e-14,
+          6.976454181740343e-14
+        ]
+      ],
+      [
+        "F",
+        [
+          0.7026351243408941,
+          -5.0019074307382126e-14,
+          7.588135788272395e-15
+        ]
+      ]
+    ],
+    "settings": {
+      "backend": "gpu",
+      "basis": "6-31G(d,p)",
+      "xc": "b3lyp",
+      "auxbasis": "def2-universal-jkfit",
+      "unit": "Angstrom",
+      "conv_tol": 1e-10,
+      "max_cycle": 100,
+      "grid_level": 3,
+      "threads": 4,
+      "max_memory_mb": 4000,
+      "degeneracy_tolerance_ev": 0.01,
+      "site_tolerance_ev": 0.001,
+      "max_pair_leakage": 0.15
+    },
+    "charge": 1,
+    "spin_2s": 1,
+    "versions": {
+      "numpy": "2.5.4",
+      "pyscf": "2.15.0",
+      "gpu4pyscf-cuda13x": "1.9.1",
+      "cupy-cuda13x": "13.6.0"
+    },
+    "implementation_sha256": "0a32f534c62492b6586495f94e066ef77f0a88b11dda1ae0646791f47c83110d",
+    "environment": "qmmm",
+    "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+    "embedding_implementation_sha256": "23c35ea8d141118a09cd64dfc9796793f6fdaa63db6663d2f20983d38db292ba"
+  },
+  "status": "completed",
+  "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/reorganization/F2/hole_Eq_R0.chk",
+  "log": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/reorganization/F2/hole_Eq_R0.log",
+  "converged": true,
+  "energy_hartree": -198.92293589817263,
+  "backend": "gpu",
+  "device": "NVIDIA GeForce RTX 5090",
+  "source_class": "gpu4pyscf.qmmm.itrf.QMMMDFUKS",
+  "charge": 1,
+  "spin_2s": 1,
+  "spin_square": 0.7522674467159263,
+  "environment": "qmmm",
+  "mm_frozen": true,
+  "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+  "checkpoint_sha256": "93a569829253e000fd8b9831c795e8ed54c547eff794fca43ad3c68d26c82051",
+  "elapsed_seconds": 0.3628367967903614,
+  "reused": false
+}

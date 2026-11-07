@@ -84,7 +84,7 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
                    ('format = xyz,gjf','format = xyz,XYZ'), ('format = xyz,gjf','format = pdb'),
                    ('qc-engine = gpu-pyscf','qc-engine = gaussian'),
                    ('re-method = 4-points','re-method = approximate'),
-                   ('re-method = 4-points','re-method = 4-points\nenvironment = qmmm'),
+                   ('re-method = 4-points','re-method = 4-points\nenvironment = qmmm\nmm-frozen = false'),
                    ('tpr = a.tpr','tpr ='), ('cutoff = 6','cutoff = 6\ncutoff = 7'),
                    ('$get_dimer','$get_dimer\nunknown = 3'),
                    ('basis-set = 6-31G(d,p)\ntransfer', 'basis-set = sto-3g\ntransfer')]

@@ -28,5 +28,8 @@ $reorganization-energy
 method = b3lyp
 basis-set = 6-31G(d,p)
 re-method = 4-points
-environment = vacuum
+environment = qmmm
+mm-source = manifest
+mm-cutoff = 12  # Angstrom; whole neighboring molecules, finite cluster
+mm-frozen = true
 $end

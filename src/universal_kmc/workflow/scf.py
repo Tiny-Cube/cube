@@ -1,4 +1,4 @@
-"""Reusable single-point jobs and checked rigid translations of vacuum results."""
+"""Single-point jobs, frozen electrostatic embedding and vacuum translations."""
 from dataclasses import asdict
 import json
 import math
@@ -15,7 +15,7 @@ from .control import scf_config
 from .dimers import file_hash, fingerprint
 
 
-def make_mean_field(atoms, config, *, charge=0, spin=0, log=None):
+def make_mean_field(atoms, config, *, charge=0, spin=0, log=None, embedding=None):
     from pyscf import gto, lib
     config.validate()
     lib.num_threads(config.threads)
@@ -35,6 +35,14 @@ def make_mean_field(atoms, config, *, charge=0, spin=0, log=None):
         mf = mf.to_gpu()
         if not type(mf).__module__.startswith('gpu4pyscf.'):
             raise RuntimeError('GPU request did not produce a GPU4PySCF mean-field object')
+    if embedding is not None:
+        embedding.validate_qm(atoms)
+        if config.backend == 'gpu':
+            from gpu4pyscf.qmmm.itrf import add_mm_charges
+        else:
+            from pyscf.qmmm import add_mm_charges
+        mf = add_mm_charges(mf, embedding.coordinates_angstrom, embedding.charges_e, unit='Angstrom')
+        embedding.assert_attached(mf)
     return mf
 
 
@@ -55,13 +63,17 @@ def scf_record(mf, backend):
             'spin_square': float(mf.spin_square()[0]) if mf.mol.spin else 0.0}
 
 
-def run_single_point(atoms, settings, prefix, *, resume=False, charge=0, spin=0):
+def run_single_point(atoms, settings, prefix, *, resume=False, charge=0, spin=0, embedding=None):
     from pyscf.scf import chkfile
     prefix = Path(prefix)
     prefix.parent.mkdir(parents=True, exist_ok=True)
     config = scf_config(settings)
     request = {'atoms': atoms, 'settings': asdict(config), 'charge': charge, 'spin_2s': spin,
                'versions': _versions(), 'implementation_sha256': file_hash(__file__)}
+    if embedding is not None:
+        from . import embedding as embedding_module
+        request.update(environment='qmmm', embedding_fingerprint=embedding.fingerprint,
+                       embedding_implementation_sha256=file_hash(embedding_module.__file__))
     key = fingerprint(request)
     checkpoint, status, log = (Path(str(prefix)+extension) for extension in ('.chk', '.status.json', '.log'))
     if status.exists():
@@ -81,14 +93,23 @@ def run_single_point(atoms, settings, prefix, *, resume=False, charge=0, spin=0)
     started = time.perf_counter()
     mf = None
     try:
-        mf = make_mean_field(atoms, config, charge=charge, spin=spin, log=log)
+        mf = make_mean_field(atoms, config, charge=charge, spin=spin, log=log, embedding=embedding)
         mf.kernel()
         details = scf_record(mf, config.backend)
-        if charge == 0 and spin == 0:
+        if embedding is not None:
+            embedding.assert_attached(mf)
+            details.update(environment='qmmm', mm_frozen=True, embedding_fingerprint=embedding.fingerprint)
+        if charge == 0 and spin == 0 and embedding is None:
             save_transfer_checkpoint(mf, checkpoint)
         else:
             chkfile.dump_scf(mf.mol, str(checkpoint), float(mf.e_tot), host(mf.mo_energy), host(mf.mo_coeff), host(mf.mo_occ))
-            chkfile.save(str(checkpoint), 'cube_reorganization', {'converged': True, 'charge': charge, 'spin_2s': spin})
+            marker = {'converged': True, 'charge': charge, 'spin_2s': spin,
+                      'environment': 'vacuum' if embedding is None else 'qmmm'}
+            if embedding is not None:
+                marker.update(embedding_fingerprint=embedding.fingerprint, mm_frozen=True,
+                              mm_coordinates_angstrom=np.asarray(embedding.coordinates_angstrom),
+                              mm_charges_e=np.asarray(embedding.charges_e))
+            chkfile.save(str(checkpoint), 'cube_reorganization', marker)
         record.update(details, status='completed', checkpoint_sha256=file_hash(checkpoint),
                       elapsed_seconds=time.perf_counter()-started, reused=False)
         _write_result(status, record)
