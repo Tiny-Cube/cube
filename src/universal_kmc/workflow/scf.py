@@ -99,6 +99,9 @@ def run_single_point(atoms, settings, prefix, *, resume=False, charge=0, spin=0,
         if embedding is not None:
             embedding.assert_attached(mf)
             details.update(environment='qmmm', mm_frozen=True, embedding_fingerprint=embedding.fingerprint)
+            lj_energy, _ = embedding.classical(atoms)
+            details.update(electronic_energy_hartree=float(mf.e_tot), qm_mm_vdw_energy_hartree=lj_energy,
+                           energy_hartree=float(mf.e_tot)+lj_energy, qm_mm_vdw_included=embedding.vdw is not None)
         if charge == 0 and spin == 0 and embedding is None:
             save_transfer_checkpoint(mf, checkpoint)
         else:
@@ -108,7 +111,8 @@ def run_single_point(atoms, settings, prefix, *, resume=False, charge=0, spin=0,
             if embedding is not None:
                 marker.update(embedding_fingerprint=embedding.fingerprint, mm_frozen=True,
                               mm_coordinates_angstrom=np.asarray(embedding.coordinates_angstrom),
-                              mm_charges_e=np.asarray(embedding.charges_e))
+                              mm_charges_e=np.asarray(embedding.charges_e),
+                              qm_mm_vdw_energy_hartree=lj_energy, total_energy_hartree=details['energy_hartree'])
             chkfile.save(str(checkpoint), 'cube_reorganization', marker)
         record.update(details, status='completed', checkpoint_sha256=file_hash(checkpoint),
                       elapsed_seconds=time.perf_counter()-started, reused=False)

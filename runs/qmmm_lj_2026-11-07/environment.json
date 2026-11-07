@@ -1,0 +1,35 @@
+{
+  "python": "3.12.15",
+  "platform": "Linux-6.12.0-211.64.1.el10_2.x86_64-x86_64-with-glibc2.39",
+  "packages": {
+    "universal-kmc": "0.1.0",
+    "pyscf": "2.15.0",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "cupy-cuda13x": "13.6.0",
+    "numpy": "2.5.4",
+    "geometric": "1.1.1"
+  },
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "cuda_runtime": 13000,
+  "cuda_driver": 13040,
+  "driver_version": "615.71.09",
+  "gpu_memory_mib": 32607,
+  "compute_capability": "12.0",
+  "cpu": "Intel Xeon Platinum 8380",
+  "tested_wheel_sha256": "5562fe36330dabc0b61fc6020372eea0e481e45f7f7160915f851e2096fd2115",
+  "source_sha256": {
+    "src/universal_kmc/workflow/__init__.py": "70d325203eff477a0431accca96075bea70cf588b4997f02f11639767cd9cc91",
+    "src/universal_kmc/workflow/control.py": "e71888a4d01512c2816e3cefc65799a904a0e2ac31b4f6bdabb483cde88c7de8",
+    "src/universal_kmc/workflow/dimers.py": "dabf027213702171dc4519fad034f26e1bb2cd3c446b1e28f3128449a88363e0",
+    "src/universal_kmc/workflow/scf.py": "a2f588364d33d4bd7e751a3f8e24d3f2a18d8e98572048099a68b2f05facb83e",
+    "src/universal_kmc/workflow/reorganization.py": "f4a2ebaa750775535c3df12fe1d75161e2508e3ff103667333f5a7398af764d0",
+    "src/universal_kmc/workflow/runner.py": "16276e7aa512cdca56e5ab51c922e5e7e7d2f739b3791c14c83dff64f398ba50",
+    "src/universal_kmc/workflow/cli.py": "94cb08171cfa4ddb142c8d1bebd147892d5eb5b4e03f86e96396485c7186a881",
+    "src/universal_kmc/workflow/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/universal_kmc/workflow/embedding.py": "54aac4317fcb64cec51874e453c41b69ee6eb44cb9e6d59c723530e3c0b1e86c",
+    "src/universal_kmc/workflow/lj.py": "38bac353f848d6eb56211d4ed7cb6bf0f8b2a2233fe1c8434de98b4d11421df3",
+    "scripts/validate_cube_workflow.py": "817db2815f757c90a5049a63bcc86916e66d99575f54ba87d32a85f90702c0c0",
+    "scripts/validate_qmmm_workflow.py": "bffa794c34e6d2359458a98875467925ef0f533488ef166d49f5bfefcefe2636"
+  },
+  "material_benchmark": "in progress; do not infer material timing from this small validation"
+}

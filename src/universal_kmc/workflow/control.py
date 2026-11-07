@@ -15,7 +15,8 @@ ALLOWED = {
     'one-mol': COMMON | {'molecules', 'xyz'},
     'two-mol': COMMON | {'dimers', 'transfer-integrals-method', 'carriers', 'assume-equivalent'},
     'reorganization-energy': COMMON | {'molecules', 'xyz', 're-method', 'environment', 'carriers', 'opt-maxsteps',
-                                      'mm-source', 'mm-charges', 'mm-cutoff', 'mm-frozen'},
+                                      'mm-source', 'mm-charges', 'mm-cutoff', 'mm-frozen',
+                                      'mm-vdw', 'mm-vdw-file', 'gmx-executable'},
 }
 
 
@@ -192,7 +193,7 @@ def load_input(filename='input'):
             n['opt-maxsteps'] = _integer(s.get('opt-maxsteps', '100'), 'opt-maxsteps')
             if n['environment'] not in ('vacuum', 'qmmm') or n['re-method'] != '4-points':
                 raise ValueError('use environment=vacuum or qmmm and re-method=4-points')
-            mm_keys = {'mm-source', 'mm-charges', 'mm-cutoff', 'mm-frozen'}
+            mm_keys = {'mm-source', 'mm-charges', 'mm-cutoff', 'mm-frozen', 'mm-vdw', 'mm-vdw-file', 'gmx-executable'}
             if n['environment'] == 'vacuum' and mm_keys.intersection(s):
                 raise ValueError('MM settings require environment=qmmm')
             if n['environment'] == 'qmmm':
@@ -214,6 +215,23 @@ def load_input(filename='input'):
                     if 'mm-charges' in s or 'xyz' in n:
                         raise ValueError('mm-source=manifest requires a GROMACS extraction manifest, without xyz/mm-charges')
                     n['mm-cutoff'] = _positive(s.get('mm-cutoff', '12'), 'mm-cutoff')
+                n['mm-vdw'] = s.get('mm-vdw', 'none').lower()
+                if n['mm-vdw'] not in ('none', 'tpr', 'file'):
+                    raise ValueError('mm-vdw must be none, tpr or file')
+                if n['mm-vdw'] == 'tpr':
+                    if source != 'manifest' or 'mm-vdw-file' in s:
+                        raise ValueError('mm-vdw=tpr requires mm-source=manifest without mm-vdw-file')
+                    executable = s.get('gmx-executable', 'gmx')
+                    n['gmx-executable'] = (str(resolve_path(executable, path.parent, 'gmx-executable', required_file=True))
+                                           if '/' in executable else executable)
+                elif 'gmx-executable' in s:
+                    raise ValueError('gmx-executable requires mm-vdw=tpr')
+                if n['mm-vdw'] == 'file':
+                    if source != 'file':
+                        raise ValueError('mm-vdw=file requires mm-charges and one xyz')
+                    n['mm-vdw-file'] = str(resolve_path(s.get('mm-vdw-file', ''), path.parent, 'mm-vdw-file', required_file=True))
+                elif 'mm-vdw-file' in s:
+                    raise ValueError('mm-vdw-file requires mm-vdw=file')
         normalized[name] = n
     if 'two-mol' in normalized and 'one-mol' in normalized:
         for key in ('method', 'basis-set', 'auxbasis', 'grid-level', 'conv-tol'):

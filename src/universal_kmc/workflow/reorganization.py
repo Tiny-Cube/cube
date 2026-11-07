@@ -2,8 +2,9 @@
 
 lambda = [Eq(R0)-Eq(Rq)] + [E0(Rq)-E0(R0)]. Both R0 and Rq are
 optimized; MD input coordinates are only starting geometries. Frozen MM
-coordinates/charges are identical at all four points. No polarizable MM,
-QM-MM van der Waals, solvent or MM outer-sphere relaxation is included.
+coordinates/charges are identical at all four points. Optional bare LJ12-6
+adds QM-MM repulsion/dispersion consistently. No polarizable MM, solvent
+or MM outer-sphere relaxation is included.
 Optimization API: https://pyscf.org/user/geomopt.html
 """
 from dataclasses import asdict
@@ -57,14 +58,22 @@ def _optimize(atoms, config, charge, directory, maxsteps, *, resume=False, embed
             embedding.validate_qm([(mol.atom_symbol(i), r) for i, r in enumerate(mol.atom_coords(unit='Angstrom'))])
             embedding.assert_attached(scanner.base)
         energy, gradient = scanner(mol)
+        electronic_energy = float(energy)
         record = scf_record(scanner.base, config.backend)
+        gradient = np.asarray(host(gradient), dtype=float)
+        lj_energy = 0.
         if embedding is not None:
             embedding.assert_attached(scanner.base)
-            record.update(embedding_fingerprint=embedding.fingerprint, mm_frozen=True)
-        gradient = np.asarray(host(gradient), dtype=float)
+            lj_energy, lj_gradient = embedding.classical([(mol.atom_symbol(i), r)
+                for i, r in enumerate(mol.atom_coords(unit='Angstrom'))])
+            energy = electronic_energy+lj_energy
+            gradient = gradient+lj_gradient
+            record.update(embedding_fingerprint=embedding.fingerprint, mm_frozen=True,
+                          qm_mm_vdw_energy_hartree=lj_energy, total_energy_hartree=float(energy))
         if gradient.shape != (mol.natm, 3) or not np.isfinite(gradient).all():
             raise RuntimeError('optimizer received an invalid energy gradient')
         trace.append({'evaluation': len(trace)+1, 'energy_hartree': float(energy),
+                      'electronic_energy_hartree': electronic_energy, 'qm_mm_vdw_energy_hartree': lj_energy,
                       'coordinates_angstrom': mol.atom_coords(unit='Angstrom').tolist(),
                       'gradient_hartree_per_bohr': gradient.tolist(),
                       'gradient_rms': float(np.sqrt(np.mean(gradient**2))),
@@ -151,11 +160,13 @@ def calculate_reorganization(atoms, settings, directory, *, resume=False, embedd
               'input': request, 'environment': settings['environment'], 'method': '4-points',
               'scope': ('intramolecular_vacuum_no_MM_no_outer_sphere' if embedding is None else
                         'QM_relaxation_in_frozen_point_charge_MM_no_QM_MM_vdw_no_outer_sphere_relaxation'), 'results': {}}
+    if embedding is not None and embedding.vdw is not None:
+        record['scope'] = 'QM_relaxation_in_frozen_point_charge_MM_plus_LJ12_6_no_outer_sphere_relaxation'
     if embedding is not None:
         from .embedding import snapshot
         snapshot(embedding, directory/'mm-environment.json')
         record['embedding'] = {k: v for k, v in embedding.payload().items()
-                               if k not in ('coordinates_angstrom', 'charges_e', 'provenance')}
+                               if k not in ('coordinates_angstrom', 'charges_e', 'provenance', 'lennard_jones')}
         record['embedding'].update(fingerprint=embedding.fingerprint, snapshot='mm-environment.json')
     _write_result(output, record)
     started = time.perf_counter()

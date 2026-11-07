@@ -1,0 +1,15 @@
+$reorganization-energy
+xyz = ../F2.xyz
+output = reorganization
+qc-engine = gpu-pyscf
+method = b3lyp
+basis-set = 6-31G(d,p)
+re-method = 4-points
+environment = qmmm
+mm-charges = ../mm.pc
+mm-frozen = true
+mm-vdw = file
+mm-vdw-file = ../lj.json
+carriers = hole,electron
+opt-maxsteps = 60
+$end

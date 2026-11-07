@@ -32,4 +32,5 @@ environment = qmmm
 mm-source = manifest
 mm-cutoff = 12  # Angstrom; whole neighboring molecules, finite cluster
 mm-frozen = true
+mm-vdw = tpr  # resolved C6/C12 from original force field; requires gmx
 $end

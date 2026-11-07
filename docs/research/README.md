@@ -18,6 +18,6 @@
 
 ## 后续构建讨论
 
-用户已补充要求从 GROMACS/LAMMPS 单帧出发，按所选共轭区域提取 dimer、计算转移积分与 QM/MM 重组能，并同时支持量化和 KMC 的 GPU 路线。见 [构建讨论稿](../plans/2026-11-05-cube-construction-discussion.md)、[更新后的 MD/量化/GPU 工作流](../plans/2026-11-05-cube-md-quantum-gpu-workflow.md)。当前已接通 GROMACS 提取、CPU/GPU DIPRO 和固定 MM 坐标/电荷的静电嵌入四点法，后者只优化 QM 分子，见 [实现与 GPU 验证](../../runs/qmmm_frozen_mm_2026-11-07/README.md)。完整力场 QM/MM、可极化环境、LAMMPS 自动导入和 GPU KMC 仍属于后续目标；具体参数须在实际运行前配置。
+用户已补充要求从 GROMACS/LAMMPS 单帧出发，按所选共轭区域提取 dimer、计算转移积分与 QM/MM 重组能，并同时支持量化和 KMC 的 GPU 路线。见 [构建讨论稿](../plans/2026-11-05-cube-construction-discussion.md)、[更新后的 MD/量化/GPU 工作流](../plans/2026-11-05-cube-md-quantum-gpu-workflow.md)。当前已接通 GROMACS 提取、CPU/GPU DIPRO 和固定 MM 坐标/电荷的四点法，后者只优化 QM 分子；已增加原 TPR 的 QM–MM LJ12-6 排斥/色散。原静电模型 GPU 验证见[报告](../../runs/qmmm_frozen_mm_2026-11-07/README.md)，新参数接口见[控制说明](../cube-input.md#加入原力场的-qmmm-范德华作用)。跨边界成键、可极化环境、LAMMPS 自动导入和 GPU KMC 仍属于后续目标。
 
 [共轭区域距离示意与数值](dimer-distance-examples/README.md)为讨论用合成例子；[GPU4PySCF 补充源码证据](gpu-qmmm-sources.json)是早期静态调研，保留当时状态。后续实际 GPU 运行以对应测试报告为准。

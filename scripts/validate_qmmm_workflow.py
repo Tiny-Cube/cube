@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import sys
+from dataclasses import replace
 
 import numpy as np
 from pyscf.data.nist import HARTREE2EV
@@ -19,6 +20,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--gpu', action='store_true')
+    parser.add_argument('--lj', action='store_true', help='include a small test LJ12-6 environment')
     args = parser.parse_args()
     output = args.output.resolve()
     if output.exists():
@@ -28,6 +30,18 @@ def main():
     charges = '# x y z q; Angstrom/e; fixed neutral quadrupolar test environment\n3 0 0 0.02\n-3 0 0 0.02\n0 3 0 -0.02\n0 -3 0 -0.02\n'
     pc = output/'mm.pc'
     pc.write_text(charges)
+    lj_controls = ''
+    if args.lj:
+        from universal_kmc.quantum.geometry import read_xyz
+        from universal_kmc.workflow.lj import LennardJones, geometry_key, sites_key
+        environment = read_charges(pc)
+        epsilon, sigma = .1, .24  # Synthetic numerical test parameters: kJ/mol, nm.
+        model = LennardJones((0, 0), (0, 0, 0, 0), ((4*epsilon*sigma**6,),), ((4*epsilon*sigma**12,),),
+                             {'source': 'synthetic_gradient_test_not_material_force_field',
+                              'qm_initial_geometry_fingerprint': geometry_key(read_xyz(output/'F2.xyz')),
+                              'mm_sites_fingerprint': sites_key(environment)})
+        (output/'lj.json').write_text(json.dumps(model.payload(), indent=2)+'\n')
+        lj_controls = 'mm-vdw = file\nmm-vdw-file = ../lj.json\n'
     results = {}
     for backend in (('cpu', 'gpu') if args.gpu else ('cpu',)):
         here = output/backend
@@ -43,7 +57,7 @@ re-method = 4-points
 environment = qmmm
 mm-charges = ../mm.pc
 mm-frozen = true
-carriers = hole,electron
+{lj_controls}carriers = hole,electron
 opt-maxsteps = 60
 $end
 ''')
@@ -52,6 +66,10 @@ $end
         record = json.loads((root/'reorganization.json').read_text())
         assert record['status'] == 'completed' and record['environment'] == 'qmmm'
         env = read_charges(pc)
+        if args.lj:
+            from universal_kmc.quantum.geometry import read_xyz
+            from universal_kmc.workflow.lj import read_lj_file
+            env = replace(env, vdw=read_lj_file(output/'lj.json', read_xyz(output/'F2.xyz'), env))
         snapshot = json.loads((root/'mm-environment.json').read_text())
         assert snapshot['fingerprint'] == env.fingerprint
         np.testing.assert_array_equal(snapshot['coordinates_angstrom'], env.coordinates_angstrom)
@@ -109,7 +127,8 @@ $end
     run(failure/'input', failure/'console.log', expected=1)
     failed = json.loads((failure/'reorganization/F2/reorganization.json').read_text())
     assert failed['status'] == 'failed' and not failed['results']
-    summary = {'status': 'passed', 'scope': 'F2 frozen finite point-charge MM electrostatic embedding; no QM-MM vdw or MM relaxation',
+    summary = {'status': 'passed', 'scope': ('F2 frozen finite point-charge MM plus LJ12-6' if args.lj else
+                                            'F2 frozen finite point-charge MM electrostatic embedding; no QM-MM vdw or MM relaxation'),
                'backends': results, 'mm_edit_invalidates_resume': True,
                'failed_optimization_no_reorganization': True, 'cpu_gpu_lambda_tolerance_ev': 5e-3}
     (output/'summary.json').write_text(json.dumps(summary, indent=2)+'\n')

@@ -161,16 +161,25 @@ def run_workflow(control, *, only=None, resume=False):
                 directory = Path(settings.get('output', data['root']/'reorganization'))
                 records = _select(data['monomers'], settings.get('molecules'), 'molecules')
                 outputs = {}
-                frame = fixed_environment = None
+                frame = fixed_environment = pair_parameters = None
                 if settings['environment'] == 'qmmm':
                     from .embedding import read_charges, load_gromacs_environment, cluster_from_frame
                     if settings['mm-source'] == 'file':
                         fixed_environment = read_charges(settings['mm-charges'])
                     else:
                         frame = load_gromacs_environment(data)
+                    if settings.get('mm-vdw') == 'tpr':
+                        from .lj import read_gromacs_lj
+                        pair_parameters = read_gromacs_lj(data['provenance']['settings']['tpr'], settings['gmx-executable'])
                 for record in records:
                     environment = (cluster_from_frame(frame, record, settings['mm-cutoff'])
                                    if frame is not None else fixed_environment)
+                    if settings.get('mm-vdw') in ('tpr', 'file'):
+                        from dataclasses import replace
+                        from .lj import bind_gromacs_lj, read_lj_file
+                        vdw = (bind_gromacs_lj(pair_parameters, record, environment) if pair_parameters is not None else
+                               read_lj_file(settings['mm-vdw-file'], _atoms(record), environment))
+                        environment = replace(environment, vdw=vdw)
                     print(f'cube: {settings["environment"]} four-point reorganization {record["id"]}', flush=True)
                     result = calculate_reorganization(_atoms(record), settings, directory/record['id'], resume=resume,
                                                       embedding=environment)

@@ -34,9 +34,10 @@ def check_gradients(settings, directory, *, embedding=None):
             try:
                 mf.kernel()
                 scf_record(mf,config.backend)
-                energies.append(float(mf.e_tot))
+                lj_energy, lj_gradient = embedding.classical(atoms) if embedding is not None else (0., 0.)
+                energies.append(float(mf.e_tot)+lj_energy)
                 if offset==0:
-                    analytic=float(host(mf.nuc_grad_method().kernel())[1,0])
+                    analytic=float((host(mf.nuc_grad_method().kernel())+lj_gradient)[1,0])
             finally:
                 mf.mol.stdout.close()
         finite=(energies[1]-energies[2])/(2*h)

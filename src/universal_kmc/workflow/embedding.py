@@ -19,6 +19,7 @@ class FrozenMM:
     coordinates_angstrom: tuple
     charges_e: tuple
     provenance: dict
+    vdw: object = None
 
     def __post_init__(self):
         coordinates = np.asarray(self.coordinates_angstrom, dtype=float)
@@ -30,14 +31,25 @@ class FrozenMM:
         # Own immutable coordinates/charges even when the caller supplies arrays.
         object.__setattr__(self, 'coordinates_angstrom', tuple(tuple(map(float, r)) for r in coordinates))
         object.__setattr__(self, 'charges_e', tuple(map(float, charges)))
+        if self.vdw is not None and len(self.vdw.mm_types) != len(charges):
+            raise ValueError('LJ MM type count differs from frozen charge/site count')
 
     def payload(self):
-        return {'schema': 'cube-frozen-mm-1', 'model': 'fixed_point_charge_electrostatic_embedding',
+        result = {'schema': 'cube-frozen-mm-1', 'model': 'fixed_point_charge_electrostatic_embedding',
                 'coordinate_unit': 'Angstrom', 'charge_unit': 'elementary_charge',
                 'coordinates_angstrom': self.coordinates_angstrom, 'charges_e': self.charges_e,
                 'atom_count': len(self.charges_e), 'total_charge_e': float(sum(self.charges_e)),
                 'mm_frozen': True, 'charges_frozen': True, 'electrostatics': 'finite_cluster_no_Ewald',
-                'qm_mm_vdw_included': False, 'polarizable_mm': False, 'provenance': self.provenance}
+                'qm_mm_vdw_included': self.vdw is not None, 'polarizable_mm': False, 'provenance': self.provenance}
+        if self.vdw is not None:
+            result.update(model='fixed_point_charge_electrostatic_embedding_plus_LJ12_6',
+                          lennard_jones=self.vdw.payload())
+        return result
+
+    def classical(self, atoms):
+        if self.vdw is None:
+            return 0., np.zeros((len(atoms), 3))
+        return self.vdw.evaluate([r for e, r in atoms], self.coordinates_angstrom)
 
     @property
     def fingerprint(self):
@@ -53,7 +65,9 @@ class FrozenMM:
 
     def assert_attached(self, mf):
         mm = getattr(mf, 'mm_mol', None)
-        if (mm is None or not np.allclose(mm.atom_coords(unit='Angstrom'), self.coordinates_angstrom,
+        if (mm is None or mm.atom_coords().shape != (len(self.charges_e), 3)
+                or mm.atom_charges().shape != (len(self.charges_e),)
+                or not np.allclose(mm.atom_coords(unit='Angstrom'), self.coordinates_angstrom,
                                          rtol=0, atol=1e-10)
                 or not np.allclose(mm.atom_charges(), self.charges_e, rtol=0, atol=1e-14)):
             raise RuntimeError('frozen MM coordinates/charges changed or embedding was lost')

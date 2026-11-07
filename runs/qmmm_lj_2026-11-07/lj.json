@@ -1,0 +1,30 @@
+{
+  "schema": "cube-qmmm-lj-1",
+  "model": "bare_LJ12_6_finite_cluster_no_switch_no_tail_correction",
+  "qm_types": [
+    0,
+    0
+  ],
+  "mm_types": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "c6_kj_mol_nm6": [
+    [
+      7.644119039999999e-05
+    ]
+  ],
+  "c12_kj_mol_nm12": [
+    [
+      1.4608138974422625e-08
+    ]
+  ],
+  "provenance": {
+    "source": "synthetic_gradient_test_not_material_force_field",
+    "qm_initial_geometry_fingerprint": "c3f1cdc343178b51c9f47585859f2bcf46a55cc1d75a496cdf94c6b29d740875",
+    "mm_sites_fingerprint": "d7cc2513beff647526d8cbcd7a8f9540305ded6e17e9804b0f30db758b6dd45f"
+  },
+  "implementation_sha256": "38bac353f848d6eb56211d4ed7cb6bf0f8b2a2233fe1c8434de98b4d11421df3"
+}

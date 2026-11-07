@@ -1,0 +1,3 @@
+
+STDERR
+cube: ValueError: LJ parameters are bound to different QM geometry/order or MM coordinates/charges

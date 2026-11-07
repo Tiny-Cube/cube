@@ -164,7 +164,54 @@ lambda(M) = [Eq(R0; M) - Eq(Rq; M)] + [E0(Rq; M) - E0(R0; M)]
 
 结果保存 `mm-environment.json`（完整固定坐标、电荷、来源、镜像映射及指纹）、中性/带电优化轨迹、四个能量、带嵌入标记的 checkpoint。每步核验实际 SCF 中的 MM 坐标和电荷，优化向量只有 QM 原子。MM 内容或坐标改变时，`--resume` 拒绝复用已有结果；修改输出快照也会使续算失败。嵌入 checkpoint 不允许进入真空 DIPRO 或真空平移复用路径。
 
-**模型范围**：这是固定电荷静电嵌入下的 QM 几何松弛重组能。未包含 QM–MM van der Waals、跨边界成键/链接原子、可极化 MM 或 MM 结构松弛，因此不是包含全部力场项的 additive QM/MM，也没有环境结构松弛的外球重组能。固定 MM 自身能量为常数，在差值中抵消；QM–MM van der Waals 一般不为常数，当前是明确省略，不能称为抵消。静电模型见 [PySCF 官方说明](https://pyscf.org/user/qmmm.html)。
+**模型范围**：这是固定电荷环境下的 QM 几何松弛重组能。`mm-vdw = none`（默认）保持此前纯静电嵌入；可按下一节加入原力场 LJ12-6 排斥和色散。未包含跨边界成键/链接原子、可极化 MM 或 MM 结构松弛，没有环境结构松弛的外球重组能。固定 MM 自身能量为常数，在差值中抵消。静电模型见 [PySCF 官方说明](https://pyscf.org/user/qmmm.html)。
+
+### 加入原力场的 QM–MM 范德华作用
+
+真实材料的纯静电优化可能出现 QM 原子向负 MM 点电荷过度靠近，不能把这种失败任务当作成功的重组能或性能结果。仓库根目录 `input` 已启用：
+
+```text
+environment = qmmm
+mm-source = manifest
+mm-frozen = true
+mm-vdw = tpr
+# gmx-executable = /path/to/gmx  # 可选，默认从 PATH 找 gmx
+```
+
+程序通过 `gmx dump` 读取原 TPR 已解析好的 C6/C12 **全部原子类型对矩阵**，通过 `gmx dump -sys` 核对全局原子类型与元素，再按同一 QM/MM 镜像映射绑定参数。不猜混合规则，不替换成通用 UFF 参数。当前支持 reppow=12 的 LJ_SR；非 LJ12-6、缺少参数、A/B 状态变化、虚拟位点或跨分子成键会拒绝执行。
+
+使用有限簇裸势 `V = C12/r^12 - C6/r^6`，TPR 单位 kJ/mol、nm；每步转换成 Hartree 能量和 Hartree/Bohr 的 QM 梯度。只加 QM–MM 分子间项，不给 QM 内部重复加力场势。MM 坐标、电荷及所有 LJ 参数在四点中固定，带电态沿用原 MD 原子类型。LJ 由 CPU 计算，昂贵的电子结构能量与梯度仍可由 GPU4PySCF 加速。
+
+该模式不复现原 MD 的 PME、potential shift/switch 或尾项修正；静电和 LJ 都作用于同一固定的完整分子有限簇，需要检查环境 cutoff 的收敛。LJ 参数随构型产生的能量进入优化及每个单点，结果单独保存 `electronic_energy_hartree`、`qm_mm_vdw_energy_hartree`、总 `energy_hartree`。标准 checkpoint 的 `scf/e_tot` 保留电子结构部分，总能量另存在 `cube_reorganization` 标记；不能拿它做真空 DIPRO。
+
+对固定构型、固定且不随电荷态改变的 LJ 参数，LJ 在四点总和中代数抵消，但它会改变优化得到的 R0/Rq 及各项松弛能，因而不能从优化中省略。势能定义见 [GROMACS 非键相互作用说明](https://manual.gromacs.org/current/reference-manual/functions/nonbonded-interactions.html)。
+
+把一个完整 QM/MM+LJ 簇导出到另一台计算机，无需传整个轨迹：
+
+```bash
+uv run --locked --extra workflow python scripts/export_qmmm_cluster.py \
+  --manifest mol/frame2000/manifest.json --molecule 1 --cutoff 12 \
+  --output build/exported-qmmm
+```
+
+输出 `molecule.xyz`、`environment.pc`、`lj.json`、来源快照与 SHA256。另一台机器只需前三个文件和量化环境，然后使用：
+
+```text
+$reorganization-energy
+xyz = molecule.xyz
+qc-engine = gpu-pyscf
+method = b3lyp
+basis-set = 6-31G(d,p)
+environment = qmmm
+mm-charges = environment.pc
+mm-vdw = file
+mm-vdw-file = lj.json
+mm-frozen = true
+re-method = 4-points
+$end
+```
+
+LJ 文件绑定初始 QM 几何、原子顺序和 MM 坐标/电荷，不允许混用另一份 XYZ 或环境。模型和实现哈希参与续算指纹；改变参数后应选择新输出目录。
 
 小分子示例和实际验证入口：
 
