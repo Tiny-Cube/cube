@@ -6,15 +6,17 @@ cube 面向有机分子晶体、非晶和聚合物的载流子输运研究。当
 
 ## cube input 统一入口
 
-提供可执行脚本 `cube`，默认读取 `$get_dimer/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 帧的 core 距离 dimer 提取、按 `format` 选择 XYZ/GJF、CPU/GPU 单体与 dimer 量化、DIPRO，以及 vacuum / 冻结 MM 静电嵌入四点法。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
+提供可执行脚本 `cube`，默认读取 `$get_dimers_monomers/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 轨迹按起始帧/帧间隔提取单体、core 距离 dimer 和完整冻结 MM 簇、按 `format` 选择 XYZ/GJF、CPU/GPU 单体与 dimer 量化、DIPRO，以及 vacuum / 冻结 MM 静电嵌入四点法。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
 
 ```bash
 uv sync --locked --extra workflow
 ./cube input --plan
-./cube input --only get_dimer
+./cube input --only get_dimers_monomers
 ```
 
 [控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。运行 `./cube input --resume` 会继续控制文件中选定的量化/重组能任务；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。
+
+新增 `frame_step` 多帧提取和 `monomers-qmmm-cutoff` 单体环境簇，支持后续量化逐帧调度；真实轨迹 1980/2000 帧及断点续算结果见[多帧提取验证](runs/frame_extraction_2026-11-08/README.md)。
 
 `cube input` 的小分子流程已在 RTX 5090 通过 CPU/GPU 对照，包括 DIPRO、GPU 梯度优化、vacuum 四点重组能及断点续算，见 [GPU 工作流实测](runs/cube_input_gpu_2026-11-07/README.md)。实际 MD 的全部量化任务尚未运行。
 

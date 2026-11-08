@@ -1,36 +1,105 @@
-# Paths are relative to this input file. frame is zero-based; -1 = last.
-# First inspect: ./cube input --plan
-# Extract only: ./cube input --only get_dimer
-$get_dimer
+# cube 完整控制文件：MD 提取 → 单体 → dimer/转移积分 → QM/MM 重组能。
+# 所有相对路径均以本文件所在目录为基准，# 后为注释。
+# 检查配置：./cube input --plan（不会启动量化计算）
+# 执行/续算：./cube input --resume
+# 当前此控制文件不调度速率计算或 KMC。
+
+# ---------- 1. 从 GROMACS 轨迹提取完整分子和 dimer ----------
+$get_dimers_monomers
 tpr = ../anneal_a.tpr
 gro = ../anneal_a_fix.gro
 xtc = ../anneal_a.xtc
-frame = -1
-cutoff = 6  # Angstrom; strict minimum core-atom distance
+frame = -1                      # 从 0 开始的起始帧；-1 表示只取最后一帧
+frame_step = 20                 # 非 -1 时从起始帧每隔 20 帧提取到轨迹末尾
+dimers_cutoff = 6               # Å；两个分子的 core 原子最短距离严格小于此值
 fragment-file = ../core.txt
+monomers-qmmm-cutoff =          # 空值默认 12 Å；完整 QM 分子与完整 MM 分子的最短距离
 output = mol
 format = xyz,gjf
 $end
 
-$two-mol
+# core.txt 填写分子内部从 1 开始的原子编号，例如：1 2 3 4 5。
+# 筛选依据是所选原子间最短距离；输出仍保留完整分子和侧链。
+# 该判据不是无限平面间距，当前不按拟合平面筛选。
+
+# ---------- 2. 单分子真空单点：为转移积分提供片段轨道 ----------
+$one-mol
+qc-engine = gpu-pyscf           # GPU：gpu-pyscf；CPU：pyscf
 method = b3lyp
 basis-set = 6-31G(d,p)
-transfer-integrals-method = DIPRO
+auxbasis = def2-universal-jkfit
+threads = 4
+grid-level = 3
+conv-tol = 1e-10
+max-cycle = 100
+max-memory-mb = 24000           # PySCF 主机内存预算；不是显存上限或硬限制
+
+# 默认处理全部单体；需要限制时取消注释并填写清单中的 ID：
+# molecules = 1,2
+# 默认数据来自本次提取；单独运行时可使用已有清单或 XYZ（二选一）：
+# input = mol/frame2000/manifest.json
+# xyz = molecule_A.xyz,molecule_B.xyz
+# 默认输出为提取帧目录下的 qc/one-mol；也可自定义：
+# output = results/one-mol
 $end
 
-$one-mol
+# ---------- 3. 二聚体真空单点及转移积分 ----------
+$two-mol
 qc-engine = gpu-pyscf
 method = b3lyp
 basis-set = 6-31G(d,p)
+auxbasis = def2-universal-jkfit
+threads = 4
+grid-level = 3
+conv-tol = 1e-10
+max-cycle = 100
+max-memory-mb = 24000
+transfer-integrals-method = DIPRO
+carriers = hole,electron
+assume-equivalent = false       # 使用 ESID 时须明确为 true 并满足等价片段条件
+
+# 其他已支持方法：orbital_gmh；多个方法用逗号分隔。
+# 默认处理全部 dimer；指定 ID 需与 manifest.json/dimers.csv 一致：
+# dimers = 1_8_img_0_-1_0
+# input = mol/frame2000/manifest.json
+# 默认输出为提取帧目录下的 qc/two-mol：
+# output = results/two-mol
 $end
 
+# ---------- 4. 固定 MM 环境，只优化 QM 分子的四点法 ----------
 $reorganization-energy
+qc-engine = gpu-pyscf
 method = b3lyp
 basis-set = 6-31G(d,p)
+auxbasis = def2-universal-jkfit
+threads = 4
+grid-level = 3
+conv-tol = 1e-10
+max-cycle = 100
+max-memory-mb = 24000
 re-method = 4-points
+carriers = hole,electron
+opt-maxsteps = 100
+
 environment = qmmm
 mm-source = manifest
-mm-cutoff = 12  # Angstrom; whole neighboring molecules, finite cluster
+# mm-cutoff = 12               # 默认继承 monomers-qmmm-cutoff；需要不同环境时显式覆盖
 mm-frozen = true
-mm-vdw = tpr  # resolved C6/C12 from original force field; requires gmx
+mm-vdw = tpr                   # 原 TPR 的 C6/C12；静电嵌入 + QM–MM LJ12-6
+# gmx-executable = /path/to/gmx # 可选；默认从 PATH 找到 gmx
+
+# 默认对全部单体分别构建环境并计算；先验证一个分子时取消注释：
+# molecules = 1
+# input = mol/frame2000/manifest.json
+# 默认输出为提取帧目录下的 reorganization：
+# output = results/reorganization-qmmm
 $end
+
+# 真空四点法：将 environment 改为 vacuum，并删除/注释所有 MM 字段。
+# 外部 QM/MM 簇：删除 mm-cutoff，替换 mm-source/mm-vdw，并添加以下字段：
+# xyz = molecule.xyz
+# mm-source = file
+# mm-charges = environment.pc   # 每行 x y z q；坐标 Å，电荷 e；与 QM 同一坐标系
+# mm-vdw = file
+# mm-vdw-file = lj.json         # 使用 export_qmmm_cluster.py 导出的绑定参数
+# 上述替代字段必须放在 $reorganization-energy 与对应 $end 之间。

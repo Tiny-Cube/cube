@@ -5,7 +5,7 @@
 ```bash
 uv sync --locked --extra workflow
 ./cube input --plan                   # 解析/检查路径并显示任务顺序，不探测 GPU
-./cube input --only get_dimer         # 只提取，本次真实数据已经实测
+./cube input --only get_dimers_monomers         # 只提取，本次真实数据已经实测
 ./cube input --resume                 # 执行其余阶段并复用一致且完整的成功结果
 ```
 
@@ -23,13 +23,15 @@ uv run --locked --extra workflow --extra quantum-cuda13 cube input --resume
 段落以 `$名字` 开始，以 `$end` 结束；字段为 `key = value`。支持 `#` 行尾注释；路径包含 `#` 时用引号。路径以 **input 所在目录**为基准。重复段落、重复字段、未知字段、缺失 `$end` 或不支持的计算引擎会报错。
 
 ```text
-$get_dimer
+$get_dimers_monomers
 tpr = ../anneal_a.tpr
 gro = ../anneal_a_fix.gro
 xtc = ../anneal_a.xtc
 frame = -1
-cutoff = 6  # 单位 Å
+frame_step = 20
+dimers_cutoff = 6  # 单位 Å
 fragment-file = ../core.txt
+monomers-qmmm-cutoff =  # 空值默认 12 Å
 output = mol
 format = xyz,gjf
 $end
@@ -58,12 +60,12 @@ $end
 
 ## 提取定义和输出格式
 
-- `frame` 从 **0** 开始；空值或 `-1` 表示最后一帧。GRO 用于核对 TPR 的原子/残基顺序，实际坐标来自所选 XTC 帧。
+- `frame` 从 **0** 开始；空值或 `-1` 只提取最后一帧，此时 `frame_step` 不参与选帧。非负 `frame` 是起始帧，从此帧按 `frame_step`（正整数，默认 1）提取至轨迹末尾。例如 46 帧轨迹中，`frame = 0`、`frame_step = 20` 提取 0、20、40，不额外补第 45 帧。GRO 用于核对 TPR 的原子/残基顺序，实际坐标来自各自的 XTC 帧。
 - `core.txt` 是以空白或逗号分隔的**分子局部、从 1 开始**的原子编号，支持 `#` 注释。当前一个 core 文件对应一致的分子类型/局部原子顺序。
-- cutoff 单位为 **Å**，判据与提供的参考脚本一致：两组所选 core 原子的最短距离 **严格小于 cutoff**。这不是无限平面间距或质心距离；清单还记录所选 core 的质量中心距离。
+- `dimers_cutoff` 单位为 **Å**，判据与提供的参考脚本一致：两组所选 core 原子的最短距离 **严格小于 dimers_cutoff**。这不是无限平面间距或质心距离；清单还记录所选 core 的质量中心距离。
 - 用 TPR 键拓扑还原完整分子，以整体分子晶胞平移搜索接触，包括跨周期边界接触和多个有效镜像；支持非退化三斜盒。只枚举不同分子 ID 的组合，不包含同一分子的自镜像。
 - 输出完整分子及侧链，不把 core 选择当成截断 QM 区域。当前要求电中性分子，量化任务采用闭壳层中性参考。
-- `format = xyz` 只写 XYZ；`format = gjf` 只写 GJF；`format = xyz,gjf` 写两种格式。两种格式保持相同的坐标和原子顺序。另写 manifest/距离 CSV，不额外写未选的结构格式。
+- `format = xyz` 只写 XYZ；`format = gjf` 只写 GJF；`format = xyz,gjf` 写两种格式。单体和 dimer 的两种格式保持相同坐标及原子顺序；簇 GJF 使用下面说明的外部点电荷形式。另写 manifest/距离 CSV，不额外写未选的结构格式。
 - GJF 的单体/二聚体 route 分别取 `$one-mol/$two-mol` 的泛函和基组；当前 GJF 为中性单重态冻结构型单点输入，不自动运行 Gaussian、Slurm 或 MOMAP。
 
 例如真实输入最后一帧输出在：
@@ -72,11 +74,23 @@ $end
 mol/frame2000/
   manifest.json                # 几何、原子编号、镜像、源文件/输出 SHA256
   dimers.csv                   # 每个有效镜像一行
-  monomers/1.xyz, 1.gjf, ...
+  monomers/1.xyz, 1.gjf, ...    # 真空单分子
+  monomers/1_cluster.xyz        # 完整簇几何：先 QM 分子，再完整 MM 分子
+  monomers/1_cluster.gjf        # 中央 QM + 冻结 MM 外部点电荷单点
+  monomers/1_mm.pc              # 只有 MM 的 x y z q，Å/e
+  monomers/1_cluster.json       # QM/MM 区域、完整元素/坐标/电荷、分子及周期镜像映射
   dimers/1_8_img_0_-1_0.xyz     # 镜像保存在 ID 中，防止覆盖
   dimers/1_8_img_0_-1_0.gjf
   workflow.json                # 最近一次调用的任务状态
 ```
+
+`monomers-qmmm-cutoff` 省略或留空默认为 **12 Å**，按完整中央分子与完整邻近分子的最短原子距离严格小于该值筛选 MM 环境，和 dimer 的 core 判据分别控制。环境复用 QM/MM 的三斜盒整分子镜像选择；排除中央分子的零平移副本，保留范围内其他周期副本，按整个分子纳入。每个单体均写簇及点电荷/映射文件；没有邻居时保存空 MM 壳层，实际 QM/MM 计算仍要求非空环境。
+
+`*_cluster.xyz` 按 QM 在前、MM 在后的顺序保存完整原子几何。`*_cluster.gjf` 使用 Gaussian `Charge` 选项：只有中央单分子进入 QM 原子区，MM 坐标/电荷作为外部点电荷写在后面，不会把整个环境算成全 QM。这个 GJF 仅是固定点电荷单点模板，没有 LJ、几何优化或四点法；cube 的 PySCF/GPU4PySCF 四点法仍由 `$reorganization-energy` 执行，可加入原力场 LJ。只生成 `format` 指定的 XYZ/GJF，`.pc/.json` 为独立环境数据。
+
+选择多帧时，各帧目录并列，例如 `mol/frame0000/`、`mol/frame0020/`，顶层另写 `mol/frames.json` 帧清单（包含各帧清单 SHA256）。后续单体、dimer 和重组能阶段遍历所有选定帧，结果默认留在各自帧目录；显式 `output = results/one` 等输出则自动再加 `frame0000/` 等子目录，避免跨帧覆盖。独立运行量化也可用 `input = mol/frames.json`，或指定某帧的 `manifest.json` 只运行该帧。只选择一帧仍直接使用该帧的 `manifest.json`。
+
+旧 `$get_dimer`、提取字段 `cutoff` 及 `--only get_dimer` 仍作为语法别名接受，报告统一使用新名称；同一字段同时写新旧名称会报重复。新增簇文件和帧指纹后，旧版输出不能直接当成新版提取成功结果续算；保留旧数据，选择新输出目录重新提取。新版本自身的 `--resume` 核验单体、dimer、簇和点电荷文件，内容变化时拒绝复用。
 
 这份实际数据含 100 个 86 原子分子；最后一帧编号 2000，时间 20000 ps，6 Å 判据得到 550 个 dimer。与参考 `extract_dimers.py` 的分子对、镜像、距离逐项一致。完整原始轨迹不加入 Git。
 
@@ -125,13 +139,13 @@ carriers = hole,electron
 $end
 ```
 
-和 `$get_dimer` 一起运行时可以省略 `input`。仓库根目录 `input` 已改为此冻结 MM 模式；上面的 `molecules = 1` 用于先选一个分子，不填写则对所有选定单体逐一构建各自的环境。可执行：
+和 `$get_dimers_monomers` 一起运行时可以省略 `input`。仓库根目录 `input` 已改为此冻结 MM 模式；上面的 `molecules = 1` 用于先选一个分子，不填写则对所有选定单体逐一构建各自的环境。可执行：
 
 ```bash
 ./cube input --only reorganization-energy --resume
 ```
 
-`mm-source = manifest` 从提取清单中找到原 TPR/GRO/XTC，核验文件哈希、所选帧、盒子、完整分子及原子编号后读取 TPR 电荷和 XTC 坐标。以**初始 QM 全分子与 MM 全分子的最短原子距离严格小于 mm-cutoff**选入完整 MM 分子，默认 12 Å。使用整体分子的三斜盒周期镜像，不截断分子；排除中央 QM 分子，非中央的周期复制分子可作为经典环境。MM 坐标随 QM 的初始居中平移一次，之后完全冻结，不跟随优化后的 QM 重新平移或重新筛选。应按材料检查 cutoff 收敛；这是有限簇静电环境，不是无限周期 Ewald 求和。
+`mm-source = manifest` 从提取清单中找到原 TPR/GRO/XTC，核验文件哈希、所选帧、盒子、完整分子及原子编号后读取 TPR 电荷和 XTC 坐标。以**初始 QM 全分子与 MM 全分子的最短原子距离严格小于 mm-cutoff**选入完整 MM 分子，默认继承同一控制文件中提取段的 `monomers-qmmm-cutoff`，没有提取段时为 12 Å；显式 `mm-cutoff` 可覆盖。提取与四点法共用相同的邻域选择函数，四点法从校验后的原帧重建环境，不把簇结构当成全 QM。使用整体分子的三斜盒周期镜像，不截断分子；排除中央 QM 分子，非中央的周期复制分子可作为经典环境。MM 坐标随 QM 的初始居中平移一次，之后完全冻结，不跟随优化后的 QM 重新平移或重新筛选。应按材料检查 cutoff 收敛；这是有限簇静电环境，不是无限周期 Ewald 求和。
 
 也可以使用一个独立 QM XYZ 和外部 MM 点电荷文件：
 
@@ -226,10 +240,10 @@ CPU 与 RTX 5090 GPU 的实际四点法、解析梯度和固定 MM 检查结果�
 
 ## 独立脚本和验证
 
-`scripts/get_dimer.py`、`one_mol.py`、`two_mol.py`、`reorganization_energy.py` 可分别读取相同 input，只执行对应阶段及其依赖。它们与 cube 调度器共用任务实现；旧 `run_pyscf.py` / `calculate_transfer.py` 两阶段入口保留。
+`scripts/get_dimers_monomers.py`、`one_mol.py`、`two_mol.py`、`reorganization_energy.py` 可分别读取相同 input，只执行对应阶段及其依赖。它们与 cube 调度器共用任务实现；旧 `run_pyscf.py` / `calculate_transfer.py` 两阶段入口保留。
 
 ```bash
-uv run --locked --extra workflow python scripts/get_dimer.py input
+uv run --locked --extra workflow python scripts/get_dimers_monomers.py input
 uv run --locked --extra workflow python scripts/validate_cube_workflow.py --output build/cube-workflow-cpu
 # RTX 5090 等已配置 GPU 环境
 uv run --locked --extra workflow --extra quantum-cuda13 python scripts/validate_cube_workflow.py \

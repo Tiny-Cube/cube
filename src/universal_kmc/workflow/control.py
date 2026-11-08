@@ -7,11 +7,13 @@ import re
 
 from universal_kmc.quantum.config import SCFConfig
 
-SECTIONS = ('get_dimer', 'two-mol', 'one-mol', 'reorganization-energy')
+EXTRACTION = 'get_dimers_monomers'
+SECTIONS = (EXTRACTION, 'two-mol', 'one-mol', 'reorganization-energy')
 COMMON = {'qc-engine', 'method', 'basis-set', 'auxbasis', 'threads', 'grid-level',
           'conv-tol', 'max-cycle', 'max-memory-mb', 'input', 'output'}
 ALLOWED = {
-    'get_dimer': {'tpr', 'gro', 'xtc', 'frame', 'cutoff', 'fragment-file', 'output', 'format'},
+    EXTRACTION: {'tpr', 'gro', 'xtc', 'frame', 'frame_step', 'dimers_cutoff', 'fragment-file',
+                 'monomers-qmmm-cutoff', 'output', 'format'},
     'one-mol': COMMON | {'molecules', 'xyz'},
     'two-mol': COMMON | {'dimers', 'transfer-integrals-method', 'carriers', 'assume-equivalent'},
     'reorganization-energy': COMMON | {'molecules', 'xyz', 're-method', 'environment', 'carriers', 'opt-maxsteps',
@@ -94,10 +96,10 @@ class WorkflowInput:
     sections: dict
 
     def plan(self, only=None):
-        selected = set(only or self.sections)
+        selected = {EXTRACTION if s == 'get_dimer' else s for s in (only or self.sections)}
         if not selected <= self.sections.keys():
             raise ValueError('--only must name a section present in input')
-        order = [s for s in ('get_dimer', 'one-mol', 'two-mol', 'reorganization-energy') if s in selected]
+        order = [s for s in (EXTRACTION, 'one-mol', 'two-mol', 'reorganization-energy') if s in selected]
         return {'schema': 'cube-workflow-1', 'control': str(self.path), 'control_sha256': self.sha256,
                 'tasks': order, 'sections': self.sections,
                 'note': 'plan only; no trajectory extraction, SCF, optimization or GPU probe performed'}
@@ -114,6 +116,8 @@ def load_input(filename='input'):
                 continue
             if line.startswith('$'):
                 name = line[1:].strip().lower()
+                if name == 'get_dimer':  # Historical controls remain readable.
+                    name = EXTRACTION
                 if name == 'end':
                     if active is None:
                         raise ValueError('$end without an open section')
@@ -127,6 +131,8 @@ def load_input(filename='input'):
                 raise ValueError('expected key = value inside a section')
             key, value = (s.strip() for s in line.split('=', 1))
             key = key.lower()
+            if active == EXTRACTION and key == 'cutoff':
+                key = 'dimers_cutoff'
             if key not in ALLOWED[active] or key in sections[active]:
                 raise ValueError(f'unknown or duplicate key {key!r} in ${active}')
             sections[active][key] = _value(value)
@@ -137,19 +143,21 @@ def load_input(filename='input'):
     if not sections:
         raise ValueError('input contains no tasks')
     normalized = {}
-    if 'get_dimer' in sections:
-        s = sections['get_dimer']
+    if EXTRACTION in sections:
+        s = sections[EXTRACTION]
         n = {key: str(resolve_path(s.get(key, ''), path.parent, key, required_file=True))
              for key in ('tpr', 'gro', 'xtc', 'fragment-file')}
         n['frame'] = _integer(s.get('frame') or '-1', 'frame', -1)
-        n['cutoff'] = _positive(s.get('cutoff', '6'), 'cutoff')
+        n['frame_step'] = _integer(s.get('frame_step') or '1', 'frame_step')
+        n['dimers_cutoff'] = _positive(s.get('dimers_cutoff', '6'), 'dimers_cutoff')
+        n['monomers-qmmm-cutoff'] = _positive(s.get('monomers-qmmm-cutoff') or '12', 'monomers-qmmm-cutoff')
         n['output'] = str(resolve_path(s.get('output', 'mol'), path.parent, 'output'))
         n['format'] = [v.lower() for v in _csv(s.get('format', 'xyz'))]
         if len(set(n['format'])) != len(n['format']) or not set(n['format']) <= {'xyz', 'gjf'}:
             raise ValueError('format must select xyz and/or gjf')
         if any(Path(n['output']) == Path(n[k]) for k in ('tpr', 'gro', 'xtc', 'fragment-file')):
             raise ValueError('output directory must not overwrite an input file')
-        normalized['get_dimer'] = n
+        normalized[EXTRACTION] = n
     inherited = sections.get('one-mol', {}).get('qc-engine', 'pyscf')
     for name in SECTIONS[1:]:
         if name not in sections:
@@ -172,8 +180,8 @@ def load_input(filename='input'):
                 n[key] = str(resolve_path(s[key], path.parent, key, required_file=(key == 'input')))
         if 'xyz' in s:
             n['xyz'] = [str(resolve_path(v, path.parent, 'xyz', required_file=True)) for v in _csv(s['xyz'])]
-        if not ('get_dimer' in normalized or 'input' in n or 'xyz' in n):
-            raise ValueError(f'${name} needs $get_dimer, input = manifest.json, or xyz = ...')
+        if not (EXTRACTION in normalized or 'input' in n or 'xyz' in n):
+            raise ValueError(f'${name} needs ${EXTRACTION}, input = manifest.json, or xyz = ...')
         selection = 'dimers' if name == 'two-mol' else 'molecules'
         if selection in s:
             n[selection] = _csv(s[selection])
@@ -214,7 +222,8 @@ def load_input(filename='input'):
                 else:
                     if 'mm-charges' in s or 'xyz' in n:
                         raise ValueError('mm-source=manifest requires a GROMACS extraction manifest, without xyz/mm-charges')
-                    n['mm-cutoff'] = _positive(s.get('mm-cutoff', '12'), 'mm-cutoff')
+                    default_cutoff = str(normalized.get(EXTRACTION, {}).get('monomers-qmmm-cutoff', 12))
+                    n['mm-cutoff'] = _positive(s.get('mm-cutoff', default_cutoff), 'mm-cutoff')
                 n['mm-vdw'] = s.get('mm-vdw', 'none').lower()
                 if n['mm-vdw'] not in ('none', 'tpr', 'file'):
                     raise ValueError('mm-vdw must be none, tpr or file')

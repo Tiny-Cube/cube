@@ -18,12 +18,12 @@ except ImportError:
     np = None
 
 
-TEMPLATE = '''$get_dimer
+TEMPLATE = '''$get_dimers_monomers
 tpr = a.tpr
 gro = a.gro
 xtc = a.xtc
 frame =
-cutoff = 6 # Angstrom
+dimers_cutoff = 6 # Angstrom
 fragment-file = core.txt
 output = mol
 format = xyz,gjf
@@ -58,10 +58,10 @@ class SectionControlTests(unittest.TestCase):
 
     def test_exact_user_syntax_defaults_engine_inheritance_and_order(self):
         control = load_input(self.path)
-        self.assertEqual(control.plan()['tasks'], ['get_dimer','one-mol','two-mol','reorganization-energy'])
-        self.assertEqual(control.sections['get_dimer']['frame'], -1)
-        self.assertEqual(control.sections['get_dimer']['format'], ['xyz','gjf'])
-        self.assertEqual(control.sections['get_dimer']['cutoff'], 6.)
+        self.assertEqual(control.plan()['tasks'], ['get_dimers_monomers','one-mol','two-mol','reorganization-energy'])
+        self.assertEqual(control.sections['get_dimers_monomers']['frame'], -1)
+        self.assertEqual(control.sections['get_dimers_monomers']['format'], ['xyz','gjf'])
+        self.assertEqual(control.sections['get_dimers_monomers']['dimers_cutoff'], 6.)
         self.assertEqual(control.sections['two-mol']['basis-set'], '6-31G(d,p)')
         self.assertEqual(control.sections['two-mol']['qc-engine'], 'gpu-pyscf')
         self.assertEqual(control.sections['reorganization-energy']['environment'], 'vacuum')
@@ -76,17 +76,17 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
         env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]/'src'))
         p = subprocess.run([sys.executable,'-c',script,str(self.path)], cwd='/tmp', env=env, text=True,capture_output=True)
         self.assertEqual(p.returncode, 0, p.stderr)
-        self.assertEqual(json.loads(p.stdout)['sections']['get_dimer']['tpr'], str(self.root/'a.tpr'))
+        self.assertEqual(json.loads(p.stdout)['sections']['get_dimers_monomers']['tpr'], str(self.root/'a.tpr'))
         self.assertFalse((self.root/'mol').exists())
 
     def test_invalid_or_ambiguous_controls_rejected(self):
-        changes = [('$two-mol','$typo'), ('cutoff = 6','cutoff = nan'), ('frame =\n','frame = -2\n'),
+        changes = [('$two-mol','$typo'), ('dimers_cutoff = 6','cutoff = nan'), ('frame =\n','frame = -2\n'),
                    ('format = xyz,gjf','format = xyz,XYZ'), ('format = xyz,gjf','format = pdb'),
                    ('qc-engine = gpu-pyscf','qc-engine = gaussian'),
                    ('re-method = 4-points','re-method = approximate'),
                    ('re-method = 4-points','re-method = 4-points\nenvironment = qmmm\nmm-frozen = false'),
-                   ('tpr = a.tpr','tpr ='), ('cutoff = 6','cutoff = 6\ncutoff = 7'),
-                   ('$get_dimer','$get_dimer\nunknown = 3'),
+                   ('tpr = a.tpr','tpr ='), ('dimers_cutoff = 6','dimers_cutoff = 6\ndimers_cutoff = 7'),
+                   ('$get_dimers_monomers','$get_dimers_monomers\nunknown = 3'),
                    ('basis-set = 6-31G(d,p)\ntransfer', 'basis-set = sto-3g\ntransfer')]
         for old,new in changes:
             with self.subTest(new=new):
@@ -94,7 +94,7 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
                 with self.assertRaises(ValueError):
                     load_input(self.path)
         for content in (TEMPLATE+'$one-mol\n$end\n', TEMPLATE.rsplit('$end',1)[0],
-                        '$end\n', 'cutoff = 6\n', '$get_dimer\n$one-mol\n$end\n'):
+                        '$end\n', 'dimers_cutoff = 6\n', '$get_dimers_monomers\n$one-mol\n$end\n'):
             self.path.write_text(content)
             with self.assertRaises(ValueError):
                 load_input(self.path)
@@ -105,9 +105,35 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
         self.path.write_text('$one-mol\nxyz = "a # molecule.xyz" # comment\nqc-engine = pyscf\n$end\n')
         self.assertEqual(load_input(self.path).sections['one-mol']['xyz'], [str(xyz)])
 
+    def test_sampling_cluster_defaults_and_legacy_aliases(self):
+        source = TEMPLATE.replace('frame =\n', 'frame = 5\nframe_step = 20\nmonomers-qmmm-cutoff =\n')
+        self.path.write_text(source)
+        s = load_input(self.path).sections['get_dimers_monomers']
+        self.assertEqual((s['frame'], s['frame_step'], s['monomers-qmmm-cutoff']), (5, 20, 12.))
+        for key, value in [('frame_step','0'), ('frame_step','-2'), ('frame_step','1.5'),
+                           ('monomers-qmmm-cutoff','nan'), ('monomers-qmmm-cutoff','0')]:
+            self.path.write_text(TEMPLATE.replace('frame =\n', f'frame = -1\n{key} = {value}\n'))
+            with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                load_input(self.path)
+        self.path.write_text(TEMPLATE.replace('$get_dimers_monomers', '$get_dimer').replace('dimers_cutoff', 'cutoff'))
+        c = load_input(self.path)
+        self.assertEqual(c.plan(['get_dimer'])['tasks'], ['get_dimers_monomers'])
+        self.assertEqual(c.sections['get_dimers_monomers']['dimers_cutoff'], 6.)
+        self.path.write_text(TEMPLATE.replace('re-method = 4-points', 're-method = 4-points\nenvironment = qmmm')
+                             .replace('frame =\n', 'frame = -1\nmonomers-qmmm-cutoff = 9\n'))
+        self.assertEqual(load_input(self.path).sections['reorganization-energy']['mm-cutoff'], 9.)
+
 
 @unittest.skipIf(np is None, 'NumPy optional dependency required')
 class PeriodicCoreTests(unittest.TestCase):
+    def test_frame_selection_starts_at_requested_frame_and_does_not_append_last(self):
+        from universal_kmc.workflow.dimers import selected_frames
+        self.assertEqual(selected_frames(-1, 20, 46), [45])
+        self.assertEqual(selected_frames(5, 20, 46), [5, 25, 45])
+        self.assertEqual(selected_frames(0, 20, 46), [0, 20, 40])
+        with self.assertRaises(ValueError):
+            selected_frames(46, 20, 46)
+
     def test_boundary_contact_whole_image_and_strict_cutoff(self):
         from universal_kmc.workflow.dimers import contact_images
         cell = np.diag([10.,10.,10.])
@@ -161,6 +187,48 @@ except ImportError:
 
 @unittest.skipIf(pyscf is None or np is None, 'quantum dependencies required')
 class CheckpointMappingTests(unittest.TestCase):
+    def test_multiframe_quantum_dispatch_separates_outputs_and_reuses_checkpoints(self):
+        from universal_kmc.workflow.dimers import file_hash
+        from universal_kmc.workflow.runner import run_workflow, _dataset_sources
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            entries = []
+            for frame, separation in [(0, 3.), (2, 4.)]:
+                here = root/f'frame{frame:04d}'
+                here.mkdir()
+                monomers = [{'id': str(i), 'elements': ['H','H'],
+                    'coordinates_angstrom': [[-.37,0,0],[.37,0,0]]} for i in (1,2)]
+                pair = {'id':'1_2','mol_i':'1','mol_j':'2','elements':['H']*4, 'atom_count_a':2,
+                        'coordinates_angstrom':[[-.37,0,-separation/2],[.37,0,-separation/2],
+                                               [-.37,0,separation/2],[.37,0,separation/2]]}
+                manifest = here/'manifest.json'
+                manifest.write_text(json.dumps({'schema':'cube-dimers-1','coordinate_unit':'Angstrom',
+                    'frame':frame,'monomers':monomers,'dimers':[pair]}))
+                entries.append({'frame':frame,'manifest':str(manifest.relative_to(root)),'sha256':file_hash(manifest)})
+            index = root/'frames.json'
+            index.write_text(json.dumps({'schema':'cube-frames-1','frame_count':2,'frames':entries}))
+            control = root/'input'
+            common = 'input = frames.json\nmethod = hf\nbasis-set = sto-3g\nthreads = 1\n'
+            control.write_text('$one-mol\n'+common+'output = one\n$end\n$two-mol\n'+common+'output = two\n$end\n')
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(run_workflow(load_input(control)), 0)
+            report = json.loads((root/'cube-results/workflow.json').read_text())
+            self.assertEqual(report['tasks']['two-mol']['frame_count'], 2)
+            self.assertEqual(report['tasks']['one-mol']['count'], 4)
+            magnitudes = []
+            for label in ('frame0000','frame0002'):
+                transfer = json.loads((root/'two'/label/'1_2/transfer.json').read_text())
+                self.assertEqual(transfer['status'], 'completed')
+                magnitudes.append(transfer['results']['hole']['methods']['dipro']['scalar_magnitude_ev'])
+            self.assertGreater(magnitudes[0], magnitudes[1])
+            checkpoints = {p:p.stat().st_mtime_ns for p in root.rglob('*.chk')}
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(run_workflow(load_input(control), resume=True), 0)
+            self.assertTrue(all(p.stat().st_mtime_ns == t for p,t in checkpoints.items()))
+            (root/'frame0000/manifest.json').write_text('{}')
+            with self.assertRaisesRegex(ValueError, 'missing/changed'):
+                _dataset_sources({'input':str(index)}, None)
+
     def test_translation_preserves_complete_mo_and_fock_and_rejects_rotation(self):
         from pyscf import gto
         from pyscf.scf import chkfile
@@ -239,6 +307,69 @@ class ExtractionTests(unittest.TestCase):
             (manifest_path.parent/'monomers/1.gjf').write_text('changed')
             with patch.object(mda,'Universe',side_effect=[self.universe(),self.universe()]),self.assertRaisesRegex(ValueError,'changed'):
                 extract_dimers(settings,one_settings={'method':'hf','basis-set':'sto-3g'},resume=True)
+
+
+    def test_multiple_frames_full_cluster_mapping_formats_and_resume_integrity(self):
+        from universal_kmc.workflow.dimers import extract_dimers_monomers
+        from universal_kmc.workflow.embedding import read_charges
+        def trajectory():
+            u = self.universe()
+            xyz = u.atoms.positions.copy()
+            frames = np.stack([xyz + [0, i*.1, 0] for i in range(5)])
+            frames[:, 3:, 0] += 1.+np.arange(5)[:,None]*.1
+            u.load_new(frames, dimensions=np.tile([10.,10.,10.,90.,90.,90.], (5,1)))
+            return u
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ('a.tpr','a.gro','a.xtc'):
+                (root/name).write_bytes(b'fixture')
+            (root/'core.txt').write_text('1\n')
+            settings = {k:str(root/v) for k,v in {'tpr':'a.tpr','gro':'a.gro','xtc':'a.xtc',
+                        'fragment-file':'core.txt','output':'mol'}.items()}
+            settings.update(frame=1, frame_step=2, dimers_cutoff=2., format=['xyz','gjf'], **{'monomers-qmmm-cutoff': 2.})
+            with patch.object(mda,'Universe',side_effect=[trajectory(), self.universe()]):
+                index_path = extract_dimers_monomers(settings)
+            index = json.loads(index_path.read_text())
+            self.assertEqual([f['frame'] for f in index['frames']], [1,3])
+            self.assertFalse((root/'mol/frame0004').exists())
+            cluster_files = []
+            for f in index['frames']:
+                frame_dir = index_path.parent/Path(f['manifest']).parent
+                manifest = json.loads((frame_dir/'manifest.json').read_text())
+                self.assertEqual(manifest['frame'], f['frame'])
+                cluster = json.loads((frame_dir/'monomers/1_cluster.json').read_text())
+                self.assertEqual((cluster['qm_atom_count'], cluster['mm_atom_count']), (3,3))
+                mapping = cluster['mm']['provenance']['molecular_images']
+                self.assertEqual(mapping[0]['global_atom_indices_zero_based'], [3,4,5])
+                self.assertEqual(mapping[0]['image'], [1,0,0])
+                self.assertEqual(mapping[0]['molecule_id'], '2')
+                qm = np.asarray(cluster['qm']['coordinates_angstrom'])
+                mm = np.asarray(cluster['mm']['coordinates_angstrom'])
+                pc = read_charges(frame_dir/'monomers/1_mm.pc')
+                np.testing.assert_allclose(pc.coordinates_angstrom, mm, atol=1e-14)
+                self.assertEqual(int((frame_dir/'monomers/1.xyz').read_text().splitlines()[0]), 3)
+                self.assertEqual(int((frame_dir/'monomers/1_cluster.xyz').read_text().splitlines()[0]), 6)
+                gjf = (frame_dir/'monomers/1_cluster.gjf').read_text()
+                self.assertIn(' SP Charge ', gjf)
+                self.assertEqual(sum(line.startswith(('C ', 'H ')) for line in gjf.splitlines()), 3)
+                self.assertAlmostEqual(mm[0,0]-qm[0,0], 1.4+f['frame']*.1, places=5)
+                cluster_files.append(frame_dir/'monomers/1_cluster.xyz')
+            self.assertNotEqual(cluster_files[0].read_bytes(), cluster_files[1].read_bytes())
+            times = {p:p.stat().st_mtime_ns for p in cluster_files}
+            with patch.object(mda,'Universe',side_effect=[trajectory(), self.universe()]):
+                self.assertEqual(extract_dimers_monomers(settings,resume=True), index_path)
+            self.assertTrue(all(p.stat().st_mtime_ns == t for p,t in times.items()))
+            (cluster_files[0].parent/'1_mm.pc').write_text('0 0 0 99\n')
+            with patch.object(mda,'Universe',side_effect=[trajectory(), self.universe()]), self.assertRaisesRegex(ValueError,'changed'):
+                extract_dimers_monomers(settings,resume=True)
+            settings.update(frame=-1, frame_step=20, output=str(root/'last'), format=['gjf'], **{'monomers-qmmm-cutoff': .01})
+            with patch.object(mda,'Universe',side_effect=[trajectory(), self.universe()]):
+                last = extract_dimers_monomers(settings)
+            self.assertEqual(json.loads(last.read_text())['frame'], 4)
+            self.assertFalse(list(last.parent.rglob('*.xyz')))
+            empty = json.loads((last.parent/'monomers/1_cluster.json').read_text())
+            self.assertEqual(empty['mm_atom_count'], 0)
+            self.assertNotIn(' SP Charge ', (last.parent/'monomers/1_cluster.gjf').read_text())
 
 
 if __name__ == '__main__':

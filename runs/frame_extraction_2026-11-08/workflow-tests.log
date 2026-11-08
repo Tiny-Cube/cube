@@ -1,0 +1,29 @@
+test_failed_optimization_never_reports_successful_lambda (test_workflow.CheckpointMappingTests.test_failed_optimization_never_reports_successful_lambda) ... ok
+test_multiframe_quantum_dispatch_separates_outputs_and_reuses_checkpoints (test_workflow.CheckpointMappingTests.test_multiframe_quantum_dispatch_separates_outputs_and_reuses_checkpoints) ... ok
+test_translation_preserves_complete_mo_and_fock_and_rejects_rotation (test_workflow.CheckpointMappingTests.test_translation_preserves_complete_mo_and_fock_and_rejects_rotation) ... ok
+test_format_selection_pbc_and_verified_resume (test_workflow.ExtractionTests.test_format_selection_pbc_and_verified_resume) ... cube: extracting frame 0
+cube: extracting frame 0
+cube: extracting frame 0
+ok
+test_multiple_frames_full_cluster_mapping_formats_and_resume_integrity (test_workflow.ExtractionTests.test_multiple_frames_full_cluster_mapping_formats_and_resume_integrity) ... cube: extracting frame 1
+cube: extracting frame 3
+cube: extracting frame 1
+cube: extracting frame 3
+cube: extracting frame 1
+cube: extracting frame 4
+ok
+test_boundary_contact_whole_image_and_strict_cutoff (test_workflow.PeriodicCoreTests.test_boundary_contact_whole_image_and_strict_cutoff) ... ok
+test_four_point_formula_preserves_relaxation_signs (test_workflow.PeriodicCoreTests.test_four_point_formula_preserves_relaxation_signs) ... ok
+test_frame_selection_starts_at_requested_frame_and_does_not_append_last (test_workflow.PeriodicCoreTests.test_frame_selection_starts_at_requested_frame_and_does_not_append_last) ... ok
+test_multiple_images_are_preserved (test_workflow.PeriodicCoreTests.test_multiple_images_are_preserved) ... ok
+test_triclinic_images_match_exhaustive_search (test_workflow.PeriodicCoreTests.test_triclinic_images_match_exhaustive_search) ... ok
+test_exact_user_syntax_defaults_engine_inheritance_and_order (test_workflow.SectionControlTests.test_exact_user_syntax_defaults_engine_inheritance_and_order) ... ok
+test_hash_in_quoted_path_and_standalone_xyz (test_workflow.SectionControlTests.test_hash_in_quoted_path_and_standalone_xyz) ... ok
+test_invalid_or_ambiguous_controls_rejected (test_workflow.SectionControlTests.test_invalid_or_ambiguous_controls_rejected) ... ok
+test_plan_is_dependency_free_and_resolves_paths_against_input (test_workflow.SectionControlTests.test_plan_is_dependency_free_and_resolves_paths_against_input) ... ok
+test_sampling_cluster_defaults_and_legacy_aliases (test_workflow.SectionControlTests.test_sampling_cluster_defaults_and_legacy_aliases) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 1.231s
+
+OK

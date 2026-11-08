@@ -135,8 +135,8 @@ def load_gromacs_environment(manifest):
         gro.trajectory.close()
 
 
-def cluster_from_frame(frame, record, cutoff):
-    """Select whole MM molecular images once, in the target QM coordinate frame."""
+def select_mm_sites(frame, record, cutoff):
+    """Select whole molecular images; extraction also permits an empty shell."""
     from scipy.spatial.distance import cdist
     if not math.isfinite(cutoff) or cutoff <= 0:
         raise ValueError('MM cutoff must be positive and finite')
@@ -161,8 +161,8 @@ def cluster_from_frame(frame, record, cutoff):
     radius = np.linalg.norm(origin_qm-center, axis=1).max()
     inverse = np.linalg.inv(lattice)
     reciprocal = np.linalg.norm(inverse, axis=0)
-    coordinates, charges, mapping = [], [], []
-    for fragment in frame['fragments']:
+    coordinates, charges, elements, mapping = [], [], [], []
+    for molecule_index, fragment in enumerate(frame['fragments'], 1):
         xyz = np.asarray(fragment['coordinates'], dtype=float)
         q = np.asarray(fragment['charges'], dtype=float)
         if xyz.shape != (len(fragment['indices']), 3) or q.shape != (len(xyz),) or not np.isfinite(xyz).all() or not np.isfinite(q).all():
@@ -181,15 +181,27 @@ def cluster_from_frame(frame, record, cutoff):
                 continue
             coordinates.extend((moved+offset[0]).tolist())
             charges.extend(q.tolist())
+            elements.extend(fragment['elements'])
             mapping.append({'global_atom_indices_zero_based': fragment['indices'], 'image': image,
-                            'site_start': len(charges)-len(q), 'site_count': len(q)})
-    environment = FrozenMM(tuple(map(tuple, coordinates)), tuple(charges),
-        {**frame['provenance'], 'qm_global_atom_indices_zero_based': ids,
+                            'site_start': len(charges)-len(q), 'site_count': len(q),
+                            'molecule_id': str(molecule_index)})
+    provenance = {**frame['provenance'], 'qm_global_atom_indices_zero_based': ids,
          'cutoff_angstrom': cutoff, 'selection': 'whole molecular images with strict min QM-MM distance < cutoff',
          'qm_frame_translation_angstrom': offset[0].tolist(), 'molecular_images': mapping,
-         'selection_fixed_at_initial_geometry': True})
-    environment.validate_qm(list(zip(record['elements'], qm)))
-    return environment
+         'selection_fixed_at_initial_geometry': True}
+    if coordinates and float(cdist(qm, coordinates).min()) < 0.5:
+        raise ValueError('QM atom is within 0.5 Angstrom of an MM site; check QM exclusion/coordinates')
+    return {'coordinates_angstrom': coordinates, 'charges_e': charges, 'elements': elements, 'provenance': provenance}
+
+
+def cluster_from_frame(frame, record, cutoff):
+    """Construct a nonempty fixed MM environment for quantum calculations."""
+    sites = select_mm_sites(frame, record, cutoff)
+    # Preserve existing calculation fingerprints; the molecule label is export metadata.
+    provenance = {**sites['provenance'], 'molecular_images': [
+        {k:v for k,v in image.items() if k != 'molecule_id'}
+        for image in sites['provenance']['molecular_images']]}
+    return FrozenMM(sites['coordinates_angstrom'], sites['charges_e'], provenance)
 
 
 def snapshot(environment, filename):
