@@ -18,6 +18,8 @@ uv sync --locked --extra workflow
 
 新增 `frame_step` 多帧提取和 `monomers-qmmm-cutoff` 单体环境簇，支持后续量化逐帧调度；真实轨迹 1980/2000 帧及断点续算结果见[多帧提取验证](runs/frame_extraction_2026-11-08/README.md)。
 
+另提供[独立 GRO 三维簇查看脚本](docs/gro-cluster-viewer.md)：`uv run scripts/view_clusters.py structure.gro --cutoff 6 --open`。界面选择中央分子、实时调节全原子最短距离阈值、显示完整周期邻居并导出 XYZ；仅需 NumPy，可选 TPR 使用真实键拓扑。
+
 `cube input` 的小分子流程已在 RTX 5090 通过 CPU/GPU 对照，包括 DIPRO、GPU 梯度优化、vacuum 四点重组能及断点续算，见 [GPU 工作流实测](runs/cube_input_gpu_2026-11-07/README.md)。实际 MD 的全部量化任务尚未运行。
 
 新增冻结 MM 的 QM/MM 四点法：环境坐标、电荷固定，只优化 QM 分子；可从 GROMACS 帧自动选取完整邻近分子，或读取外部点电荷文件。CPU/GPU 优化、梯度、四点能量及续算已实测，见 [原静电模型验证](runs/qmmm_frozen_mm_2026-11-07/README.md)。现在另支持原 TPR 的 QM–MM LJ12-6 排斥/色散，根目录 `input` 已启用；见[范德华参数与异机导出](docs/cube-input.md#加入原力场的-qmmm-范德华作用)。未包含可极化 MM。
