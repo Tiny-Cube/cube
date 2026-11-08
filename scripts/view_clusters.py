@@ -350,12 +350,13 @@ HTML = r'''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="v
 <title>cube · GRO 簇查看器</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#233949;font:14px/1.6 system-ui,sans-serif}header{padding:18px 24px 12px}h1{margin:0;font-size:25px}header p{margin:4px 0;color:#607585}.toolbar{padding:12px 24px;background:white;border-block:1px solid #dce5eb;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.toolbar label{display:flex;align-items:center;gap:7px}button,select,input[type=number],.download{font:inherit;color:#233949;background:white;border:1px solid #b9cbd7;border-radius:6px;padding:6px 10px}button,select,.download{cursor:pointer}select{max-width:300px}input[type=range]{width:210px;accent-color:#db3357}input[type=number]{width:85px}.download{display:inline-block;text-decoration:none}button[aria-pressed=true]{color:white;background:#233949}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #70b9df;outline-offset:2px}main{display:grid;grid-template-columns:minmax(0,1fr) 300px;min-height:540px;height:calc(100vh - 205px)}.stage{position:relative;min-width:0;min-height:500px}canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}.hint{position:absolute;bottom:12px;left:16px;font-size:12px;background:#ffffffd9;padding:5px 9px;border-radius:5px;pointer-events:none;color:#607585}aside{background:white;border-left:1px solid #dce5eb;padding:18px;overflow:auto}h2{font-size:18px;margin:0 0 8px}h3{font-size:14px;margin:18px 0 6px}.muted{color:#607585}.legend{display:flex;align-items:center;gap:8px;margin:4px 0}.dot{width:10px;height:10px;border-radius:50%}.neighbor{padding:8px 0;border-bottom:1px solid #edf1f5;font-size:13px}.mono{font:12px ui-monospace,monospace}.info{font-size:12px;color:#607585;background:#f4f7fa;padding:9px;border-radius:6px}.status{padding:5px 24px;font-size:12px;color:#607585;min-height:30px}.status.error{color:#a1253d;background:#fff1f2}#tip{position:absolute;background:#213747ed;color:white;font-size:12px;padding:8px 10px;border-radius:5px;pointer-events:none;display:none;max-width:270px}#loading{position:absolute;top:16px;left:18px;background:#fffffff0;padding:7px 13px;border-radius:6px;color:#607585;display:none}
+#preview{position:absolute;top:16px;right:16px;max-width:360px;background:#ffffffed;color:#607585;font-size:12px;padding:7px 12px;border-radius:6px;pointer-events:none}
 @media(max-width:850px){main{grid-template-columns:1fr;height:auto}.stage{height:65vh}aside{border-left:0;border-top:1px solid #dce5eb;max-height:500px}.toolbar,header{padding-inline:15px}input[type=range]{width:150px}}
 </style>
 <header><h1>cube · GRO 簇查看器</h1><p id="file">正在读取结构…</p></header>
 <div class="toolbar"><label>中央分子 <select id="center" aria-label="中央分子"></select></label><label>最短原子距离 <input id="slider" aria-label="距离滑块" type="range" min="0" max="30" step="0.1"><input id="cutoff" aria-label="距离阈值" type="number" min="0" max="30" step="0.1"> Å</label><button id="all" aria-pressed="true">完整环境</button><button id="near" aria-pressed="false">最近 4 个邻居</button><label><input id="hydrogen" type="checkbox">显示氢</label><label><input id="autofit" type="checkbox" checked>自动适配</label><button id="reset">重置视角</button><a id="export" class="download" href="#">导出簇 XYZ</a></div>
 <div id="status" class="status" role="status" aria-live="polite">按两完整分子的全原子最短距离筛选，包含氢，不使用 core；阈值单位 Å。</div>
-<main><div class="stage"><canvas id="canvas" aria-label="三维分子簇"></canvas><div id="loading">正在计算全原子邻域…</div><div class="hint">拖动旋转 · 滚轮缩放 · Shift＋拖动平移 · 悬停查看原子</div><div id="tip"></div></div><aside><h2 id="heading">中央分子</h2><div id="stats" class="muted"></div><h3>颜色</h3><div class="legend"><i class="dot" style="background:#db3357"></i>中央完整分子</div><div class="legend"><i class="dot" style="background:#7b9aa8"></i>邻居镜像</div><h3>分子与化学键来源</h3><div id="source" class="info"></div><h3>筛选定义</h3><div class="info">入选条件：两个完整分子的所有原子对中，最短距离严格小于当前阈值。氢的显示开关不改变筛选结果。周围分子整体保留，所以簇外缘可以超过阈值。</div><h3>最近邻居</h3><div id="neighbors"></div></aside></main>
+<main><div class="stage"><canvas id="canvas" aria-label="三维分子簇"></canvas><div id="loading">正在计算全原子邻域…</div><div id="preview" hidden>交互预览：外围简化为原子点，停止操作后恢复完整结构</div><div class="hint">拖动旋转 · 滚轮缩放 · Shift＋拖动平移 · 悬停查看原子</div><div id="tip"></div></div><aside><h2 id="heading">中央分子</h2><div id="stats" class="muted"></div><h3>颜色</h3><div class="legend"><i class="dot" style="background:#db3357"></i>中央完整分子</div><div class="legend"><i class="dot" style="background:#7b9aa8"></i>邻居镜像</div><h3>分子与化学键来源</h3><div id="source" class="info"></div><h3>筛选定义</h3><div class="info">入选条件：两个完整分子的所有原子对中，最短距离严格小于当前阈值。氢的显示开关不改变筛选结果。周围分子整体保留，所以簇外缘可以超过阈值。</div><h3>最近邻居</h3><div id="neighbors"></div></aside></main>
 <script>
 const INITIAL=__INITIAL__;
 const $=id=>document.getElementById(id),canvas=$('canvas'),ctx=canvas.getContext('2d');
@@ -367,7 +368,7 @@ async function loadCluster(){
  if(!Number.isFinite(cutoff)||cutoff<0||cutoff>structure.max_cutoff){error(`阈值需要在 0–${structure.max_cutoff} Å 之间`);return}
  const sequence=++request;if(controller)controller.abort();controller=new AbortController();$('loading').style.display='block';
  try{const query=new URLSearchParams({center:String(center),cutoff:String(cutoff)}),response=await fetch('/api/cluster?'+query,{signal:controller.signal});const value=await response.json();if(!response.ok)throw new Error(value.error||'无法读取簇');if(sequence!==request)return;
- data=value;if($('autofit').checked){zoom=1;panX=panY=0}metadata();schedule();
+ data=value;if($('autofit').checked){zoom=1;panX=panY=0}metadata();prepareGeometry();schedule();
  $('status').classList.remove('error');$('status').textContent=`当前阈值 ${data.cutoff} Å · 全原子严格最短距离（含氢，不使用 core） · ${structure.periodic?'周期镜像已启用':'非周期模式'}`;
  }catch(e){if(e.name!=='AbortError'&&sequence===request)error('未更新结构：'+e.message)}finally{if(sequence===request)$('loading').style.display='none'}
 }
@@ -378,30 +379,93 @@ function metadata(){
  if(data.neighbor_images>20)$('neighbors').insertAdjacentHTML('beforeend',`<div class="muted">列出最近 20 个；共 ${data.neighbor_images} 个</div>`);
  $('export').href='/api/cluster.xyz?'+new URLSearchParams({center:String(data.center),cutoff:String(data.cutoff)});
 }
+// Geometry and display membership only change when data or display options change.
+let render=null,coordinates=null,hoverFrame=0,hoverPosition=null,motion=false,motionTimer=null;
+const PREVIEW_THRESHOLD=4000,PREVIEW_LIMIT=12000;
+function prepareGeometry(){
+ coordinates=new Float64Array(data.coordinates.length*3);
+ for(let i=0;i<data.coordinates.length;i++)coordinates.set(data.coordinates[i],i*3);
+ points=new Float32Array(coordinates.length);
+ prepareVisibility();
+}
+function prepareVisibility(){
+ if(!data)return;
+ const n=data.elements.length,groups=[{atoms:[],heavy:[],hydrogens:[],bonds:[]},{atoms:[],heavy:[],hydrogens:[],bonds:[]}];
+ visible=new Uint8Array(n);let fit=1,count=0;
+ for(let i=0;i<n;i++){
+  if((!hydrogen&&data.elements[i]==='H')||(mode==='near'&&data.atom_groups[i]>4))continue;
+  visible[i]=1;count++;const g=groups[data.atom_groups[i]===0?0:1];g.atoms.push(i);(data.elements[i]==='H'?g.hydrogens:g.heavy).push(i);
+  const j=i*3;fit=Math.max(fit,Math.hypot(coordinates[j],coordinates[j+1],coordinates[j+2]));
+ }
+ for(const [a,b] of data.bonds)if(visible[a]&&visible[b])groups[data.atom_groups[a]===0?0:1].bonds.push(a,b);
+ const environment=groups[1].atoms,step=Math.max(1,Math.ceil(environment.length/PREVIEW_LIMIT));
+ const preview=environment.filter((_,i)=>i%step===0);
+ render={groups,count,fit,preview,all:groups[0].atoms.concat(environment),quick:groups[0].atoms.concat(preview)};
+ if($('autofit').checked||!radius)radius=fit;
+ $('visible-count').textContent=`当前显示 ${count} 个原子${mode==='near'?'（中央＋最近至多 4 个邻居）':''}`;
+ canvas.dataset.visibleAtoms=String(count);canvas.dataset.cutoff=String(data.cutoff);canvas.dataset.neighborImages=String(data.neighbor_images);canvas.dataset.center=String(data.center);
+ $('tip').style.display='none';
+}
 function schedule(){if(!pending){pending=true;requestAnimationFrame(()=>{pending=false;draw()})}}
 function draw(){
- const bounds=canvas.getBoundingClientRect();W=bounds.width;H=bounds.height;const dpr=Math.min(devicePixelRatio||1,2);
- if(canvas.width!==Math.round(W*dpr)||canvas.height!==Math.round(H*dpr)){canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr)}ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#f4f7fa';ctx.fillRect(0,0,W,H);if(!data)return;
- visible=data.elements.map((e,i)=>(hydrogen||e!=='H')&&(mode==='all'||data.atom_groups[i]<=4));let fit=1;for(let i=0;i<data.coordinates.length;i++)if(visible[i])fit=Math.max(fit,Math.hypot(...data.coordinates[i]));if($('autofit').checked||!radius)radius=fit;
- const scale=Math.min(W,H)*.44/radius*zoom,cx=Math.cos(rx),sx=Math.sin(rx),cy=Math.cos(ry),sy=Math.sin(ry);
- function rotate(p){const x=p[0]*cy+p[2]*sy,z=-p[0]*sy+p[2]*cy;return [x,p[1]*cx-z*sx,p[1]*sx+z*cx]}
- points=data.coordinates.map(p=>{const r=rotate(p);return {x:W/2+panX+r[0]*scale,y:H/2+panY-r[1]*scale,z:r[2]}});
- const primitives=[];for(const [a,b] of data.bonds)if(visible[a]&&visible[b])primitives.push({kind:0,a,b,z:(points[a].z+points[b].z)/2});for(let i=0;i<visible.length;i++)if(visible[i])primitives.push({kind:1,i,z:points[i].z});primitives.sort((a,b)=>a.z-b.z);
- for(const p of primitives){const g=data.atom_groups[p.kind===0?p.a:p.i],color=g===0?'#db3357':'#7b9aa8';ctx.globalAlpha=g===0?1:mode==='all'?.42:.8;if(p.kind===0){const a=points[p.a],b=points[p.b];ctx.strokeStyle=color;ctx.lineWidth=g===0?2.2:mode==='all'?.65:1.1;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}else{const a=points[p.i],size=(g===0?3:mode==='all'?1.1:1.8)*(data.elements[p.i]==='H'?.65:1)*Math.sqrt(zoom);ctx.fillStyle=color;ctx.beginPath();ctx.arc(a.x,a.y,Math.max(.5,size),0,Math.PI*2);ctx.fill()}}
- ctx.globalAlpha=1;const base=Math.pow(10,Math.floor(Math.log10(90/scale)));let bar=base;for(const m of [1,2,5])if(base*m*scale<=110)bar=base*m;ctx.strokeStyle='#233949';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(20,32);ctx.lineTo(20+bar*scale,32);ctx.stroke();ctx.fillStyle='#233949';ctx.font='12px system-ui';ctx.fillText(`${bar} Å`,20,23);
- const origin=[W-60,H-65];for(const [label,p,color] of [['x',[1,0,0],'#aa4355'],['y',[0,1,0],'#448568'],['z',[0,0,1],'#4479a8']]){const r=rotate(p);ctx.strokeStyle=color;ctx.beginPath();ctx.moveTo(...origin);ctx.lineTo(origin[0]+r[0]*32,origin[1]-r[1]*32);ctx.stroke();ctx.fillStyle=color;ctx.fillText(label,origin[0]+r[0]*42-3,origin[1]-r[1]*42+3)}
- const count=visible.filter(Boolean).length;$('visible-count').textContent=`当前显示 ${count} 个原子${mode==='near'?'（中央＋最近至多 4 个邻居）':''}`;if(!count)ctx.fillText('所有原子均被隐藏，请启用“显示氢”',Math.max(20,W/2-130),H/2);
- canvas.dataset.rendered='true';canvas.dataset.visibleAtoms=String(count);canvas.dataset.cutoff=String(data.cutoff);canvas.dataset.neighborImages=String(data.neighbor_images);canvas.dataset.center=String(data.center);
+ const started=performance.now(),bounds=canvas.getBoundingClientRect();W=bounds.width;H=bounds.height;
+ const preview=!!(render&&motion&&render.count>PREVIEW_THRESHOLD),dpr=preview?1:Math.min(devicePixelRatio||1,2);
+ if(canvas.width!==Math.round(W*dpr)||canvas.height!==Math.round(H*dpr)){canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr)}
+ ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#f4f7fa';ctx.fillRect(0,0,W,H);if(!data||!render)return;
+ const scale=Math.min(W,H)*.44/radius*zoom,cx=Math.cos(rx),sx=Math.sin(rx),cy=Math.cos(ry),sy=Math.sin(ry),originX=W/2+panX,originY=H/2+panY;
+ const ids=preview?render.quick:render.all;
+ for(let k=0;k<ids.length;k++){
+  const j=ids[k]*3,x=coordinates[j]*cy+coordinates[j+2]*sy,z=-coordinates[j]*sy+coordinates[j+2]*cy;
+  points[j]=originX+x*scale;points[j+1]=originY-(coordinates[j+1]*cx-z*sx)*scale;points[j+2]=coordinates[j+1]*sx+z*cx;
+ }
+ function bonds(group,width){
+  ctx.lineWidth=width;ctx.beginPath();const edges=group.bonds;
+  for(let k=0;k<edges.length;k+=2){const a=edges[k]*3,b=edges[k+1]*3;ctx.moveTo(points[a],points[a+1]);ctx.lineTo(points[b],points[b+1])}
+  if(edges.length)ctx.stroke();
+ }
+ function atoms(ids,size){
+  ctx.beginPath();for(let k=0;k<ids.length;k++){const j=ids[k]*3,x=points[j],y=points[j+1];ctx.moveTo(x+size,y);ctx.arc(x,y,size,0,Math.PI*2)}
+  if(ids.length)ctx.fill();
+ }
+ // This is a wireframe overview: environment first, highlighted central molecule last.
+ const environment=render.groups[1],central=render.groups[0],rootZoom=Math.sqrt(zoom),envSize=(mode==='all'?1.1:1.8)*rootZoom;
+ ctx.strokeStyle=ctx.fillStyle='#7b9aa8';ctx.globalAlpha=mode==='all'?.42:.8;
+ if(preview){
+  // Small screen-space squares are cheaper than thousands of individual arcs.
+  const size=Math.max(1,envSize),half=size/2;ctx.beginPath();for(const i of render.preview){const j=i*3;ctx.rect(points[j]-half,points[j+1]-half,size,size)}if(render.preview.length)ctx.fill();
+ }else{
+  bonds(environment,mode==='all'?.65:1.1);atoms(environment.heavy,Math.max(.5,envSize));atoms(environment.hydrogens,Math.max(.5,envSize*.65));
+ }
+ ctx.strokeStyle=ctx.fillStyle='#db3357';ctx.globalAlpha=1;bonds(central,2.2);atoms(central.heavy,Math.max(.5,3*rootZoom));atoms(central.hydrogens,Math.max(.5,1.95*rootZoom));
+ const base=Math.pow(10,Math.floor(Math.log10(90/scale)));let bar=base;for(const m of [1,2,5])if(base*m*scale<=110)bar=base*m;ctx.strokeStyle='#233949';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(20,32);ctx.lineTo(20+bar*scale,32);ctx.stroke();ctx.fillStyle='#233949';ctx.font='12px system-ui';ctx.fillText(`${bar} Å`,20,23);
+ const axisOrigin=[W-60,H-65];for(const [label,p,color] of [['x',[1,0,0],'#aa4355'],['y',[0,1,0],'#448568'],['z',[0,0,1],'#4479a8']]){const x=p[0]*cy+p[2]*sy,z=-p[0]*sy+p[2]*cy,y=p[1]*cx-z*sx;ctx.strokeStyle=color;ctx.beginPath();ctx.moveTo(...axisOrigin);ctx.lineTo(axisOrigin[0]+x*32,axisOrigin[1]-y*32);ctx.stroke();ctx.fillStyle=color;ctx.fillText(label,axisOrigin[0]+x*42-3,axisOrigin[1]-y*42+3)}
+ if(!render.count)ctx.fillText('所有原子均被隐藏，请启用“显示氢”',Math.max(20,W/2-130),H/2);
+ $('preview').hidden=!preview;
+ canvas.dataset.rendered='true';canvas.dataset.quality=preview?'preview':'full';canvas.dataset.drawnAtoms=String(ids.length);canvas.dataset.drawMs=(performance.now()-started).toFixed(2);if(preview){canvas.dataset.previewDrawMs=canvas.dataset.drawMs;canvas.dataset.previewDrawnAtoms=String(ids.length)}
 }
-function reset(){rx=.38;ry=-.5;zoom=1;panX=panY=0;$('tip').style.display='none';radius=0;schedule()}
+function endMotion(){if(motionTimer){clearTimeout(motionTimer);motionTimer=null}motion=false;schedule()}
+function reset(){rx=.38;ry=-.5;zoom=1;panX=panY=0;$('tip').style.display='none';if(render)radius=render.fit;else radius=0;schedule()}
 $('center').onchange=()=>{reset();clearTimeout(timer);loadCluster()};
 function changeDistance(event){if(event.target.id==='slider')$('cutoff').value=event.target.value;else if(Number.isFinite(Number(event.target.value)))$('slider').value=event.target.value;clearTimeout(timer);timer=setTimeout(loadCluster,180)}
 $('slider').oninput=changeDistance;$('cutoff').oninput=changeDistance;$('cutoff').onchange=()=>{clearTimeout(timer);loadCluster()};
-for(const m of ['all','near'])$(m).onclick=()=>{mode=m;for(const b of ['all','near'])$(b).setAttribute('aria-pressed',String(b===m));schedule()};
-$('hydrogen').onchange=e=>{hydrogen=e.target.checked;schedule()};$('autofit').onchange=schedule;$('reset').onclick=reset;
-let drag=null;canvas.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);$('tip').style.display='none';canvas.style.cursor='grabbing'};canvas.onpointerup=()=>{drag=null;canvas.style.cursor='grab'};canvas.onpointercancel=canvas.onpointerup;
-canvas.onpointermove=e=>{if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag={x:e.clientX,y:e.clientY};if(e.shiftKey){panX+=dx;panY+=dy}else{ry+=dx*.008;rx+=dy*.008}schedule();return}if(!data)return;const box=canvas.getBoundingClientRect(),x=e.clientX-box.left,y=e.clientY-box.top;let closest=-1,distance=64;for(let i=0;i<points.length;i++)if(visible[i]){const d=(points[i].x-x)**2+(points[i].y-y)**2;if(d<distance){closest=i;distance=d}}if(closest<0){$('tip').style.display='none';return}const group=data.groups[data.atom_groups[closest]];$('tip').innerHTML=`${group.molecule===data.center&&data.atom_groups[closest]===0?'中央':'邻居'} · 分子 ${group.molecule} · ${esc(data.elements[closest])}<br>${esc(data.names[closest])} · 分子内原子 ${closest-group.start+1}<br>GRO 原子记录 ${data.global_indices[closest]} / 编号 ${data.serials[closest]}<br>image [${group.image.join(', ')}]`;$('tip').style.display='block';$('tip').style.left=Math.max(5,Math.min(x+12,W-260))+'px';$('tip').style.top=Math.max(5,y-85)+'px'};canvas.onpointerleave=()=>{$('tip').style.display='none'};
-canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.2,Math.min(10,zoom*Math.exp(-e.deltaY*.001)));schedule()},{passive:false});new ResizeObserver(schedule).observe(canvas);
+for(const m of ['all','near'])$(m).onclick=()=>{mode=m;for(const b of ['all','near'])$(b).setAttribute('aria-pressed',String(b===m));prepareVisibility();schedule()};
+$('hydrogen').onchange=e=>{hydrogen=e.target.checked;prepareVisibility();schedule()};$('autofit').onchange=()=>{if($('autofit').checked&&render)radius=render.fit;schedule()};$('reset').onclick=reset;
+let drag=null;
+canvas.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY};motion=true;canvas.setPointerCapture(e.pointerId);$('tip').style.display='none';canvas.style.cursor='grabbing';schedule()};
+function finishDrag(){drag=null;canvas.style.cursor='grab';endMotion()}
+canvas.onpointerup=finishDrag;canvas.onpointercancel=finishDrag;canvas.onlostpointercapture=finishDrag;
+function showHover(){
+ hoverFrame=0;if(!data||!render||drag||motion||!hoverPosition)return;
+ const box=canvas.getBoundingClientRect(),x=hoverPosition.x-box.left,y=hoverPosition.y-box.top;let closest=-1,distance=64,depth=-Infinity;
+ for(const i of render.all){const j=i*3,d=(points[j]-x)**2+(points[j+1]-y)**2;if(d<distance||(d===distance&&points[j+2]>depth)){closest=i;distance=d;depth=points[j+2]}}
+ if(closest<0){$('tip').style.display='none';return}
+ const group=data.groups[data.atom_groups[closest]];
+ $('tip').innerHTML=`${data.atom_groups[closest]===0?'中央':'邻居'} · 分子 ${group.molecule} · ${esc(data.elements[closest])}<br>${esc(data.names[closest])} · 分子内原子 ${closest-group.start+1}<br>GRO 原子记录 ${data.global_indices[closest]} / 编号 ${data.serials[closest]}<br>image [${group.image.join(', ')}]`;
+ $('tip').style.display='block';$('tip').style.left=Math.max(5,Math.min(x+12,W-260))+'px';$('tip').style.top=Math.max(5,y-85)+'px';
+}
+canvas.onpointermove=e=>{if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag={x:e.clientX,y:e.clientY};if(e.shiftKey){panX+=dx;panY+=dy}else{ry+=dx*.008;rx+=dy*.008}schedule();return}hoverPosition={x:e.clientX,y:e.clientY};if(!hoverFrame)hoverFrame=requestAnimationFrame(showHover)};
+canvas.onpointerleave=()=>{hoverPosition=null;if(hoverFrame){cancelAnimationFrame(hoverFrame);hoverFrame=0}$('tip').style.display='none'};
+canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.2,Math.min(10,zoom*Math.exp(-e.deltaY*.001)));motion=true;$('tip').style.display='none';clearTimeout(motionTimer);motionTimer=setTimeout(()=>{if(!drag)endMotion()},140);schedule()},{passive:false});new ResizeObserver(schedule).observe(canvas);
 async function boot(){try{const response=await fetch('/api/structure');if(!response.ok)throw new Error('无法读取 GRO');structure=await response.json();$('file').textContent=`${structure.filename} · ${structure.atom_count} 个原子 · ${structure.molecule_count} 个分子 · ${structure.periodic?'周期盒':'非周期结构'}`;$('source').textContent=structure.grouping+'；'+structure.bond_source+'。本页只显示几何，不从 GRO 推断电荷或力场参数。';for(const m of structure.molecules){const o=document.createElement('option');o.value=m.id;o.textContent=`${m.id} · ${m.label} · ${m.atoms} atoms`;$('center').append(o)}$('center').value=INITIAL.center;$('slider').max=$('cutoff').max=structure.max_cutoff;$('slider').value=$('cutoff').value=INITIAL.cutoff;await loadCluster()}catch(e){error(e.message)}}boot();
 </script></html>
 '''
