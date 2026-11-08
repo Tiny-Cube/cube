@@ -18,7 +18,7 @@ uv sync --locked --extra workflow
 
 新增 `frame_step` 多帧提取和 `monomers-qmmm-cutoff` 单体环境簇，支持后续量化逐帧调度；真实轨迹 1980/2000 帧及断点续算结果见[多帧提取验证](runs/frame_extraction_2026-11-08/README.md)。
 
-另提供[独立 GRO 三维簇查看脚本](docs/gro-cluster-viewer.md)：`uv run scripts/view_clusters.py structure.gro --cutoff 6 --open`。界面选择中央分子、实时调节全原子最短距离阈值、显示完整周期邻居并导出 XYZ；仅需 NumPy，可选 TPR 使用真实键拓扑。
+GRO 三维簇查看器已迁至独立项目 [cube-view](https://github.com/Tiny-Cube/cube-view)，实现、uv 环境、测试和发布均在新仓库维护。查看器使用 `uv run cube-view structure.gro --cutoff 6 --open`，不依赖本项目。
 
 `cube input` 的小分子流程已在 RTX 5090 通过 CPU/GPU 对照，包括 DIPRO、GPU 梯度优化、vacuum 四点重组能及断点续算，见 [GPU 工作流实测](runs/cube_input_gpu_2026-11-07/README.md)。实际 MD 的全部量化任务尚未运行。
 
