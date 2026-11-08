@@ -13,7 +13,7 @@ frame = -1                      # 从 0 开始的起始帧；-1 表示只取最�
 frame_step = 20                 # 非 -1 时从起始帧每隔 20 帧提取到轨迹末尾
 dimers_cutoff = 6               # Å；两个分子的 core 原子最短距离严格小于此值
 fragment-file = ../core.txt
-monomers-qmmm-cutoff =          # 空值默认 12 Å；完整 QM 分子与完整 MM 分子的最短距离
+monomers-qmmm-cutoff = 6        # Å；完整 QM 分子与完整 MM 分子的最短距离
 output = mol
 format = xyz,gjf
 $end
@@ -83,7 +83,7 @@ opt-maxsteps = 100
 
 environment = qmmm
 mm-source = manifest
-# mm-cutoff = 12               # 默认继承 monomers-qmmm-cutoff；需要不同环境时显式覆盖
+# mm-cutoff = 6                # 默认继承 monomers-qmmm-cutoff；需要不同环境时显式覆盖
 mm-frozen = true
 mm-vdw = tpr                   # 原 TPR 的 C6/C12；静电嵌入 + QM–MM LJ12-6
 # gmx-executable = /path/to/gmx # 可选；默认从 PATH 找到 gmx
