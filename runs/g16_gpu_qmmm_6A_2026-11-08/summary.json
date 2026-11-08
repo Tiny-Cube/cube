@@ -1,0 +1,64 @@
+{
+  "status": "preflight_passed_material_benchmark_queued",
+  "material": {
+    "frame": 1980,
+    "molecule": "85",
+    "cutoff_angstrom": 6.0,
+    "qm_atoms": 86,
+    "mm_atoms": 2580,
+    "mm_frozen": true
+  },
+  "material_timing_available": false,
+  "reason": "wait for existing 12A CPU benchmark to exit, then idle resources, then run sequentially",
+  "energy_convention_probe": {
+    "system": "H2/STO-3G + two frozen charges",
+    "g16_minus_pyscf_hartree_after_self_energy_correction": -1.3203749205104032e-10,
+    "max_gradient_difference_hartree_per_bohr": 1.3067953143208744e-09
+  },
+  "force_preflight_differences": {
+    "0": {
+      "energy_hartree": 2.099040889902426e-05,
+      "max_gradient_hartree_per_bohr": 2.0152184061997258e-05
+    },
+    "1": {
+      "energy_hartree": 2.347879993180868e-05,
+      "max_gradient_hartree_per_bohr": 9.475434513031566e-06
+    },
+    "-1": {
+      "energy_hartree": 1.2767317485895546e-05,
+      "max_gradient_hartree_per_bohr": 1.1811479735057695e-05
+    }
+  },
+  "four_point_preflight_g16_minus_gpu_ev": {
+    "hole": 0.00018010156094461216,
+    "electron": -0.00033176944765056504
+  },
+  "preflight_reorganization_ev": {
+    "g16": {
+      "hole": 0.4092426050644829,
+      "electron": 5.6266527374602795
+    },
+    "gpu": {
+      "hole": 0.4090625035035383,
+      "electron": 5.62698450690793
+    }
+  },
+  "preflight_optimizer_evaluations": {
+    "g16": {
+      "neutral": 6,
+      "hole": 6,
+      "electron": 9
+    },
+    "gpu": {
+      "neutral": 6,
+      "hole": 6,
+      "electron": 9
+    }
+  },
+  "benchmark_script_sha256": "5ab36c7a4042cd189a474a23071696666c02a93b204d93b4d80fa239e0dfc76d",
+  "scope": "G16 external-charge QM plus cube TPR LJ versus GPU4PySCF DF plus same LJ; common geomeTRIC; not native ONIOM; tiny preflight timings excluded",
+  "sources": [
+    "https://pyscf.org/user/qmmm.html",
+    "https://github.com/pyscf/gpu4pyscf/blob/master/gpu4pyscf/qmmm/itrf.py"
+  ]
+}

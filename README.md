@@ -22,6 +22,8 @@ uv sync --locked --extra workflow
 
 新增冻结 MM 的 QM/MM 四点法：环境坐标、电荷固定，只优化 QM 分子；可从 GROMACS 帧自动选取完整邻近分子，或读取外部点电荷文件。CPU/GPU 优化、梯度、四点能量及续算已实测，见 [原静电模型验证](runs/qmmm_frozen_mm_2026-11-07/README.md)。现在另支持原 TPR 的 QM–MM LJ12-6 排斥/色散，根目录 `input` 已启用；见[范德华参数与异机导出](docs/cube-input.md#加入原力场的-qmmm-范德华作用)。未包含可极化 MM。
 
+独立的 G16/GPU 同模型比较工具已完成小体系能量、梯度和完整四点法数值预检；2026-11-08 的真实 6 Å 材料计时提交时处于等待旧 CPU 任务的队列中，尚无加速倍数，见[对比范围与验证记录](runs/g16_gpu_qmmm_6A_2026-11-08/README.md)。
+
 ## 新增：GPU 转移积分
 
 [理论公式、原始论文与使用方法](docs/transfer-integrals.md) · [RTX 5090 实测](runs/transfer_gpu_2026-11-06/README.md)
