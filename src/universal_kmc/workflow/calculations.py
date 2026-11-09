@@ -66,7 +66,8 @@ def route_sections(available, entries, only=None, *, module_switches=None):
     enabled = [name for name in selected if entries[name]['do'] == 1]
     disabled = [name for name in selected if entries[name]['do'] == 0]
     if entries:
-        owners = {module: [name for name in enabled if module in CALCULATIONS[name].modules]
+        owners = {module: [name for name in enabled if module in CALCULATIONS[name].modules
+                           and entries[name].get(module, 1) == 1]
                   for module in MODULE_ORDER}
     else:
         owners = {module: ['legacy'] for module in MODULE_ORDER}
@@ -93,6 +94,8 @@ def route_sections(available, entries, only=None, *, module_switches=None):
             'pending_solvers': [name for name in calculations if CALCULATIONS[name].solver is None],
             'entry_points': {name: {'do': entries[name]['do'], 'selected': name in selected,
                                    'modules': list(CALCULATIONS[name].modules),
+                                   'module_selection': {module: entries[name].get(module, 1)
+                                                        for module in CALCULATIONS[name].modules},
                                    'solver_available': CALCULATIONS[name].solver is not None,
                                    'unavailable_reason': CALCULATIONS[name].unavailable_reason}
                              for name in CALCULATIONS if name in entries}}

@@ -42,3 +42,5 @@ register_calculation('new-calculation', CalculationType(
 只提供模块而未提供 solver 时，完整入口结束为 `prepared`；不支持整条计算时设置 `unavailable_reason` 并在预检说明。新增公共模块本身仍需实现其解析和调度，不能只在注册表中添加未知模块名称。
 
 子模块开关使用统一契约：`do=1` 添加独立执行请求；`do=0` 禁用并阻止隐式调用；省略 `do` 保留自动调度。主流程和独立请求共用科学实现、报告和续算。公共改动见 [主模块／子模块设计](plans/2026-11-09-main-submodule-design.md)。
+
+主模块段内可使用其模块名作为 0/1 选择，例如 `one-mol=0` 使该主流程不调用单体；独立子模块 `do=1` 不受这个选择限制。显式主请求 1 与子模块 do=0 冲突时，在执行前报错。详见 [主模块内部选择](plans/2026-11-09-main-module-selectors-design.md)。
