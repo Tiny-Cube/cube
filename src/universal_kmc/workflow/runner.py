@@ -8,7 +8,7 @@ import re
 from universal_kmc.quantum.cli import _write_result
 from universal_kmc.quantum.geometry import normalize_atoms, read_xyz
 from .control import EXTRACTION, scf_config
-from .calculations import CALCULATIONS
+from .calculations import CALCULATIONS, QUANTUM_SECTIONS, SURFACE_DYNAMICS
 
 
 def _atoms(record):
@@ -85,7 +85,7 @@ def _dataset_sources(settings, extracted):
 def run_workflow(control, *, only=None, resume=False):
     plan = control.execution_plan(only)
     tasks = plan['tasks']
-    if tasks:
+    if any(task != SURFACE_DYNAMICS for task in tasks):
         from .dimers import extract_dimers_monomers, file_hash, fingerprint
     sections = control.sections
     extracted = None
@@ -109,7 +109,7 @@ def run_workflow(control, *, only=None, resume=False):
         return monomer_cache[key]
 
     try:
-        if EXTRACTION in sections and (EXTRACTION in tasks or any('input' not in sections[t] and 'xyz' not in sections[t] for t in tasks if t != EXTRACTION)):
+        if EXTRACTION in sections and (EXTRACTION in tasks or any('input' not in sections[t] and 'xyz' not in sections[t] for t in tasks if t in QUANTUM_SECTIONS)):
             print('cube: extracting complete molecules/dimers', flush=True)
             extracted = extract_dimers_monomers(sections[EXTRACTION], one_settings=sections.get('one-mol'),
                                        two_settings=sections.get('two-mol'), resume=resume)
@@ -126,6 +126,15 @@ def run_workflow(control, *, only=None, resume=False):
             if task == EXTRACTION:
                 continue
             original_settings = sections[task]
+            if task == SURFACE_DYNAMICS:
+                from universal_kmc.surface_hopping.runner import run_control
+                if summary_path is None:
+                    summary_path = control.path.parent/'cube-results/workflow.json'
+                result = run_control(original_settings['input'], output=original_settings['output'], resume=resume)
+                report['tasks'][task] = {'status': result['status'], 'output': result['output'],
+                                        'scope': result['scope'], 'reused': result['reused']}
+                _write_result(summary_path, report)
+                continue
             sources = _dataset_sources(original_settings, extracted)
             multi = len(sources) > 1
             results = {}
@@ -265,6 +274,10 @@ def run_workflow(control, *, only=None, resume=False):
                     if not isinstance(result, dict) or result.get('status') not in ('completed', 'partial'):
                         raise ValueError(f'${name} solver must return status=completed or partial')
                 report['calculations'][name] = result
+        else:
+            for name in plan['enabled_calculations']:
+                report['calculations'][name] = {'status': 'partial', 'reason': 'module_incomplete',
+                    'modules': [task for task in tasks if name in plan['module_owners'].get(task, [])]}
         statuses = [report['calculations'][name]['status'] for name in plan['calculation_tasks']]
         report['status'] = ('partial' if not complete or 'partial' in statuses else
                             'prepared' if 'prepared' in statuses else 'completed')

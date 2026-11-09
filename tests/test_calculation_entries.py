@@ -72,7 +72,7 @@ class CalculationEntryTests(unittest.TestCase):
             control = self.write(**{enabled:1}, modules=geometry+others)
             self.assertEqual(control.plan()['tasks'], ['get_dimers_monomers'])
             self.assertEqual(set(control.plan()['skipped_modules']), {'one-mol','two-mol','reorganization-energy'})
-            with self.assertRaises(NotImplementedError):control.execution_plan()
+            with self.assertRaises((NotImplementedError, ValueError)):control.execution_plan()
             self.assertEqual(control.execution_plan(['get_dimer'])['tasks'], ['get_dimers_monomers'])
             self.assertEqual(control.plan(['one-mol'])['tasks'], [])
 

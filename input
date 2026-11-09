@@ -15,7 +15,8 @@ $end
 # 检查配置：./cube input --plan（不会启动量化计算）
 # 入口决定下面哪些模块会被调用；--only 仅缩小已开启入口的范围。
 # 载流子目前可运行参数准备链；迁移率求解尚未接通，完成准备后报告 prepared。
-# 激子和表面跳跃的专用求解尚未接通，完整入口会在计算前明确提示。
+# 激子专用求解尚未接通；表面跳跃的模型示例见 examples/surface-hopping/input。
+# 本材料准备配置没有 $surface-hopping-dynamics，完整入口会在 MD/QC 前明确提示。
 
 # ---------- 1. 从 GROMACS 轨迹提取完整分子和 dimer ----------
 $get_dimers_monomers

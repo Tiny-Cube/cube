@@ -162,7 +162,7 @@ assert main([sys.argv[1]]) == 1
 from universal_kmc.workflow.runner import run_workflow
 try:
     run_workflow(load_input(sys.argv[1]))
-except NotImplementedError:
+except (NotImplementedError, ValueError):
     pass
 else:
     raise AssertionError('enabled unsupported stage must fail')
@@ -175,7 +175,7 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
                                     cwd='/tmp', env=env, text=True, capture_output=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn('no MD/QC tasks were started', result.stderr)
-            self.assertEqual(json.loads(result.stdout)['unsupported_tasks'], [name])
+            self.assertEqual(json.loads(result.stdout)['unsupported_tasks'], [name] if name == 'exciton' else [])
             self.assertFalse((self.root/'mol').exists())
             self.assertFalse((self.root/'cube-results').exists())
 

@@ -80,7 +80,7 @@ $end
 |---|---|---|
 | `$charge-carrier` | 提取、单体、dimer/转移积分、重组能 | 可以运行已实现的参数准备链；迁移率求解尚未接通 |
 | `$exciton` | 结构提取 | 激发态参数、激子耦合与扩散求解尚未接通 |
-| `$surface-hopping` | 结构提取 | 电子态能量、非绝热耦合与动力学尚未接通 |
+| `$surface-hopping` | 结构提取、`surface-hopping-dynamics` | 本分支支持模型 FSSH；真实材料量化／输运尚未接通 |
 
 开启入口后，仅执行该入口允许、且控制文件中存在的模块；多个入口共用的模块合并后只运行一次。激子/表面跳跃不会自动复用载流子的基态轨道与中性/带电四点法。已选量化模块缺少独立数据源时，仍会按所属入口的权限添加提取依赖；DIPRO 所需片段单点保持原有按需复用。
 
@@ -90,7 +90,7 @@ $end
 
 - 载流子完整入口完成现有模块后，`workflow.json` 报告 `status=prepared`、`calculations.charge-carrier.reason=solver_not_implemented`，退出码为 2；不会把参数准备说成迁移率完成。
 - 明确选择已实现模块子集且成功时，退出码为 0，入口状态为 `modules_completed`。
-- 激子/表面跳跃完整入口当前在预检报 `NotImplementedError`，启动 MD/量化前停止。可用 `--only get_dimers_monomers` 选择其已支持的公共结构准备。
+- 激子完整入口当前在预检报 `NotImplementedError`。本分支表面跳跃支持 `$surface-hopping-dynamics`，字段为 `input = dynamics.toml` 和可选 `output = directory`，见 [模型 FSSH 控制](surface-hopping.md)。完整入口缺少该模块时，在 MD/量化前报错；仍可用 `--only get_dimers_monomers` 单独选择公共结构准备。模型运行不自动消费提取文件，也不启动基态量化。
 - 全部入口关闭时，入口标记 `disabled`，实际任务为空，正常结束且不启动科学计算。
 
 新增计算类型只需在 `workflow/calculations.py` 注册允许的模块和可选 solver 回调；解析器、CLI 选项和公共模块去重从注册表派生。solver 尚未实现时保留明确的准备/未实现状态，不用其他计算近似替代。注册方法与并行开发分支见[开发说明](development-branches.md)。

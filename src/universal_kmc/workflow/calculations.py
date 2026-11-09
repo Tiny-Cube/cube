@@ -9,9 +9,10 @@ import re
 from typing import Callable
 
 EXTRACTION = 'get_dimers_monomers'
+SURFACE_DYNAMICS = 'surface-hopping-dynamics'
 QUANTUM_SECTIONS = ('two-mol', 'one-mol', 'reorganization-energy')
-MODULE_SECTIONS = (EXTRACTION, *QUANTUM_SECTIONS)
-MODULE_ORDER = (EXTRACTION, 'one-mol', 'two-mol', 'reorganization-energy')
+MODULE_SECTIONS = (EXTRACTION, *QUANTUM_SECTIONS, SURFACE_DYNAMICS)
+MODULE_ORDER = (EXTRACTION, 'one-mol', 'two-mol', 'reorganization-energy', SURFACE_DYNAMICS)
 
 
 @dataclass(frozen=True)
@@ -19,6 +20,7 @@ class CalculationType:
     modules: tuple[str, ...]
     solver: Callable | None = None
     unavailable_reason: str | None = None
+    required_modules: tuple[str, ...] = ()
 
 
 CALCULATIONS: dict[str, CalculationType] = {}
@@ -35,14 +37,22 @@ def register_calculation(name, calculation):
         raise ValueError('calculation modules must be unique registered modules')
     if calculation.solver is not None and not callable(calculation.solver):
         raise TypeError('solver must be callable')
+    if not set(calculation.required_modules) <= set(calculation.modules):
+        raise ValueError('required modules must belong to the calculation')
     CALCULATIONS[name] = calculation
 
 
-register_calculation('charge-carrier', CalculationType(MODULE_ORDER))
+def _surface_result(control, preparation_report, *, resume):
+    result = preparation_report['tasks'][SURFACE_DYNAMICS]
+    return {'status': result['status'], 'scope': 'model_hamiltonian', 'output': result['output'],
+            'note': 'model FSSH completed; atomistic transport and mobility are not yet connected'}
+
+
+register_calculation('charge-carrier', CalculationType((EXTRACTION, 'one-mol', 'two-mol', 'reorganization-energy')))
 register_calculation('exciton', CalculationType((EXTRACTION,), unavailable_reason=
     'excited-state parameters, exciton couplings and diffusion solver are not yet connected'))
-register_calculation('surface-hopping', CalculationType((EXTRACTION,), unavailable_reason=
-    'electronic-state energies, nonadiabatic couplings and surface-hopping dynamics are not yet connected'))
+register_calculation('surface-hopping', CalculationType((EXTRACTION, SURFACE_DYNAMICS),
+    solver=_surface_result, required_modules=(SURFACE_DYNAMICS,)))
 
 
 def section_names():
@@ -82,6 +92,8 @@ def route_sections(available, entries, only=None):
             'pending_solvers': [name for name in calculations if CALCULATIONS[name].solver is None],
             'entry_points': {name: {'do': entries[name]['do'], 'selected': name in selected,
                                    'modules': list(CALCULATIONS[name].modules),
+                                   'required_modules': list(CALCULATIONS[name].required_modules),
+                                   'missing_required_modules': [m for m in CALCULATIONS[name].required_modules if m not in tasks],
                                    'solver_available': CALCULATIONS[name].solver is not None,
                                    'unavailable_reason': CALCULATIONS[name].unavailable_reason}
                              for name in CALCULATIONS if name in entries}}

@@ -1,0 +1,26 @@
+# Atomic units: Bohr, Hartree, hbar/Eh, electron mass, electron mass*Bohr/(hbar/Eh).
+[model]
+type = "tully-1"
+
+[initial]
+coordinates = [-8.0]
+momenta = [20.0]
+masses = [2000.0]
+active-state = 0                     # zero-based adiabatic state
+
+[dynamics]
+dt-au = 1.0
+electronic-substeps = 4
+trajectories = 32
+max-steps = 2200
+seed = 2026
+decoherence = "none"                 # original FSSH baseline; optional "edc"
+edc-constant-hartree = 0.1
+output-stride = 100
+
+[scattering]
+left = -10.0
+right = 8.0
+
+[output]
+directory = "../../build/surface-hopping/tully1"

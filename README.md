@@ -16,7 +16,13 @@ uv sync --locked --extra workflow
 
 [控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。`--resume` 复用选定且已实现阶段的一致成功结果；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。
 
-`input` 最前面的 `$charge-carrier/$exciton/$surface-hopping` 是计算入口，`do=0/1` 决定后面的哪些模块可执行；全关则不执行下层模块，`--only` 不能绕过入口。公共模块按注册表归属合并，未来可注册新计算类型。载流子已可准备参数，迁移率最终求解仍未接通；激子/表面跳跃完整入口明确提示未实现。详见[入口路由](docs/cube-input.md#顶层计算入口与模块路由)与[分支开发说明](docs/development-branches.md)。
+`input` 最前面的 `$charge-carrier/$exciton/$surface-hopping` 是计算入口，`do=0/1` 决定后面的哪些模块可执行；全关则不执行下层模块，`--only` 不能绕过入口。公共模块按注册表归属合并，未来可注册新计算类型。载流子已可准备参数，迁移率最终求解仍未接通；激子完整入口明确提示未实现。本分支已接入模型 surface hopping，真实材料的非绝热量化／输运待接通。详见[入口路由](docs/cube-input.md#顶层计算入口与模块路由)与[分支开发说明](docs/development-branches.md)。
+
+## 模型 Surface hopping（本开发分支）
+
+提供独立 Python/NumPy FSSH 引擎、Tully 1/2/3、实固定正交基多态 LVC、NAC 方向动量调整和可选 EDC。使用 `uv sync --extra dynamics`，然后 `uv run cube examples/surface-hopping/input`；专用命令为 `cube-surface-hopping`。模型示例无需 MD 或量化依赖。原有四语言 KMC 与本非绝热动力学引擎分别维护。
+
+[理论与开源项目调研](docs/research/surface-hopping.md) · [控制文件和 provider](docs/surface-hopping.md) · [验证结果及范围](runs/surface_hopping_2026-11-09/README.md)。当前没有真实材料迁移率、GPU surface hopping 或 atomistic QC provider；根目录材料 input 缺少 dynamics 模块时会在科学计算前报错。
 
 新增 `frame_step` 多帧提取和 `monomers-qmmm-cutoff` 单体环境簇，支持后续量化逐帧调度；真实轨迹 1980/2000 帧及断点续算结果见[多帧提取验证](runs/frame_extraction_2026-11-08/README.md)。
 

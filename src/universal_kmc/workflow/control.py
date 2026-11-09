@@ -7,11 +7,12 @@ import re
 
 from universal_kmc.quantum.config import SCFConfig
 
-from .calculations import (CALCULATIONS, EXTRACTION, QUANTUM_SECTIONS, route_sections, section_names)
+from .calculations import (CALCULATIONS, EXTRACTION, QUANTUM_SECTIONS, SURFACE_DYNAMICS, route_sections, section_names)
 
 COMMON = {'qc-engine', 'method', 'basis-set', 'auxbasis', 'threads', 'grid-level',
           'conv-tol', 'max-cycle', 'max-memory-mb', 'input', 'output'}
 ALLOWED = {
+    SURFACE_DYNAMICS: {'input', 'output'},
     EXTRACTION: {'tpr', 'gro', 'xtc', 'frame', 'frame_step', 'dimers_cutoff', 'fragment-file',
                  'monomers-qmmm-cutoff', 'output', 'format'},
     'one-mol': COMMON | {'molecules', 'xyz'},
@@ -119,6 +120,11 @@ class WorkflowInput:
 
     def execution_plan(self, only=None):
         plan = self.plan(only)
+        for name in plan['calculation_tasks']:
+            missing = set(CALCULATIONS[name].required_modules)-set(plan['tasks'])
+            if missing:
+                raise ValueError(f'${name} requires {", ".join("$"+m for m in sorted(missing))}; '
+                                 'no MD/QC tasks were started')
         if plan['unsupported_tasks']:
             details = '; '.join(f'${s}: {CALCULATIONS[s].unavailable_reason}'
                                 for s in plan['unsupported_tasks'])
@@ -178,6 +184,13 @@ def load_input(filename='input'):
     active_modules = set(route['tasks'])
     inactive = {name: settings for name, settings in sections.items()
                 if name not in CALCULATIONS and name not in active_modules}
+    if SURFACE_DYNAMICS in active_modules:
+        from universal_kmc.surface_hopping.control import load_control
+        s = sections[SURFACE_DYNAMICS]
+        source = resolve_path(s.get('input', ''), path.parent, 'surface-hopping input', required_file=True)
+        output = resolve_path(s['output'], path.parent, 'surface-hopping output') if 'output' in s else None
+        _, directory, _, _ = load_control(source, output)
+        normalized[SURFACE_DYNAMICS] = {'input': str(source), 'output': str(directory)}
     if EXTRACTION in active_modules:
         s = sections[EXTRACTION]
         n = {key: str(resolve_path(s.get(key, ''), path.parent, key, required_file=True))

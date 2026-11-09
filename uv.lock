@@ -1545,6 +1545,10 @@ version = "0.1.0"
 source = { editable = "." }
 
 [package.optional-dependencies]
+dynamics = [
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+]
 quantum = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -1573,6 +1577,7 @@ requires-dist = [
     { name = "geometric", marker = "extra == 'workflow'", specifier = ">=1.1,<2" },
     { name = "gpu4pyscf-cuda13x", marker = "extra == 'quantum-cuda13'", specifier = "==1.9.1" },
     { name = "mdanalysis", marker = "extra == 'workflow'", specifier = ">=2.11,<3" },
+    { name = "numpy", marker = "extra == 'dynamics'", specifier = ">=2.0,<2.6" },
     { name = "numpy", marker = "extra == 'quantum'", specifier = ">=2.0,<2.6" },
     { name = "numpy", marker = "extra == 'quantum-cuda13'", specifier = ">=2.0,<2.6" },
     { name = "numpy", marker = "extra == 'workflow'", specifier = ">=2.0,<2.6" },
@@ -1580,4 +1585,4 @@ requires-dist = [
     { name = "pyscf", marker = "extra == 'quantum-cuda13'", specifier = ">=2.8,<3" },
     { name = "pyscf", marker = "extra == 'workflow'", specifier = ">=2.8,<3" },
 ]
-provides-extras = ["quantum", "workflow", "quantum-cuda13"]
+provides-extras = ["dynamics", "quantum", "workflow", "quantum-cuda13"]
