@@ -9,9 +9,10 @@ import re
 from typing import Callable
 
 EXTRACTION = 'get_dimers_monomers'
+KMC = 'kmc'
 QUANTUM_SECTIONS = ('two-mol', 'one-mol', 'reorganization-energy')
-MODULE_SECTIONS = (EXTRACTION, *QUANTUM_SECTIONS)
-MODULE_ORDER = (EXTRACTION, 'one-mol', 'two-mol', 'reorganization-energy')
+MODULE_SECTIONS = (EXTRACTION, *QUANTUM_SECTIONS, KMC)
+MODULE_ORDER = (EXTRACTION, 'one-mol', 'two-mol', 'reorganization-energy', KMC)
 
 
 @dataclass(frozen=True)
@@ -38,7 +39,15 @@ def register_calculation(name, calculation):
     CALCULATIONS[name] = calculation
 
 
-register_calculation('charge-carrier', CalculationType(MODULE_ORDER))
+def _charge_result(control,preparation_report,*,resume):
+    if KMC in preparation_report['tasks'] and 'charge-carrier' in preparation_report['module_owners'].get(KMC,[]):
+        result=preparation_report['tasks'][KMC]
+        return {**result,'scope':'static_zero_field_single_carrier_transport'}
+    return {'status':'prepared','reason':'kmc_not_requested',
+            'note':'parameter preparation completed; no mobility simulation was requested'}
+
+
+register_calculation('charge-carrier', CalculationType(MODULE_ORDER,solver=_charge_result))
 register_calculation('exciton', CalculationType((EXTRACTION,), unavailable_reason=
     'excited-state parameters, exciton couplings and diffusion solver are not yet connected'))
 register_calculation('surface-hopping', CalculationType((EXTRACTION,), unavailable_reason=

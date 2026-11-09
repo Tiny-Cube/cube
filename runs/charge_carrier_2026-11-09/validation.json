@@ -1,0 +1,240 @@
+{
+  "schema": "cube-charge-carrier-validation-1",
+  "date": "2026-11-09",
+  "model": "synthetic one-site 1D periodic chain; 10 Angstrom repeat",
+  "scope": "zero-field classical Marcus independent single carrier",
+  "temperature_K": 300.0,
+  "trajectories_per_carrier": 512,
+  "duration_s": 1e-09,
+  "seed": 20261109,
+  "status": "completed",
+  "carriers": {
+    "hole": {
+      "status": "completed",
+      "events": 171363,
+      "diffusion_xx_m2_s": 1.5661120728586492e-07,
+      "diffusion_xx_sem_m2_s": 1.8167993170234043e-08,
+      "analytic_diffusion_xx_m2_s": 1.6805712261699397e-07,
+      "difference_in_sem": -0.6300043831963636,
+      "mobility_xx_cm2_Vs": 0.0605799197662231,
+      "analytic_mobility_xx_cm2_Vs": 0.06500739749548369,
+      "relative_marginal_ci_norm": 0.22737368053526696,
+      "late_window_relative_change": 0.13546476474497512,
+      "relative_target": 0.35,
+      "periodic_transport_rank": 1
+    },
+    "electron": {
+      "status": "completed",
+      "events": 62715,
+      "diffusion_xx_m2_s": 6.129379959664109e-08,
+      "diffusion_xx_sem_m2_s": 7.006305046927817e-09,
+      "analytic_diffusion_xx_m2_s": 6.140061836836696e-08,
+      "difference_in_sem": -0.01524609205714087,
+      "mobility_xx_cm2_Vs": 0.023709500271929845,
+      "analytic_mobility_xx_cm2_Vs": 0.023750819617670334,
+      "relative_marginal_ci_norm": 0.22404155040718107,
+      "late_window_relative_change": 0.050607150700631334,
+      "relative_target": 0.35,
+      "periodic_transport_rank": 1
+    }
+  },
+  "export_conformance": {
+    "hole": [
+      {
+        "mode": "steps",
+        "language": "python",
+        "events": 10000,
+        "time_s": 2.9574661498911038e-08,
+        "visited_sites": 1,
+        "rows": 10001,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.4810430819998146,
+        "status": "status=step_limit events=10000 time=2.9574661498911038e-08",
+        "passed": true
+      },
+      {
+        "mode": "steps",
+        "language": "cpp",
+        "events": 10000,
+        "time_s": 2.9574661498911038e-08,
+        "visited_sites": 1,
+        "rows": 10001,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.17137788599939086,
+        "status": "status=step_limit events=10000 time=2.9574661498911038e-08",
+        "passed": true
+      },
+      {
+        "mode": "steps",
+        "language": "rust",
+        "events": 10000,
+        "time_s": 2.9574661498911038e-08,
+        "visited_sites": 1,
+        "rows": 10001,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.21708017399942037,
+        "status": "status=step_limit events=10000 time=2.95746614989110380e-8",
+        "passed": true
+      },
+      {
+        "mode": "steps",
+        "language": "fortran",
+        "events": 10000,
+        "time_s": 2.9574661498911038e-08,
+        "visited_sites": 1,
+        "rows": 10001,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.2241132560011465,
+        "status": "status=step_limit events=10000 time= 2.95746614989110380E-008",
+        "passed": true
+      },
+      {
+        "mode": "time",
+        "language": "python",
+        "events": 312,
+        "time_s": 1e-09,
+        "visited_sites": 1,
+        "rows": 314,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.14858810499936226,
+        "status": "status=time_limit events=312 time=1.0000000000000001e-09",
+        "passed": true
+      },
+      {
+        "mode": "time",
+        "language": "cpp",
+        "events": 312,
+        "time_s": 1e-09,
+        "visited_sites": 1,
+        "rows": 314,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.010042170997621724,
+        "status": "status=time_limit events=312 time=1.0000000000000001e-09",
+        "passed": true
+      },
+      {
+        "mode": "time",
+        "language": "rust",
+        "events": 312,
+        "time_s": 1e-09,
+        "visited_sites": 1,
+        "rows": 314,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.008034671998757403,
+        "status": "status=time_limit events=312 time=1.00000000000000006e-9",
+        "passed": true
+      },
+      {
+        "mode": "time",
+        "language": "fortran",
+        "events": 312,
+        "time_s": 1e-09,
+        "visited_sites": 1,
+        "rows": 314,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.01031160899947281,
+        "status": "status=time_limit events=312 time= 1.00000000000000006E-009",
+        "passed": true
+      }
+    ],
+    "electron": [
+      {
+        "mode": "steps",
+        "language": "python",
+        "events": 10000,
+        "time_s": 8.094759704308113e-08,
+        "visited_sites": 1,
+        "rows": 10001,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.39990239799953997,
+        "status": "status=step_limit events=10000 time=8.0947597043081127e-08",
+        "passed": true
+      },
+      {
+        "mode": "steps",
+        "language": "cpp",
+        "events": 10000,
+        "time_s": 8.094759704308113e-08,
+        "visited_sites": 1,
+        "rows": 10001,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.1770347950005089,
+        "status": "status=step_limit events=10000 time=8.0947597043081127e-08",
+        "passed": true
+      },
+      {
+        "mode": "steps",
+        "language": "rust",
+        "events": 10000,
+        "time_s": 8.094759704308113e-08,
+        "visited_sites": 1,
+        "rows": 10001,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.28239697000026354,
+        "status": "status=step_limit events=10000 time=8.09475970430811266e-8",
+        "passed": true
+      },
+      {
+        "mode": "steps",
+        "language": "fortran",
+        "events": 10000,
+        "time_s": 8.094759704308113e-08,
+        "visited_sites": 1,
+        "rows": 10001,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.4501183190004667,
+        "status": "status=step_limit events=10000 time= 8.09475970430811266E-008",
+        "passed": true
+      },
+      {
+        "mode": "time",
+        "language": "python",
+        "events": 111,
+        "time_s": 1e-09,
+        "visited_sites": 1,
+        "rows": 113,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.21389563800039468,
+        "status": "status=time_limit events=111 time=1.0000000000000001e-09",
+        "passed": true
+      },
+      {
+        "mode": "time",
+        "language": "cpp",
+        "events": 111,
+        "time_s": 1e-09,
+        "visited_sites": 1,
+        "rows": 113,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.009631966000597458,
+        "status": "status=time_limit events=111 time=1.0000000000000001e-09",
+        "passed": true
+      },
+      {
+        "mode": "time",
+        "language": "rust",
+        "events": 111,
+        "time_s": 1e-09,
+        "visited_sites": 1,
+        "rows": 113,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.006900610002048779,
+        "status": "status=time_limit events=111 time=1.00000000000000006e-9",
+        "passed": true
+      },
+      {
+        "mode": "time",
+        "language": "fortran",
+        "events": 111,
+        "time_s": 1e-09,
+        "visited_sites": 1,
+        "rows": 113,
+        "max_time_difference_vs_python_s": 0.0,
+        "elapsed_seconds": 0.010524066998186754,
+        "status": "status=time_limit events=111 time= 1.00000000000000006E-009",
+        "passed": true
+      }
+    ]
+  },
+  "interpretation": "Model implementation validation, not a measured or computed real-material mobility. Native replay uses the portable reference RNG; Python material ensembles use independent MT19937 streams."
+}

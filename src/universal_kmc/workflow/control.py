@@ -7,11 +7,13 @@ import re
 
 from universal_kmc.quantum.config import SCFConfig
 
-from .calculations import (CALCULATIONS, EXTRACTION, QUANTUM_SECTIONS, route_sections, section_names)
+from .calculations import (CALCULATIONS, EXTRACTION, KMC, QUANTUM_SECTIONS, route_sections, section_names)
+from universal_kmc.transport.config import FIELDS as KMC_FIELDS
 
 COMMON = {'do', 'qc-engine', 'method', 'basis-set', 'auxbasis', 'threads', 'grid-level',
           'conv-tol', 'max-cycle', 'max-memory-mb', 'input', 'output'}
 ALLOWED = {
+    KMC: KMC_FIELDS,
     EXTRACTION: {'do', 'tpr', 'gro', 'xtc', 'frame', 'frame_step', 'dimers_cutoff', 'fragment-file',
                  'monomers-qmmm-cutoff', 'output', 'format'},
     'one-mol': COMMON | {'molecules', 'xyz'},
@@ -141,6 +143,9 @@ class WorkflowInput:
             raise NotImplementedError(
                 f'{details}; these calculation entries are not yet connected to cube input; '
                 'no MD/QC tasks were started. Use --only for a supported shared module or disable the entry.')
+        if KMC in plan['tasks']:
+            from universal_kmc.transport.config import preflight
+            preflight(self.sections[KMC],plan['tasks'])
         return plan
 
 
@@ -217,6 +222,9 @@ def load_input(filename='input'):
             active_modules.add(EXTRACTION)
     inactive = {name: settings for name, settings in sections.items()
                 if name not in CALCULATIONS and name not in active_modules}
+    if KMC in active_modules:
+        from universal_kmc.transport.config import normalize
+        normalized[KMC]=normalize(sections[KMC],path.parent)
     if EXTRACTION in active_modules:
         s = sections[EXTRACTION]
         n = {key: str(resolve_path(s.get(key, ''), path.parent, key, required_file=True))

@@ -8,7 +8,7 @@ import re
 from universal_kmc.quantum.cli import _write_result
 from universal_kmc.quantum.geometry import normalize_atoms, read_xyz
 from .control import EXTRACTION, scf_config
-from .calculations import CALCULATIONS
+from .calculations import CALCULATIONS, KMC, QUANTUM_SECTIONS
 
 
 def _atoms(record):
@@ -110,7 +110,7 @@ def run_workflow(control, *, only=None, resume=False):
         return monomer_cache[key]
 
     try:
-        if EXTRACTION in sections and (EXTRACTION in tasks or any('input' not in sections[t] and 'xyz' not in sections[t] for t in tasks if t != EXTRACTION)):
+        if EXTRACTION in sections and (EXTRACTION in tasks or any('input' not in sections[t] and 'xyz' not in sections[t] for t in tasks if t in QUANTUM_SECTIONS)):
             print('cube: extracting complete molecules/dimers', flush=True)
             extracted = extract_dimers_monomers(sections[EXTRACTION], one_settings=sections.get('one-mol'),
                                        two_settings=sections.get('two-mol'), resume=resume)
@@ -127,6 +127,13 @@ def run_workflow(control, *, only=None, resume=False):
             if task == EXTRACTION:
                 continue
             original_settings = sections[task]
+            if task == KMC:
+                from universal_kmc.transport.runner import run_task
+                if summary_path is None:
+                    summary_path=control.path.parent/'cube-results/workflow.json'
+                report['tasks'][task]=run_task(original_settings,report,extracted,resume=resume)
+                _write_result(summary_path,report)
+                continue
             sources = _dataset_sources(original_settings, extracted)
             multi = len(sources) > 1
             results = {}
@@ -252,20 +259,21 @@ def run_workflow(control, *, only=None, resume=False):
         if summary_path is None:
             summary_path = control.path.parent/'cube-results/workflow.json'
         complete = all(t['status'] == 'completed' for t in report['tasks'].values())
-        if complete:
-            for name in plan['enabled_calculations']:
-                modules = [task for task in tasks if name in plan['module_owners'].get(task, [])]
-                if name not in plan['calculation_tasks']:
-                    result = {'status': 'modules_completed' if modules else 'not_selected', 'modules': modules}
-                elif CALCULATIONS[name].solver is None:
-                    result = {'status': 'prepared', 'reason': 'solver_not_implemented', 'modules': modules}
-                else:
-                    report['calculations'][name] = {'status': 'running', 'modules': modules}
-                    _write_result(summary_path, report)
-                    result = CALCULATIONS[name].solver(control, report, resume=resume)
-                    if not isinstance(result, dict) or result.get('status') not in ('completed', 'partial'):
-                        raise ValueError(f'${name} solver must return status=completed or partial')
-                report['calculations'][name] = result
+        for name in plan['enabled_calculations']:
+            modules = [task for task in tasks if name in plan['module_owners'].get(task, [])]
+            if any(report['tasks'][task]['status'] != 'completed' for task in modules):
+                result = {'status': 'partial', 'reason': 'module_incomplete', 'modules': modules}
+            elif name not in plan['calculation_tasks']:
+                result = {'status': 'modules_completed' if modules else 'not_selected', 'modules': modules}
+            elif CALCULATIONS[name].solver is None:
+                result = {'status': 'prepared', 'reason': 'solver_not_implemented', 'modules': modules}
+            else:
+                report['calculations'][name] = {'status': 'running', 'modules': modules}
+                _write_result(summary_path, report)
+                result = CALCULATIONS[name].solver(control, report, resume=resume)
+                if not isinstance(result, dict) or result.get('status') not in ('completed', 'partial', 'prepared'):
+                    raise ValueError(f'${name} solver must return status=completed, partial or prepared')
+            report['calculations'][name] = result
         statuses = [report['calculations'][name]['status'] for name in plan['calculation_tasks']]
         report['status'] = ('partial' if not complete or 'partial' in statuses else
                             'prepared' if 'prepared' in statuses else 'completed')

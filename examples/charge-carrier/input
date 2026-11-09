@@ -1,0 +1,31 @@
+$charge-carrier
+do = 1
+get_dimers_monomers = 0
+one-mol = 0
+two-mol = 0
+reorganization-energy = 0
+kmc = 1
+$end
+$exciton
+do = 0
+$end
+$surface-hopping
+do = 0
+$end
+
+# Reuse a fully specified parameter network; no MD or quantum jobs.
+$kmc
+input = chain.json
+output = ../../build/charge-carrier/chain
+carriers = hole,electron
+backend = python
+temperature = 300
+trajectories = 512
+duration = 1e-9
+samples = 51
+seed = 20261109
+fit-start = 0.5
+relative-tolerance = 0.35
+trace-trajectories = 3
+max-events = 1000000
+$end

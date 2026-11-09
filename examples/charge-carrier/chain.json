@@ -1,0 +1,12 @@
+{
+  "schema": "cube-charge-network-1",
+  "lattice_angstrom": [[10.0, 0.0, 0.0], [0.0, 10.0, 0.0], [0.0, 0.0, 10.0]],
+  "sites": [
+    {"id": "A", "position_angstrom": [0.0, 0.0, 0.0], "free_energy_ev": {"hole": 0.0, "electron": 0.0}}
+  ],
+  "pairs": [
+    {"id": "A_A_img_1_0_0", "source": "A", "target": "A", "image": [1, 0, 0],
+     "coupling_ev": {"hole": 0.01, "electron": 0.008}, "reorganization_ev": {"hole": 0.3, "electron": 0.35}}
+  ],
+  "provenance": {"scope": "synthetic one-dimensional periodic chain, not a material measurement"}
+}

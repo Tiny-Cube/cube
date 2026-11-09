@@ -26,7 +26,7 @@ def main(argv=None):
     except (ImportError, ValueError, RuntimeError, OSError, KeyError, TypeError) as exc:
         print(f'cube: {type(exc).__name__}: {exc}', file=sys.stderr)
         if isinstance(exc, ImportError):
-            print('Install optional dependencies: uv sync --extra workflow [--extra quantum-cuda13]', file=sys.stderr)
+            print('Install optional dependencies: uv sync --extra transport (KMC only), or --extra workflow [--extra quantum-cuda13]', file=sys.stderr)
         return 1
 
 

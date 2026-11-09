@@ -159,7 +159,7 @@ def _extract_frame(universe, settings, provenance, one_settings, two_settings, r
     frame = universe.trajectory.frame
     base = Path(settings['output'])
     out = base/f'frame{frame:04d}'
-    key = fingerprint({'provenance': provenance, 'frame': frame, 'extraction_version': 2})
+    key = fingerprint({'provenance': provenance, 'frame': frame, 'extraction_version': 3})
     if out.exists():
         manifest_path = out/'manifest.json'
         if not resume or not manifest_path.is_file():
@@ -205,6 +205,7 @@ def _extract_frame(universe, settings, provenance, one_settings, two_settings, r
             elements = mol.elements.tolist()
             files = _write_formats(stage, f'monomers/{i}', elements, xyz, settings['format'], one_settings)
             record = {'id': str(i), 'elements': elements, 'coordinates_angstrom': xyz.tolist(),
+                      'transport_position_angstrom': positions[i-1].mean(axis=0).tolist(),
                       'global_atom_indices_zero_based': mol.indices.tolist(), 'files': files}
             if 'monomers-qmmm-cutoff' in settings:
                 record['cluster'] = _write_cluster(stage, record, environment_frame,
@@ -259,7 +260,7 @@ def extract_dimers_monomers(settings, *, one_settings=None, two_settings=None, r
             raise ValueError('GRO/TPR atom count, names or residue ordering do not match')
         frames = selected_frames(settings['frame'], settings.get('frame_step', 1), len(universe.trajectory))
         index_path = Path(settings['output'])/'frames.json'
-        index_key = fingerprint({'provenance': provenance, 'frames': frames, 'extraction_version': 2})
+        index_key = fingerprint({'provenance': provenance, 'frames': frames, 'extraction_version': 3})
         if len(frames) > 1 and index_path.exists():
             previous = json.loads(index_path.read_text())
             if not resume or previous.get('fingerprint') != index_key:

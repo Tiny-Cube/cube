@@ -113,7 +113,7 @@ class CalculationEntryTests(unittest.TestCase):
         with redirect_stdout(io.StringIO()):self.assertEqual(run_workflow(control),2)
         report=json.loads((self.root/'cube-results/workflow.json').read_text())
         self.assertEqual(report['status'],'prepared')
-        self.assertEqual(report['calculations']['charge-carrier']['reason'],'solver_not_implemented')
+        self.assertEqual(report['calculations']['charge-carrier']['reason'],'kmc_not_requested')
 
     def test_failed_solver_marks_the_entry_failed(self):
         def fail(control, preparation_report, *, resume):
