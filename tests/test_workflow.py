@@ -123,6 +123,80 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
                              .replace('frame =\n', 'frame = -1\nmonomers-qmmm-cutoff = 9\n'))
         self.assertEqual(load_input(self.path).sections['reorganization-energy']['mm-cutoff'], 9.)
 
+    def test_transport_switches_plan_order_and_only(self):
+        self.path.write_text(TEMPLATE+'$exciton\ndo = 0 # skip\n$end\n$charge-carrier\ndo = 1\n$end\n')
+        control = load_input(self.path)
+        plan = control.plan()
+        self.assertEqual(plan['tasks'], ['get_dimers_monomers', 'one-mol', 'two-mol',
+                                         'reorganization-energy', 'charge-carrier'])
+        self.assertEqual(control.sections['charge-carrier'], {'do': 1})
+        self.assertEqual(plan['disabled_tasks'], ['exciton'])
+        self.assertEqual(plan['unsupported_tasks'], ['charge-carrier'])
+        self.assertEqual(control.plan(['exciton'])['tasks'], [])
+        self.assertEqual(control.execution_plan(['get_dimer'])['tasks'], ['get_dimers_monomers'])
+        self.assertEqual(control.execution_plan(['exciton'])['disabled_tasks'], ['exciton'])
+        with self.assertRaisesRegex(NotImplementedError, 'charge-carrier.*not yet connected'):
+            control.execution_plan()
+        self.path.write_text('$charge-carrier\n$end\n$exciton\n$end\n')
+        self.assertEqual(load_input(self.path).sections, {'charge-carrier': {'do': 0}, 'exciton': {'do': 0}})
+
+    def test_transport_switches_require_binary_values_and_known_keys(self):
+        for name in ('charge-carrier', 'exciton'):
+            for value in ('', '2', '-1', '1.0', 'true', 'false', 'yes', '01'):
+                with self.subTest(name=name, value=value):
+                    self.path.write_text(f'${name}\ndo = {value}\n$end\n')
+                    with self.assertRaisesRegex(ValueError, 'do must be 0 or 1'):
+                        load_input(self.path)
+            for contents in ('do = 0\ndo = 1', 'unknown = 0'):
+                self.path.write_text(f'${name}\n{contents}\n$end\n')
+                with self.assertRaises(ValueError):
+                    load_input(self.path)
+
+    def test_transport_enabled_fails_before_importing_or_starting_science(self):
+        # Check both the CLI and direct dispatcher, without importing optional packages.
+        source = '''import sys
+from universal_kmc.workflow.cli import main
+from universal_kmc.workflow.control import load_input
+assert main([sys.argv[1], '--plan']) == 0
+assert main([sys.argv[1]]) == 1
+from universal_kmc.workflow.runner import run_workflow
+try:
+    run_workflow(load_input(sys.argv[1]))
+except NotImplementedError:
+    pass
+else:
+    raise AssertionError('enabled unsupported stage must fail')
+assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
+'''
+        env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]/'src'))
+        for name in ('charge-carrier', 'exciton'):
+            self.path.write_text(TEMPLATE+f'${name}\ndo = 1\n$end\n')
+            result = subprocess.run([sys.executable, '-c', source, str(self.path)],
+                                    cwd='/tmp', env=env, text=True, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn('no MD/QC tasks were started', result.stderr)
+            self.assertEqual(json.loads(result.stdout)['unsupported_tasks'], [name])
+            self.assertFalse((self.root/'mol').exists())
+            self.assertFalse((self.root/'cube-results').exists())
+
+    def test_disabled_transport_skips_without_implicit_extraction_or_optional_imports(self):
+        self.path.write_text(TEMPLATE+'$charge-carrier\ndo = 0\n$end\n$exciton\ndo = 0\n$end\n')
+        source = '''import sys
+from universal_kmc.workflow.cli import main
+assert main([sys.argv[1], '--only', 'charge-carrier', '--only', 'exciton']) == 0
+assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
+'''
+        env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]/'src'))
+        result = subprocess.run([sys.executable, '-c', source, str(self.path)],
+                                cwd='/tmp', env=env, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        report = json.loads((self.root/'cube-results/workflow.json').read_text())
+        self.assertEqual(report['status'], 'completed')
+        self.assertEqual(report['task_order'], [])
+        self.assertEqual(report['tasks'], {name: {'status': 'skipped', 'reason': 'do=0'}
+                                         for name in ('charge-carrier', 'exciton')})
+        self.assertFalse((self.root/'mol').exists())
+
 
 @unittest.skipIf(np is None, 'NumPy optional dependency required')
 class PeriodicCoreTests(unittest.TestCase):
@@ -209,12 +283,15 @@ class CheckpointMappingTests(unittest.TestCase):
             index.write_text(json.dumps({'schema':'cube-frames-1','frame_count':2,'frames':entries}))
             control = root/'input'
             common = 'input = frames.json\nmethod = hf\nbasis-set = sto-3g\nthreads = 1\n'
-            control.write_text('$one-mol\n'+common+'output = one\n$end\n$two-mol\n'+common+'output = two\n$end\n')
+            control.write_text('$one-mol\n'+common+'output = one\n$end\n$two-mol\n'+common+'output = two\n$end\n'
+                               '$charge-carrier\ndo = 0\n$end\n$exciton\ndo = 0\n$end\n')
             with redirect_stdout(io.StringIO()):
                 self.assertEqual(run_workflow(load_input(control)), 0)
             report = json.loads((root/'cube-results/workflow.json').read_text())
             self.assertEqual(report['tasks']['two-mol']['frame_count'], 2)
             self.assertEqual(report['tasks']['one-mol']['count'], 4)
+            for stage in ('charge-carrier', 'exciton'):
+                self.assertEqual(report['tasks'][stage], {'status': 'skipped', 'reason': 'do=0'})
             magnitudes = []
             for label in ('frame0000','frame0002'):
                 transfer = json.loads((root/'two'/label/'1_2/transfer.json').read_text())

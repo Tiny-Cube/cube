@@ -1,8 +1,9 @@
 # cube 完整控制文件：MD 提取 → 单体 → dimer/转移积分 → QM/MM 重组能。
 # 所有相对路径均以本文件所在目录为基准，# 后为注释。
 # 检查配置：./cube input --plan（不会启动量化计算）
-# 执行/续算：./cube input --resume
-# 当前此控制文件不调度速率计算或 KMC。
+# 执行/续算已实现阶段：使用 --only 选择提取、单体、dimer 或重组能，并添加 --resume。
+# 迁移率/激子开关已可解析；这两个求解阶段尚未接通 cube input。
+# do=1 会在任何 MD/量化前明确报错；可用 --only 选择已实现的阶段。
 
 # ---------- 1. 从 GROMACS 轨迹提取完整分子和 dimer ----------
 $get_dimers_monomers
@@ -103,3 +104,12 @@ $end
 # mm-vdw = file
 # mm-vdw-file = lj.json         # 使用 export_qmmm_cluster.py 导出的绑定参数
 # 上述替代字段必须放在 $reorganization-energy 与对应 $end 之间。
+
+# ---------- 5. 载流子迁移率与激子传输开关 ----------
+$charge-carrier
+do = 1                         # 1 请求执行，0 不执行迁移率计算
+$end
+
+$exciton
+do = 0                         # 1 请求执行，0 不执行激子传输计算
+$end

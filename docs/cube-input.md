@@ -6,7 +6,7 @@
 uv sync --locked --extra workflow
 ./cube input --plan                   # 解析/检查路径并显示任务顺序，不探测 GPU
 ./cube input --only get_dimers_monomers         # 只提取，本次真实数据已经实测
-./cube input --resume                 # 执行其余阶段并复用一致且完整的成功结果
+./cube input --only one-mol --only two-mol --only reorganization-energy --resume
 ```
 
 GPU 量化再安装可选 GPU 环境，原有 CUDA 13 验证条件继续适用：
@@ -54,9 +54,29 @@ basis-set = 6-31G(d,p)
 re-method = 4-points
 environment = vacuum
 $end
+
+$charge-carrier
+do = 1     # 1 请求执行，0 不执行迁移率计算
+$end
+
+$exciton
+do = 0     # 1 请求执行，0 不执行激子传输计算
+$end
 ```
 
 执行顺序由依赖决定：提取→单体→dimer/转移积分→重组能；不会因为 `$two-mol` 写在 `$one-mol` 前面就先启动 dimer。只写所需段落即可。`--only` 可重复，依赖的提取/单体单点仍会执行；已有提取需要加 `--resume`。
+
+## 迁移率与激子开关
+
+`$charge-carrier` 和 `$exciton` 均接受 `do = 0` 或 `do = 1`，对应载流子迁移率与激子传输阶段。只允许整数文本 `0/1`，其他值会报错；段内省略 `do` 时默认 `0`，不写新段落保持旧流程。
+
+- `do = 0`：不加入执行队列；若该段被选中，运行报告记录 `status=skipped, reason=do=0`，不会因为这个段自动提取结构或启动量化。
+- `do = 1`：加入请求顺序。**目前两种输运求解尚未接通 `cube input`**；`--plan` 的 `unsupported_tasks` 明确列出它们，真正执行则在任何 MD/SCF/优化之前报 `NotImplementedError` 并返回非零退出码，不生成迁移率或激子结果。
+- `--only charge-carrier`、`--only exciton` 识别对应段，并遵守 `do`，不会覆盖 `do=0`。只选提取/量化阶段时，未选中的输运请求不会阻止运行。
+
+预期的完整请求顺序为提取→单体→dimer/转移积分→重组能→载流子→激子；实际 `tasks` 排除关闭的段，`disabled_tasks` 单独列出关闭段。启用请求与可执行能力分开报告。
+
+仓库根 `input` 按用户设置为 `charge-carrier: do=1`、`exciton: do=0`，因此当前直接 `./cube input --resume` 会在预检明确停止。可执行上面的 `--only` 命令继续已有量化流程。独立材料 KMC 验证脚本不等于已经打通此统一入口，也不会被开关隐式调用。
 
 ## 提取定义和输出格式
 

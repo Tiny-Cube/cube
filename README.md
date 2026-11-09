@@ -14,7 +14,9 @@ uv sync --locked --extra workflow
 ./cube input --only get_dimers_monomers
 ```
 
-[控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。运行 `./cube input --resume` 会继续控制文件中选定的量化/重组能任务；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。
+[控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。`--resume` 复用选定且已实现阶段的一致成功结果；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。
+
+新增 `$charge-carrier/$exciton` 的 `do=0/1` 开关及预检；迁移率和激子求解尚未接通 `cube input`，启用时会在计算前明确报错。根 `input` 按用户设置载流子为 1、激子为 0；继续量化可用 `./cube input --only one-mol --only two-mol --only reorganization-energy --resume`，详见[开关说明](docs/cube-input.md#迁移率与激子开关)。
 
 新增 `frame_step` 多帧提取和 `monomers-qmmm-cutoff` 单体环境簇，支持后续量化逐帧调度；真实轨迹 1980/2000 帧及断点续算结果见[多帧提取验证](runs/frame_extraction_2026-11-08/README.md)。
 

@@ -19,6 +19,7 @@ def main(argv=None):
         if args.plan:
             print(json.dumps(plan, indent=2, allow_nan=False))
             return 0
+        control.execution_plan(args.only)
         from .runner import run_workflow
         return run_workflow(control, only=args.only, resume=args.resume)
     except (ImportError, ValueError, RuntimeError, OSError, KeyError, TypeError) as exc:

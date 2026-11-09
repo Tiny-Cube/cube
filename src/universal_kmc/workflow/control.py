@@ -8,7 +8,10 @@ import re
 from universal_kmc.quantum.config import SCFConfig
 
 EXTRACTION = 'get_dimers_monomers'
-SECTIONS = (EXTRACTION, 'two-mol', 'one-mol', 'reorganization-energy')
+QUANTUM_SECTIONS = ('two-mol', 'one-mol', 'reorganization-energy')
+TRANSPORT_SECTIONS = ('charge-carrier', 'exciton')
+SECTIONS = (EXTRACTION, *QUANTUM_SECTIONS, *TRANSPORT_SECTIONS)
+TASK_ORDER = (EXTRACTION, 'one-mol', 'two-mol', 'reorganization-energy', *TRANSPORT_SECTIONS)
 COMMON = {'qc-engine', 'method', 'basis-set', 'auxbasis', 'threads', 'grid-level',
           'conv-tol', 'max-cycle', 'max-memory-mb', 'input', 'output'}
 ALLOWED = {
@@ -19,6 +22,8 @@ ALLOWED = {
     'reorganization-energy': COMMON | {'molecules', 'xyz', 're-method', 'environment', 'carriers', 'opt-maxsteps',
                                       'mm-source', 'mm-charges', 'mm-cutoff', 'mm-frozen',
                                       'mm-vdw', 'mm-vdw-file', 'gmx-executable'},
+    'charge-carrier': {'do'},
+    'exciton': {'do'},
 }
 
 
@@ -99,10 +104,22 @@ class WorkflowInput:
         selected = {EXTRACTION if s == 'get_dimer' else s for s in (only or self.sections)}
         if not selected <= self.sections.keys():
             raise ValueError('--only must name a section present in input')
-        order = [s for s in (EXTRACTION, 'one-mol', 'two-mol', 'reorganization-energy') if s in selected]
+        disabled = [s for s in TRANSPORT_SECTIONS if s in selected and self.sections[s]['do'] == 0]
+        order = [s for s in TASK_ORDER if s in selected and s not in disabled]
         return {'schema': 'cube-workflow-1', 'control': str(self.path), 'control_sha256': self.sha256,
                 'tasks': order, 'sections': self.sections,
+                'disabled_tasks': disabled,
+                'unsupported_tasks': [s for s in TRANSPORT_SECTIONS if s in order],
                 'note': 'plan only; no trajectory extraction, SCF, optimization or GPU probe performed'}
+
+    def execution_plan(self, only=None):
+        plan = self.plan(only)
+        if plan['unsupported_tasks']:
+            stages = ', '.join('$'+s for s in plan['unsupported_tasks'])
+            raise NotImplementedError(
+                f'{stages}: do=1 requested, but these transport stages are not yet connected to cube input; '
+                'no MD/QC tasks were started. Set do=0 or use --only to select implemented stages.')
+        return plan
 
 
 def load_input(filename='input'):
@@ -159,7 +176,7 @@ def load_input(filename='input'):
             raise ValueError('output directory must not overwrite an input file')
         normalized[EXTRACTION] = n
     inherited = sections.get('one-mol', {}).get('qc-engine', 'pyscf')
-    for name in SECTIONS[1:]:
+    for name in QUANTUM_SECTIONS:
         if name not in sections:
             continue
         s = sections[name]
@@ -242,6 +259,13 @@ def load_input(filename='input'):
                 elif 'mm-vdw-file' in s:
                     raise ValueError('mm-vdw-file requires mm-vdw=file')
         normalized[name] = n
+    for name in TRANSPORT_SECTIONS:
+        if name not in sections:
+            continue
+        value = sections[name].get('do', '0')
+        if value not in ('0', '1'):
+            raise ValueError(f'${name}: do must be 0 or 1')
+        normalized[name] = {'do': int(value)}
     if 'two-mol' in normalized and 'one-mol' in normalized:
         for key in ('method', 'basis-set', 'auxbasis', 'grid-level', 'conv-tol'):
             if str(normalized['two-mol'][key]).lower() != str(normalized['one-mol'][key]).lower():

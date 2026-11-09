@@ -8,7 +8,6 @@ import re
 from universal_kmc.quantum.cli import _write_result
 from universal_kmc.quantum.geometry import normalize_atoms, read_xyz
 from .control import EXTRACTION, scf_config
-from .dimers import extract_dimers_monomers, file_hash, fingerprint
 
 
 def _atoms(record):
@@ -60,6 +59,7 @@ def _dataset_sources(settings, extracted):
     index = json.loads(source.read_text())
     if index.get('schema') != 'cube-frames-1':
         return [source]
+    from .dimers import file_hash
     entries = index.get('frames', [])
     if not entries or index.get('frame_count') != len(entries):
         raise ValueError('empty or inconsistent frame collection')
@@ -82,11 +82,16 @@ def _dataset_sources(settings, extracted):
 
 
 def run_workflow(control, *, only=None, resume=False):
-    tasks = control.plan(only)['tasks']
+    plan = control.execution_plan(only)
+    tasks = plan['tasks']
+    if tasks:
+        from .dimers import extract_dimers_monomers, file_hash, fingerprint
     sections = control.sections
     extracted = None
     report = {'schema': 'cube-workflow-1', 'status': 'running', 'control': str(control.path),
-              'control_sha256': control.sha256, 'tasks': {}, 'task_order': tasks}
+              'control_sha256': control.sha256,
+              'tasks': {s: {'status': 'skipped', 'reason': 'do=0'} for s in plan['disabled_tasks']},
+              'task_order': tasks}
     summary_path = None
     monomer_cache = {}
 
@@ -239,8 +244,10 @@ def run_workflow(control, *, only=None, resume=False):
                                'completed' if all(r['status'] == 'completed' for r in results.values()) else 'partial'),
                     'frame_count': len(results), 'count': sum(r['count'] for r in results.values()), 'frames': results})
                 _write_result(summary_path, report)
-        complete = all(t['status'] == 'completed' for t in report['tasks'].values())
+        complete = all(t['status'] in ('completed', 'skipped') for t in report['tasks'].values())
         report['status'] = 'completed' if complete else 'partial'
+        if summary_path is None:
+            summary_path = control.path.parent/'cube-results/workflow.json'
         _write_result(summary_path, report)
         print(f'cube: {report["status"]}; report: {summary_path}', flush=True)
         return 0 if complete else 2
