@@ -1,5 +1,5 @@
 """Parse $section ... $end input controls without scientific dependencies."""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import math
 from pathlib import Path
@@ -7,11 +7,8 @@ import re
 
 from universal_kmc.quantum.config import SCFConfig
 
-EXTRACTION = 'get_dimers_monomers'
-QUANTUM_SECTIONS = ('two-mol', 'one-mol', 'reorganization-energy')
-TRANSPORT_SECTIONS = ('charge-carrier', 'exciton')
-SECTIONS = (EXTRACTION, *QUANTUM_SECTIONS, *TRANSPORT_SECTIONS)
-TASK_ORDER = (EXTRACTION, 'one-mol', 'two-mol', 'reorganization-energy', *TRANSPORT_SECTIONS)
+from .calculations import (CALCULATIONS, EXTRACTION, QUANTUM_SECTIONS, route_sections, section_names)
+
 COMMON = {'qc-engine', 'method', 'basis-set', 'auxbasis', 'threads', 'grid-level',
           'conv-tol', 'max-cycle', 'max-memory-mb', 'input', 'output'}
 ALLOWED = {
@@ -22,8 +19,6 @@ ALLOWED = {
     'reorganization-energy': COMMON | {'molecules', 'xyz', 're-method', 'environment', 'carriers', 'opt-maxsteps',
                                       'mm-source', 'mm-charges', 'mm-cutoff', 'mm-frozen',
                                       'mm-vdw', 'mm-vdw-file', 'gmx-executable'},
-    'charge-carrier': {'do'},
-    'exciton': {'do'},
 }
 
 
@@ -99,26 +94,37 @@ class WorkflowInput:
     path: Path
     sha256: str
     sections: dict
+    inactive_sections: dict = field(default_factory=dict)
 
     def plan(self, only=None):
-        selected = {EXTRACTION if s == 'get_dimer' else s for s in (only or self.sections)}
-        if not selected <= self.sections.keys():
-            raise ValueError('--only must name a section present in input')
-        disabled = [s for s in TRANSPORT_SECTIONS if s in selected and self.sections[s]['do'] == 0]
-        order = [s for s in TASK_ORDER if s in selected and s not in disabled]
+        entries = {name: self.sections[name] for name in CALCULATIONS if name in self.sections}
+        available = self.sections.keys() | self.inactive_sections.keys()
+        route = route_sections(available, entries, only)
+        # An input-less quantum module needs the selected entry's shared extraction.
+        if EXTRACTION in self.sections and any(
+                task in QUANTUM_SECTIONS and 'input' not in self.sections[task]
+                and 'xyz' not in self.sections[task] for task in route['tasks']):
+            if EXTRACTION not in route['tasks']:
+                owners = [name for name in route['enabled_calculations']
+                          if EXTRACTION in CALCULATIONS[name].modules]
+                if entries and not owners:
+                    raise ValueError('selected calculation needs an explicit data source or an owned extraction module')
+                route['tasks'].insert(0, EXTRACTION)
+                route['skipped_modules'].pop(EXTRACTION, None)
+                route['module_owners'][EXTRACTION] = owners or ['legacy']
         return {'schema': 'cube-workflow-1', 'control': str(self.path), 'control_sha256': self.sha256,
-                'tasks': order, 'sections': self.sections,
-                'disabled_tasks': disabled,
-                'unsupported_tasks': [s for s in TRANSPORT_SECTIONS if s in order],
+                **route, 'sections': self.sections,
+                'inactive_sections': self.inactive_sections,
                 'note': 'plan only; no trajectory extraction, SCF, optimization or GPU probe performed'}
 
     def execution_plan(self, only=None):
         plan = self.plan(only)
         if plan['unsupported_tasks']:
-            stages = ', '.join('$'+s for s in plan['unsupported_tasks'])
+            details = '; '.join(f'${s}: {CALCULATIONS[s].unavailable_reason}'
+                                for s in plan['unsupported_tasks'])
             raise NotImplementedError(
-                f'{stages}: do=1 requested, but these transport stages are not yet connected to cube input; '
-                'no MD/QC tasks were started. Set do=0 or use --only to select implemented stages.')
+                f'{details}; these calculation entries are not yet connected to cube input; '
+                'no MD/QC tasks were started. Use --only for a supported shared module or disable the entry.')
         return plan
 
 
@@ -140,7 +146,7 @@ def load_input(filename='input'):
                         raise ValueError('$end without an open section')
                     active = None
                 else:
-                    if name not in SECTIONS or active is not None or name in sections:
+                    if name not in section_names() or active is not None or name in sections:
                         raise ValueError(f'unknown, nested or duplicate section ${name}')
                     sections[name], active = {}, name
                 continue
@@ -150,7 +156,8 @@ def load_input(filename='input'):
             key = key.lower()
             if active == EXTRACTION and key == 'cutoff':
                 key = 'dimers_cutoff'
-            if key not in ALLOWED[active] or key in sections[active]:
+            allowed = {'do'} if active in CALCULATIONS else ALLOWED[active]
+            if key not in allowed or key in sections[active]:
                 raise ValueError(f'unknown or duplicate key {key!r} in ${active}')
             sections[active][key] = _value(value)
         except ValueError as exc:
@@ -160,7 +167,18 @@ def load_input(filename='input'):
     if not sections:
         raise ValueError('input contains no tasks')
     normalized = {}
-    if EXTRACTION in sections:
+    for name in CALCULATIONS:
+        if name not in sections:
+            continue
+        value = sections[name].get('do', '0')
+        if value not in ('0', '1'):
+            raise ValueError(f'${name}: do must be 0 or 1')
+        normalized[name] = {'do': int(value)}
+    route = route_sections(sections, normalized)
+    active_modules = set(route['tasks'])
+    inactive = {name: settings for name, settings in sections.items()
+                if name not in CALCULATIONS and name not in active_modules}
+    if EXTRACTION in active_modules:
         s = sections[EXTRACTION]
         n = {key: str(resolve_path(s.get(key, ''), path.parent, key, required_file=True))
              for key in ('tpr', 'gro', 'xtc', 'fragment-file')}
@@ -175,9 +193,9 @@ def load_input(filename='input'):
         if any(Path(n['output']) == Path(n[k]) for k in ('tpr', 'gro', 'xtc', 'fragment-file')):
             raise ValueError('output directory must not overwrite an input file')
         normalized[EXTRACTION] = n
-    inherited = sections.get('one-mol', {}).get('qc-engine', 'pyscf')
+    inherited = sections.get('one-mol', {}).get('qc-engine', 'pyscf') if 'one-mol' in active_modules else 'pyscf'
     for name in QUANTUM_SECTIONS:
-        if name not in sections:
+        if name not in active_modules:
             continue
         s = sections[name]
         engine = s.get('qc-engine', inherited).lower()
@@ -259,18 +277,11 @@ def load_input(filename='input'):
                 elif 'mm-vdw-file' in s:
                     raise ValueError('mm-vdw-file requires mm-vdw=file')
         normalized[name] = n
-    for name in TRANSPORT_SECTIONS:
-        if name not in sections:
-            continue
-        value = sections[name].get('do', '0')
-        if value not in ('0', '1'):
-            raise ValueError(f'${name}: do must be 0 or 1')
-        normalized[name] = {'do': int(value)}
     if 'two-mol' in normalized and 'one-mol' in normalized:
         for key in ('method', 'basis-set', 'auxbasis', 'grid-level', 'conv-tol'):
             if str(normalized['two-mol'][key]).lower() != str(normalized['one-mol'][key]).lower():
                 raise ValueError(f'DIPRO requires matching one-mol/two-mol {key}')
-    return WorkflowInput(path, hashlib.sha256(raw).hexdigest(), normalized)
+    return WorkflowInput(path, hashlib.sha256(raw).hexdigest(), normalized, inactive)
 
 
 def scf_config(settings):

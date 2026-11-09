@@ -128,20 +128,20 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
         control = load_input(self.path)
         plan = control.plan()
         self.assertEqual(plan['tasks'], ['get_dimers_monomers', 'one-mol', 'two-mol',
-                                         'reorganization-energy', 'charge-carrier'])
+                                         'reorganization-energy'])
         self.assertEqual(control.sections['charge-carrier'], {'do': 1})
         self.assertEqual(plan['disabled_tasks'], ['exciton'])
-        self.assertEqual(plan['unsupported_tasks'], ['charge-carrier'])
+        self.assertEqual(plan['unsupported_tasks'], [])
+        self.assertEqual(plan['pending_solvers'], ['charge-carrier'])
         self.assertEqual(control.plan(['exciton'])['tasks'], [])
         self.assertEqual(control.execution_plan(['get_dimer'])['tasks'], ['get_dimers_monomers'])
         self.assertEqual(control.execution_plan(['exciton'])['disabled_tasks'], ['exciton'])
-        with self.assertRaisesRegex(NotImplementedError, 'charge-carrier.*not yet connected'):
-            control.execution_plan()
+        self.assertEqual(control.execution_plan()['enabled_calculations'], ['charge-carrier'])
         self.path.write_text('$charge-carrier\n$end\n$exciton\n$end\n')
         self.assertEqual(load_input(self.path).sections, {'charge-carrier': {'do': 0}, 'exciton': {'do': 0}})
 
     def test_transport_switches_require_binary_values_and_known_keys(self):
-        for name in ('charge-carrier', 'exciton'):
+        for name in ('charge-carrier', 'exciton', 'surface-hopping'):
             for value in ('', '2', '-1', '1.0', 'true', 'false', 'yes', '01'):
                 with self.subTest(name=name, value=value):
                     self.path.write_text(f'${name}\ndo = {value}\n$end\n')
@@ -169,7 +169,7 @@ else:
 assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
 '''
         env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]/'src'))
-        for name in ('charge-carrier', 'exciton'):
+        for name in ('exciton', 'surface-hopping'):
             self.path.write_text(TEMPLATE+f'${name}\ndo = 1\n$end\n')
             result = subprocess.run([sys.executable, '-c', source, str(self.path)],
                                     cwd='/tmp', env=env, text=True, capture_output=True)
@@ -193,8 +193,9 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
         report = json.loads((self.root/'cube-results/workflow.json').read_text())
         self.assertEqual(report['status'], 'completed')
         self.assertEqual(report['task_order'], [])
-        self.assertEqual(report['tasks'], {name: {'status': 'skipped', 'reason': 'do=0'}
-                                         for name in ('charge-carrier', 'exciton')})
+        self.assertEqual(report['tasks'], {})
+        self.assertEqual(report['calculations'], {name: {'status': 'disabled'}
+                                                for name in ('charge-carrier', 'exciton')})
         self.assertFalse((self.root/'mol').exists())
 
 
@@ -284,14 +285,15 @@ class CheckpointMappingTests(unittest.TestCase):
             control = root/'input'
             common = 'input = frames.json\nmethod = hf\nbasis-set = sto-3g\nthreads = 1\n'
             control.write_text('$one-mol\n'+common+'output = one\n$end\n$two-mol\n'+common+'output = two\n$end\n'
-                               '$charge-carrier\ndo = 0\n$end\n$exciton\ndo = 0\n$end\n')
+                               '$charge-carrier\ndo = 1\n$end\n$exciton\ndo = 0\n$end\n')
             with redirect_stdout(io.StringIO()):
-                self.assertEqual(run_workflow(load_input(control)), 0)
+                self.assertEqual(run_workflow(load_input(control)), 2)
             report = json.loads((root/'cube-results/workflow.json').read_text())
             self.assertEqual(report['tasks']['two-mol']['frame_count'], 2)
             self.assertEqual(report['tasks']['one-mol']['count'], 4)
-            for stage in ('charge-carrier', 'exciton'):
-                self.assertEqual(report['tasks'][stage], {'status': 'skipped', 'reason': 'do=0'})
+            self.assertEqual(report['status'], 'prepared')
+            self.assertEqual(report['calculations']['charge-carrier']['status'], 'prepared')
+            self.assertEqual(report['calculations']['exciton']['status'], 'disabled')
             magnitudes = []
             for label in ('frame0000','frame0002'):
                 transfer = json.loads((root/'two'/label/'1_2/transfer.json').read_text())
@@ -300,7 +302,7 @@ class CheckpointMappingTests(unittest.TestCase):
             self.assertGreater(magnitudes[0], magnitudes[1])
             checkpoints = {p:p.stat().st_mtime_ns for p in root.rglob('*.chk')}
             with redirect_stdout(io.StringIO()):
-                self.assertEqual(run_workflow(load_input(control), resume=True), 0)
+                self.assertEqual(run_workflow(load_input(control), resume=True), 2)
             self.assertTrue(all(p.stat().st_mtime_ns == t for p,t in checkpoints.items()))
             (root/'frame0000/manifest.json').write_text('{}')
             with self.assertRaisesRegex(ValueError, 'missing/changed'):

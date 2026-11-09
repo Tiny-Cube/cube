@@ -8,6 +8,7 @@ import re
 from universal_kmc.quantum.cli import _write_result
 from universal_kmc.quantum.geometry import normalize_atoms, read_xyz
 from .control import EXTRACTION, scf_config
+from .calculations import CALCULATIONS
 
 
 def _atoms(record):
@@ -90,8 +91,11 @@ def run_workflow(control, *, only=None, resume=False):
     extracted = None
     report = {'schema': 'cube-workflow-1', 'status': 'running', 'control': str(control.path),
               'control_sha256': control.sha256,
-              'tasks': {s: {'status': 'skipped', 'reason': 'do=0'} for s in plan['disabled_tasks']},
-              'task_order': tasks}
+              'tasks': {}, 'task_order': tasks, 'routing': plan['routing'],
+              'module_owners': plan['module_owners'], 'skipped_modules': plan['skipped_modules'],
+              'calculations': {name: {'status': 'disabled' if entry['do'] == 0 else
+                                     'preparing' if entry['selected'] else 'not_selected'}
+                               for name, entry in plan['entry_points'].items()}}
     summary_path = None
     monomer_cache = {}
 
@@ -244,15 +248,34 @@ def run_workflow(control, *, only=None, resume=False):
                                'completed' if all(r['status'] == 'completed' for r in results.values()) else 'partial'),
                     'frame_count': len(results), 'count': sum(r['count'] for r in results.values()), 'frames': results})
                 _write_result(summary_path, report)
-        complete = all(t['status'] in ('completed', 'skipped') for t in report['tasks'].values())
-        report['status'] = 'completed' if complete else 'partial'
         if summary_path is None:
             summary_path = control.path.parent/'cube-results/workflow.json'
+        complete = all(t['status'] == 'completed' for t in report['tasks'].values())
+        if complete:
+            for name in plan['enabled_calculations']:
+                modules = [task for task in tasks if name in plan['module_owners'].get(task, [])]
+                if name not in plan['calculation_tasks']:
+                    result = {'status': 'modules_completed', 'modules': modules}
+                elif CALCULATIONS[name].solver is None:
+                    result = {'status': 'prepared', 'reason': 'solver_not_implemented', 'modules': modules}
+                else:
+                    report['calculations'][name] = {'status': 'running', 'modules': modules}
+                    _write_result(summary_path, report)
+                    result = CALCULATIONS[name].solver(control, report, resume=resume)
+                    if not isinstance(result, dict) or result.get('status') not in ('completed', 'partial'):
+                        raise ValueError(f'${name} solver must return status=completed or partial')
+                report['calculations'][name] = result
+        statuses = [report['calculations'][name]['status'] for name in plan['calculation_tasks']]
+        report['status'] = ('partial' if not complete or 'partial' in statuses else
+                            'prepared' if 'prepared' in statuses else 'completed')
         _write_result(summary_path, report)
         print(f'cube: {report["status"]}; report: {summary_path}', flush=True)
-        return 0 if complete else 2
+        return 0 if report['status'] == 'completed' else 2
     except Exception as exc:
         if summary_path is not None:
+            for calculation in report['calculations'].values():
+                if calculation['status'] in ('preparing', 'running'):
+                    calculation.update(status='failed', error={'type': type(exc).__name__, 'message': str(exc)})
             report.update(status='failed', error={'type': type(exc).__name__, 'message': str(exc)})
             _write_result(summary_path, report)
         raise

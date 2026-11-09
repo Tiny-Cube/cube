@@ -1,5 +1,7 @@
 # input 载流子与激子开关
 
+此初版方案已由 [顶层入口路由设计](2026-11-09-calculation-entry-routing-design.md) 取代；当前开关决定下层模块，而非追加末尾任务。
+
 用户指定新增 `$charge-carrier / do=1 / $end` 与 `$exciton / do=0 / $end`。本次加入根控制文件、解析、计划与执行预检，不扩展未经定义的物理参数，不调用固定材料的独立验证脚本代替通用输运。
 
 两段仅接受 do，值严格为 0/1；省略字段默认为 0，不写段落维持旧行为。计划先按 --only 选段，再移除 do=0，报告 disabled_tasks 和 unsupported_tasks；启用的请求排在量化/重组能之后。--only 也不能覆盖 do=0。
