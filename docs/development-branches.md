@@ -21,7 +21,7 @@ git worktree add ../cube-exciton feat/exciton
 
 ## 注册新计算类型
 
-`src/universal_kmc/workflow/calculations.py` 是入口注册表。新类型声明自己允许调用的模块，可提供延迟加载的 solver：
+`src/universal_kmc/workflow/calculations.py` 是主模块注册表。新类型声明自己自动组织的子模块，可提供延迟加载的 solver。这不是独立子模块的权限表：任何已有子模块都可通过自身 `do=1` 独立运行，不要求主模块开启。
 
 ```python
 from .calculations import CalculationType, register_calculation
@@ -40,3 +40,5 @@ register_calculation('new-calculation', CalculationType(
 注册在 CLI 构造参数之前完成，`$new-calculation / do=1 / $end` 和 `--only new-calculation` 自动可用，不需要逐处修改入口名字列表。模块按公共固定顺序去重；solver 在模块成功后执行，返回包含 `status=completed/partial` 的 JSON 可序列化字典。科学依赖在 solver 内导入，以保持解析与关闭入口无计算副作用。
 
 只提供模块而未提供 solver 时，完整入口结束为 `prepared`；不支持整条计算时设置 `unavailable_reason` 并在预检说明。新增公共模块本身仍需实现其解析和调度，不能只在注册表中添加未知模块名称。
+
+子模块开关使用统一契约：`do=1` 添加独立执行请求；`do=0` 禁用并阻止隐式调用；省略 `do` 保留自动调度。主流程和独立请求共用科学实现、报告和续算。公共改动见 [主模块／子模块设计](plans/2026-11-09-main-submodule-design.md)。

@@ -1,4 +1,5 @@
 $reorganization-energy
+do = 1
 xyz = F2.xyz
 output = results
 qc-engine = pyscf  # change to gpu-pyscf on a compatible GPU
