@@ -1,0 +1,16 @@
+$charge-carrier
+do = 0
+$end
+$exciton
+do = 0
+$end
+$surface-hopping
+do = 1
+$end
+
+# Analytical model validation: no MD files, ground-state SCF, or extraction needed.
+$surface-hopping-dynamics
+do = 1
+input = tully1.toml
+output = ../../build/surface-hopping/tully1
+$end

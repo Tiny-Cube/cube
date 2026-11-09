@@ -1,0 +1,88 @@
+{
+  "schema": "cube-fssh-validation-1",
+  "model": "Tully 1",
+  "scope": "single high-momentum scattering benchmark",
+  "reference_doi": "10.1063/1.459170",
+  "initial": "Gaussian pure diabatic 0; q=-8 sigma_q=1, p=20 sigma_p=0.5; FSSH uses matching Wigner distribution",
+  "quantum_coarse": {
+    "right": [
+      0.5070068553070015,
+      0.4929931348966644
+    ],
+    "left": [
+      8.525115804273302e-09,
+      1.2716144373690555e-09
+    ],
+    "central_probability": 4.38786569193061e-21,
+    "norm": 1.000000000000397,
+    "points": 2048,
+    "dt_au": 1.0,
+    "duration_au": 2200.0
+  },
+  "quantum_refined": {
+    "right": [
+      0.5070078135807794,
+      0.49299217637457576
+    ],
+    "left": [
+      8.743479848275763e-09,
+      1.3024228341470315e-09
+    ],
+    "central_probability": 4.773075847143448e-21,
+    "norm": 1.0000000000012579,
+    "points": 4096,
+    "dt_au": 0.5,
+    "duration_au": 2200.0
+  },
+  "fssh": {
+    "trajectories": 128,
+    "seed": 29101,
+    "dt_au": 1.0,
+    "counts": {
+      "left": [
+        0,
+        0
+      ],
+      "right": [
+        63,
+        65
+      ],
+      "unfinished": [
+        0,
+        0
+      ]
+    },
+    "fractions": {
+      "left": [
+        0.0,
+        0.0
+      ],
+      "right": [
+        0.4921875,
+        0.5078125
+      ],
+      "unfinished": [
+        0.0,
+        0.0
+      ]
+    },
+    "max_energy_drift_hartree": 6.755862775320587e-07,
+    "max_hop_energy_error_hartree": 3.122502256758253e-17,
+    "max_norm_error": 3.168576512280197e-13
+  },
+  "quantum_refinement_max_difference": 9.585220886454415e-07,
+  "right_fraction_difference": [
+    -0.014820313580779398,
+    0.014820323625424237
+  ],
+  "binomial_standard_errors_using_quantum_p": [
+    0.04418983290772475,
+    0.04418983289528003
+  ],
+  "right_difference_in_standard_errors": [
+    -0.33537835754497014,
+    0.33537858494611356
+  ],
+  "elapsed_seconds": 194.17447513800016,
+  "interpretation": "Stochastic and approximate FSSH; one benchmark does not establish accuracy for material transport or all Tully regimes."
+}

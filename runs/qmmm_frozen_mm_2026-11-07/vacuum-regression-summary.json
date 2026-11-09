@@ -1,0 +1,118 @@
+{
+  "status": "passed",
+  "backends": {
+    "cpu": {
+      "elapsed_seconds_observation": 19.71874881722033,
+      "resume_seconds_observation": 0.4902218789793551,
+      "couplings_ev": {
+        "hole": 0.42176447345528073,
+        "electron": 0.4740213579087462
+      },
+      "reorganization_ev": {
+        "hole": 0.40551451695345164,
+        "electron": 5.706538161587172
+      },
+      "neutral_optimization": {
+        "converged": true,
+        "evaluations": 6,
+        "gradient_class": "pyscf.grad.rhf.Gradients_Scanner",
+        "final_gradient_rms": 5.740982383598948e-08,
+        "final_gradient_max": 9.9436739731118e-08,
+        "charge": 0,
+        "spin_2s": 0,
+        "gradient_mro": [
+          "pyscf.grad.rhf.Gradients_Scanner",
+          "pyscf.grad.rhf.SCF_GradScanner",
+          "pyscf.lib.misc.GradScanner",
+          "pyscf.df.grad.rks.Gradients",
+          "pyscf.grad.rks.Gradients",
+          "pyscf.grad.rhf.Gradients",
+          "pyscf.grad.rhf.GradientsBase",
+          "pyscf.lib.misc.StreamObject",
+          "builtins.object"
+        ]
+      },
+      "resume_no_recomputation": "passed",
+      "gradients": {
+        "0": {
+          "analytic_hartree_per_bohr": 0.054168570065661115,
+          "finite_difference_hartree_per_bohr": 0.054182017080961486,
+          "absolute_error": 1.3447015300371845e-05,
+          "step_bohr": 0.001
+        },
+        "1": {
+          "analytic_hartree_per_bohr": 0.10581158556190218,
+          "finite_difference_hartree_per_bohr": 0.10582296947347913,
+          "absolute_error": 1.1383911576956507e-05,
+          "step_bohr": 0.001
+        },
+        "-1": {
+          "analytic_hartree_per_bohr": -0.2307439389020427,
+          "finite_difference_hartree_per_bohr": -0.23073147708885244,
+          "absolute_error": 1.2461813190256521e-05,
+          "step_bohr": 0.001
+        }
+      }
+    },
+    "gpu": {
+      "elapsed_seconds_observation": 15.370441684965044,
+      "resume_seconds_observation": 0.4931837930344045,
+      "couplings_ev": {
+        "hole": 0.4217643262678997,
+        "electron": 0.47402121267670244
+      },
+      "reorganization_ev": {
+        "hole": 0.40551510044682254,
+        "electron": 5.706537733336427
+      },
+      "neutral_optimization": {
+        "converged": true,
+        "evaluations": 6,
+        "gradient_class": "gpu4pyscf.grad.rhf.Gradients_Scanner",
+        "final_gradient_rms": 1.6707437766064623e-08,
+        "final_gradient_max": 2.8940180030190277e-08,
+        "charge": 0,
+        "spin_2s": 0,
+        "gradient_mro": [
+          "gpu4pyscf.grad.rhf.Gradients_Scanner",
+          "gpu4pyscf.grad.rhf.SCF_GradScanner",
+          "pyscf.lib.misc.GradScanner",
+          "gpu4pyscf.df.grad.rks.Gradients",
+          "gpu4pyscf.grad.rks.Gradients",
+          "gpu4pyscf.grad.rhf.Gradients",
+          "gpu4pyscf.grad.rhf.GradientsBase",
+          "pyscf.lib.misc.StreamObject",
+          "builtins.object"
+        ]
+      },
+      "resume_no_recomputation": "passed",
+      "gradients": {
+        "0": {
+          "analytic_hartree_per_bohr": 0.05416857476846815,
+          "finite_difference_hartree_per_bohr": 0.05418201747886542,
+          "absolute_error": 1.3442710397271185e-05,
+          "step_bohr": 0.001
+        },
+        "1": {
+          "analytic_hartree_per_bohr": 0.10581160544930057,
+          "finite_difference_hartree_per_bohr": 0.10582137137760128,
+          "absolute_error": 9.765928300708993e-06,
+          "step_bohr": 0.001
+        },
+        "-1": {
+          "analytic_hartree_per_bohr": -0.23074390451490245,
+          "finite_difference_hartree_per_bohr": -0.2307314768472679,
+          "absolute_error": 1.2427667634540285e-05,
+          "step_bohr": 0.001
+        }
+      }
+    }
+  },
+  "failed_optimization_no_reorganization": "passed",
+  "coupling_tolerance": {
+    "atol_ev": 2e-05,
+    "rtol": 0.0002
+  },
+  "reorganization_cpu_gpu_atol_ev": 0.005,
+  "scope": "ethylene DIPRO and F2 vacuum four-point; timings are observations, not a general speedup benchmark"
+}

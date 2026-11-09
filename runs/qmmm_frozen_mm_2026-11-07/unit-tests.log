@@ -1,0 +1,61 @@
+test_generic_queue_all_languages (test_conformance.ConformanceTests.test_generic_queue_all_languages) ... ok
+test_graph_and_reaction_trajectories (test_conformance.ConformanceTests.test_graph_and_reaction_trajectories) ... ok
+test_invalid_input_rejected_in_all_languages (test_conformance.ConformanceTests.test_invalid_input_rejected_in_all_languages) ... ok
+test_native_rate_laws_match_python (test_conformance.ConformanceTests.test_native_rate_laws_match_python) ... ok
+test_zero_events_zero_steps_zero_horizon (test_conformance.ConformanceTests.test_zero_events_zero_steps_zero_horizon) ... ok
+test_absorbed_horizon_zero_steps_and_boundary (test_core.CoreTests.test_absorbed_horizon_zero_steps_and_boundary) ... ok
+test_arbitrary_state_and_dynamic_events (test_core.CoreTests.test_arbitrary_state_and_dynamic_events) ... ok
+test_disabled_callback_not_evaluated (test_core.CoreTests.test_disabled_callback_not_evaluated) ... ok
+test_exact_clock_selection_and_terminal_observation (test_core.CoreTests.test_exact_clock_selection_and_terminal_observation) ... ok
+test_invalid_rates_and_rng (test_core.CoreTests.test_invalid_rates_and_rng) ... ok
+test_mass_action_and_conservation (test_core.CoreTests.test_mass_action_and_conservation) ... ok
+test_minimal_model_needs_only_two_methods (test_core.CoreTests.test_minimal_model_needs_only_two_methods) ... ok
+test_parser_validation (test_core.CoreTests.test_parser_validation) ... ok
+test_rate_laws_and_detailed_balance (test_core.CoreTests.test_rate_laws_and_detailed_balance) ... ok
+test_exponential_waiting_and_branch_probabilities (test_core.StatisticalTests.test_exponential_waiting_and_branch_probabilities) ... ok
+test_fixed_time_random_walk_and_birth_death (test_core.StatisticalTests.test_fixed_time_random_walk_and_birth_death) ... ok
+test_two_state_time_weighted_occupation (test_core.StatisticalTests.test_two_state_time_weighted_occupation) ... ok
+test_explicit_file_and_manifest_controls_are_unambiguous (test_frozen_mm.FrozenMMControlTests.test_explicit_file_and_manifest_controls_are_unambiguous) ... ok
+test_gromacs_source_hash_change_is_rejected_before_loading (test_frozen_mm.FrozenMMGeometryTests.test_gromacs_source_hash_change_is_rejected_before_loading) ... ok
+test_point_charge_format_finite_data_and_collision (test_frozen_mm.FrozenMMGeometryTests.test_point_charge_format_finite_data_and_collision) ... ok
+test_whole_molecule_images_match_brute_force_and_translate_together (test_frozen_mm.FrozenMMGeometryTests.test_whole_molecule_images_match_brute_force_and_translate_together) ... ok
+test_embedded_checkpoint_isolated_from_vacuum_and_mm_edits_invalidate_resume (test_frozen_mm.FrozenMMPhysicsTests.test_embedded_checkpoint_isolated_from_vacuum_and_mm_edits_invalidate_resume) ... ok
+test_energy_embedding_gradients_frozen_sites_and_translation_invariance (test_frozen_mm.FrozenMMPhysicsTests.test_energy_embedding_gradients_frozen_sites_and_translation_invariance) ... output file: /tmp/tmpuf_w_qh1/point.log
+
+WARN: Mole.unit (Bohr) is changed to Angstrom
+
+ok
+test_optimizer_initialization_failure_is_recorded (test_frozen_mm.FrozenMMPhysicsTests.test_optimizer_initialization_failure_is_recorded) ... ok
+test_ising_detailed_balance (test_generic.GenericPhysicsTests.test_ising_detailed_balance) ... ok
+test_queue_stationary_time_average (test_generic.GenericPhysicsTests.test_queue_stationary_time_average) ... ok
+test_closed_dimer_has_zero_diffusion_and_known_transient (test_molecular_analysis.MolecularBenchmarkTests.test_closed_dimer_has_zero_diffusion_and_known_transient) ... ok
+test_periodic_walk_retains_winding_displacements (test_molecular_analysis.MolecularBenchmarkTests.test_periodic_walk_retains_winding_displacements) ... ok
+test_bad_settings_rejected_before_import_or_output (test_quantum_control.TransferControlTests.test_bad_settings_rejected_before_import_or_output) ... ok
+test_no_ambiguous_flags_and_check_does_not_write_output (test_quantum_control.TransferControlTests.test_no_ambiguous_flags_and_check_does_not_write_output) ... ok
+test_output_cannot_overwrite_inputs_control_or_hardlink (test_quantum_control.TransferControlTests.test_output_cannot_overwrite_inputs_control_or_hardlink) ... ok
+test_paths_indices_and_dependency_free_check_from_other_cwd (test_quantum_control.TransferControlTests.test_paths_indices_and_dependency_free_check_from_other_cwd) ... ok
+test_plain_logs_are_not_accepted_as_complete_checkpoint (test_quantum_control.TransferControlTests.test_plain_logs_are_not_accepted_as_complete_checkpoint) ... ok
+test_esid_requires_equivalence_and_site_check (test_quantum_coupling.CouplingAlgebraTests.test_esid_requires_equivalence_and_site_check) ... ok
+test_gmh_recovers_known_diabatic_hamiltonian (test_quantum_coupling.CouplingAlgebraTests.test_gmh_recovers_known_diabatic_hamiltonian) ... ok
+test_gmh_symmetric_limit_and_undefined_dipoles (test_quantum_coupling.CouplingAlgebraTests.test_gmh_symmetric_limit_and_undefined_dipoles) ... ok
+test_gpu_lowdin_matches_numpy (test_quantum_coupling.CouplingAlgebraTests.test_gpu_lowdin_matches_numpy) ... skipped 'explicit GPU opt-in required'
+test_input_and_config_validation (test_quantum_coupling.CouplingAlgebraTests.test_input_and_config_validation) ... ok
+test_multistate_phase_permutation_and_generalized_spectrum (test_quantum_coupling.CouplingAlgebraTests.test_multistate_phase_permutation_and_generalized_spectrum) ... ok
+test_singular_invalid_and_nonsymmetric_metrics_rejected (test_quantum_coupling.CouplingAlgebraTests.test_singular_invalid_and_nonsymmetric_metrics_rejected) ... ok
+test_two_state_overlap_formula_and_energy_origin (test_quantum_coupling.CouplingAlgebraTests.test_two_state_overlap_formula_and_energy_origin) ... ok
+test_failed_optimization_never_reports_successful_lambda (test_workflow.CheckpointMappingTests.test_failed_optimization_never_reports_successful_lambda) ... ok
+test_translation_preserves_complete_mo_and_fock_and_rejects_rotation (test_workflow.CheckpointMappingTests.test_translation_preserves_complete_mo_and_fock_and_rejects_rotation) ... ok
+test_format_selection_pbc_and_verified_resume (test_workflow.ExtractionTests.test_format_selection_pbc_and_verified_resume) ... ok
+test_boundary_contact_whole_image_and_strict_cutoff (test_workflow.PeriodicCoreTests.test_boundary_contact_whole_image_and_strict_cutoff) ... ok
+test_four_point_formula_preserves_relaxation_signs (test_workflow.PeriodicCoreTests.test_four_point_formula_preserves_relaxation_signs) ... ok
+test_multiple_images_are_preserved (test_workflow.PeriodicCoreTests.test_multiple_images_are_preserved) ... ok
+test_triclinic_images_match_exhaustive_search (test_workflow.PeriodicCoreTests.test_triclinic_images_match_exhaustive_search) ... ok
+test_exact_user_syntax_defaults_engine_inheritance_and_order (test_workflow.SectionControlTests.test_exact_user_syntax_defaults_engine_inheritance_and_order) ... ok
+test_hash_in_quoted_path_and_standalone_xyz (test_workflow.SectionControlTests.test_hash_in_quoted_path_and_standalone_xyz) ... ok
+test_invalid_or_ambiguous_controls_rejected (test_workflow.SectionControlTests.test_invalid_or_ambiguous_controls_rejected) ... ok
+test_plan_is_dependency_free_and_resolves_paths_against_input (test_workflow.SectionControlTests.test_plan_is_dependency_free_and_resolves_paths_against_input) ... ok
+
+----------------------------------------------------------------------
+Ran 52 tests in 12.472s
+
+OK (skipped=1)

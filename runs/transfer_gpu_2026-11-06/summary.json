@@ -1,0 +1,395 @@
+{
+  "schema": "cube-transfer-validation-1",
+  "host_platform": "Linux-6.12.0-211.64.1.el10_2.x86_64-x86_64-with-glibc2.39",
+  "python": "3.12.15 (main, Oct  1 2026, 00:00:00) [GCC 14.3.1 20251022 (Red Hat 14.3.1-4)]",
+  "gpu": "NVIDIA GeForce RTX 5090, 32607 MiB, 615.71.09, 12.0",
+  "tolerances": {
+    "total_energy_hartree_atol": 1e-06,
+    "coupling_ev_atol": 2e-05,
+    "coupling_rtol": 0.0002
+  },
+  "cases": {
+    "cofacial": {
+      "passed": true,
+      "maximum_scf_energy_difference_hartree": 7.958078640513122e-13,
+      "comparisons": [
+        {
+          "carrier": "hole",
+          "method": "dipro",
+          "maximum_difference_ev": 2.6939430941563813e-07
+        },
+        {
+          "carrier": "hole",
+          "method": "frozen_density",
+          "maximum_difference_ev": 1.6374133771090982e-08
+        },
+        {
+          "carrier": "hole",
+          "method": "esid",
+          "maximum_difference_ev": 1.2024364731688664e-07
+        },
+        {
+          "carrier": "hole",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 1.2024364731688664e-07
+        },
+        {
+          "carrier": "electron",
+          "method": "dipro",
+          "maximum_difference_ev": 3.1095875796527395e-07
+        },
+        {
+          "carrier": "electron",
+          "method": "frozen_density",
+          "maximum_difference_ev": 3.752176919169514e-08
+        },
+        {
+          "carrier": "electron",
+          "method": "esid",
+          "maximum_difference_ev": 3.5602230119557987e-07
+        },
+        {
+          "carrier": "electron",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 3.5602230119557987e-07
+        }
+      ],
+      "expected_method_rejections": {}
+    },
+    "slipped": {
+      "passed": true,
+      "maximum_scf_energy_difference_hartree": 8.355982572538778e-12,
+      "comparisons": [
+        {
+          "carrier": "hole",
+          "method": "dipro",
+          "maximum_difference_ev": 1.097556799889432e-07
+        },
+        {
+          "carrier": "hole",
+          "method": "frozen_density",
+          "maximum_difference_ev": 5.84013049031995e-09
+        },
+        {
+          "carrier": "hole",
+          "method": "esid",
+          "maximum_difference_ev": 1.268355360739548e-07
+        },
+        {
+          "carrier": "hole",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 1.268355360739548e-07
+        },
+        {
+          "carrier": "electron",
+          "method": "dipro",
+          "maximum_difference_ev": 5.162656838142432e-08
+        },
+        {
+          "carrier": "electron",
+          "method": "frozen_density",
+          "maximum_difference_ev": 3.311879337442036e-08
+        },
+        {
+          "carrier": "electron",
+          "method": "esid",
+          "maximum_difference_ev": 6.230161657613809e-07
+        },
+        {
+          "carrier": "electron",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 6.230161657683198e-07
+        }
+      ],
+      "expected_method_rejections": {}
+    },
+    "distorted": {
+      "passed": true,
+      "maximum_scf_energy_difference_hartree": 7.389644451905042e-12,
+      "comparisons": [
+        {
+          "carrier": "hole",
+          "method": "dipro",
+          "maximum_difference_ev": 1.2673342825175737e-07
+        },
+        {
+          "carrier": "hole",
+          "method": "frozen_density",
+          "maximum_difference_ev": 8.47592568353761e-09
+        },
+        {
+          "carrier": "hole",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 2.0780573589673779e-07
+        },
+        {
+          "carrier": "electron",
+          "method": "dipro",
+          "maximum_difference_ev": 3.7677490738463604e-08
+        },
+        {
+          "carrier": "electron",
+          "method": "frozen_density",
+          "maximum_difference_ev": 1.5045525630918988e-08
+        },
+        {
+          "carrier": "electron",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 1.8412828620140154e-07
+        }
+      ],
+      "expected_method_rejections": {
+        "hole/esid": "ESID rejected: projected site energies are not equivalent",
+        "electron/esid": "ESID rejected: projected site energies are not equivalent"
+      }
+    },
+    "separated": {
+      "passed": true,
+      "maximum_scf_energy_difference_hartree": 1.5631940186722204e-12,
+      "comparisons": [
+        {
+          "carrier": "hole",
+          "method": "dipro",
+          "maximum_difference_ev": 1.2108207167617737e-11
+        },
+        {
+          "carrier": "hole",
+          "method": "frozen_density",
+          "maximum_difference_ev": 1.2324004769031496e-11
+        },
+        {
+          "carrier": "hole",
+          "method": "esid",
+          "maximum_difference_ev": 1.3392406543078915e-11
+        },
+        {
+          "carrier": "hole",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 1.3392406554937376e-11
+        },
+        {
+          "carrier": "electron",
+          "method": "dipro",
+          "maximum_difference_ev": 7.276865877448371e-13
+        },
+        {
+          "carrier": "electron",
+          "method": "frozen_density",
+          "maximum_difference_ev": 6.267200673086126e-13
+        },
+        {
+          "carrier": "electron",
+          "method": "esid",
+          "maximum_difference_ev": 5.500708937823673e-13
+        },
+        {
+          "carrier": "electron",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 5.500710869058793e-13
+        }
+      ],
+      "expected_method_rejections": {}
+    },
+    "hf": {
+      "passed": true,
+      "maximum_scf_energy_difference_hartree": 5.7411853049416095e-12,
+      "comparisons": [
+        {
+          "carrier": "hole",
+          "method": "dipro",
+          "maximum_difference_ev": 1.1383859410685204e-09
+        },
+        {
+          "carrier": "hole",
+          "method": "frozen_density",
+          "maximum_difference_ev": 3.188166730616615e-09
+        },
+        {
+          "carrier": "hole",
+          "method": "esid",
+          "maximum_difference_ev": 3.2968793806098518e-09
+        },
+        {
+          "carrier": "hole",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 3.2968793806098518e-09
+        },
+        {
+          "carrier": "electron",
+          "method": "dipro",
+          "maximum_difference_ev": 1.5965022082120583e-09
+        },
+        {
+          "carrier": "electron",
+          "method": "frozen_density",
+          "maximum_difference_ev": 2.1142647077532217e-09
+        },
+        {
+          "carrier": "electron",
+          "method": "esid",
+          "maximum_difference_ev": 3.6078260934324646e-09
+        },
+        {
+          "carrier": "electron",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 3.6078260934324646e-09
+        }
+      ],
+      "expected_method_rejections": {}
+    },
+    "multiorbital": {
+      "passed": true,
+      "maximum_scf_energy_difference_hartree": 7.958078640513122e-13,
+      "comparisons": [
+        {
+          "carrier": "hole",
+          "method": "dipro",
+          "maximum_difference_ev": 2.6939431657657664e-07
+        },
+        {
+          "carrier": "hole",
+          "method": "frozen_density",
+          "maximum_difference_ev": 1.6374129330198883e-08
+        },
+        {
+          "carrier": "electron",
+          "method": "dipro",
+          "maximum_difference_ev": 3.1095876068532036e-07
+        },
+        {
+          "carrier": "electron",
+          "method": "frozen_density",
+          "maximum_difference_ev": 3.752173444171447e-08
+        }
+      ],
+      "expected_method_rejections": {
+        "hole/esid": "two-state method rejected: selected fragment manifolds contain more than one orbital per fragment",
+        "hole/orbital_gmh": "two-state method rejected: selected fragment manifolds contain more than one orbital per fragment",
+        "electron/esid": "two-state method rejected: selected fragment manifolds contain more than one orbital per fragment",
+        "electron/orbital_gmh": "two-state method rejected: selected fragment manifolds contain more than one orbital per fragment"
+      }
+    },
+    "benzene": {
+      "passed": true,
+      "maximum_scf_energy_difference_hartree": 5.729816621169448e-11,
+      "comparisons": [
+        {
+          "carrier": "hole",
+          "method": "dipro",
+          "maximum_difference_ev": 8.49930803514809e-09
+        },
+        {
+          "carrier": "hole",
+          "method": "frozen_density",
+          "maximum_difference_ev": 1.1045549985766456e-07
+        },
+        {
+          "carrier": "electron",
+          "method": "dipro",
+          "maximum_difference_ev": 2.5547144733018e-08
+        },
+        {
+          "carrier": "electron",
+          "method": "frozen_density",
+          "maximum_difference_ev": 1.0692872415285493e-07
+        }
+      ],
+      "expected_method_rejections": {
+        "hole/esid": "two-state method rejected: selected fragment manifolds contain more than one orbital per fragment",
+        "hole/orbital_gmh": "two-state method rejected: selected fragment manifolds contain more than one orbital per fragment",
+        "electron/esid": "two-state method rejected: selected fragment manifolds contain more than one orbital per fragment",
+        "electron/orbital_gmh": "two-state method rejected: selected fragment manifolds contain more than one orbital per fragment"
+      }
+    },
+    "rigid_transform": {
+      "passed": true,
+      "maximum_scf_energy_difference_hartree": 1.1226575225009583e-12,
+      "comparisons": [
+        {
+          "carrier": "hole",
+          "method": "dipro",
+          "maximum_difference_ev": 2.6939601993625217e-07
+        },
+        {
+          "carrier": "hole",
+          "method": "frozen_density",
+          "maximum_difference_ev": 1.6372445843515493e-08
+        },
+        {
+          "carrier": "hole",
+          "method": "esid",
+          "maximum_difference_ev": 1.2024184986580977e-07
+        },
+        {
+          "carrier": "hole",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 1.2024184986580977e-07
+        },
+        {
+          "carrier": "electron",
+          "method": "dipro",
+          "maximum_difference_ev": 3.109520445021552e-07
+        },
+        {
+          "carrier": "electron",
+          "method": "frozen_density",
+          "maximum_difference_ev": 3.752825550318306e-08
+        },
+        {
+          "carrier": "electron",
+          "method": "esid",
+          "maximum_difference_ev": 3.5602942760615264e-07
+        },
+        {
+          "carrier": "electron",
+          "method": "orbital_gmh",
+          "maximum_difference_ev": 3.5602942760615264e-07
+        }
+      ],
+      "expected_method_rejections": {}
+    }
+  },
+  "all_passed": true,
+  "timing_scope": "synchronized calculation wall time; small QC validation, not a speedup benchmark",
+  "file_sha256": {
+    "pyproject.toml": "b63124d061ce7f0d6a2df84e7cca08d291fab97ea4927282bcbe8e2de80224be",
+    "uv.lock": "3c1aaddeeef63419d1b7239835c3791bfd2557e90b3cf45b050b4dc1569ea36b",
+    "scripts/validate_transfer_gpu.py": "1c2bd6100f9adf86d4f05783c800d56ebe0dff194fa6641bc4ddebf1e922db27",
+    "src/universal_kmc/quantum/__init__.py": "d3a6c41e9acc1672d9ed9e3ba05048eceb48b1d0be249927245c3c2bcdf804cc",
+    "src/universal_kmc/quantum/cli.py": "3cf7785c359a341a6fdb0cc0dbc206292215e2b25595c7cbab400b45ba7ae392",
+    "src/universal_kmc/quantum/coupling.py": "49de9f380812fdb854650c51d6b265ff705763f9acc1c042cbde1affa024e2c1",
+    "src/universal_kmc/quantum/transfer.py": "943d37e3f32f61cc91d39cb1c13d9704505f21eb5a176082c4ffc4dd0437463c",
+    "tests/test_quantum_coupling.py": "ee2e51e35d31c3ad0cb3074dabdea3d0ac9cc85e7ecd8d0281c80be1ef28bb43"
+  },
+  "installed_implementation_matches_source": true,
+  "installed_from_source_tree": false,
+  "installed_wheel_hashes": {},
+  "algebra_tests": {
+    "run": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "distance_decay_check": true,
+  "quantum_rigid_transform_invariance": true,
+  "frozen_density_without_dimer_scf": true,
+  "unconverged_scf_rejected": {
+    "cpu": "fragment_a SCF did not converge; no coupling is emitted",
+    "gpu": "fragment_a SCF did not converge; no coupling is emitted"
+  },
+  "cli": {
+    "dipro": {
+      "exit_code": 0,
+      "stderr": "/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/gpu4pyscf/lib/cutensor.py:154: UserWarning: using cupy as the tensor contraction engine.\n  warnings.warn(f'using {contract_engine} as the tensor contraction engine.')\n"
+    },
+    "esid": {
+      "exit_code": 2,
+      "stderr": "/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/gpu4pyscf/lib/cutensor.py:154: UserWarning: using cupy as the tensor contraction engine.\n  warnings.warn(f'using {contract_engine} as the tensor contraction engine.')\nOne or more methods were not applicable; inspect output JSON.\n"
+    },
+    "failed_run_replaces_stale_success": {
+      "exit_code": 1,
+      "status": "failed"
+    }
+  },
+  "wall_time_seconds": 93.09681106288917
+}

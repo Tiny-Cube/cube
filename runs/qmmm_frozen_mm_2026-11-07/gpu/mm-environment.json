@@ -1,0 +1,48 @@
+{
+  "schema": "cube-frozen-mm-1",
+  "model": "fixed_point_charge_electrostatic_embedding",
+  "coordinate_unit": "Angstrom",
+  "charge_unit": "elementary_charge",
+  "coordinates_angstrom": [
+    [
+      3.0,
+      0.0,
+      0.0
+    ],
+    [
+      -3.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      3.0,
+      0.0
+    ],
+    [
+      0.0,
+      -3.0,
+      0.0
+    ]
+  ],
+  "charges_e": [
+    0.02,
+    0.02,
+    -0.02,
+    -0.02
+  ],
+  "atom_count": 4,
+  "total_charge_e": 0.0,
+  "mm_frozen": true,
+  "charges_frozen": true,
+  "electrostatics": "finite_cluster_no_Ewald",
+  "qm_mm_vdw_included": false,
+  "polarizable_mm": false,
+  "provenance": {
+    "source": "explicit_file",
+    "path": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/mm.pc",
+    "sha256": "305e8990f8878e0247774ceee25086cd07ac915089e7b21f054f5066bda8c3c2",
+    "selection": "all supplied sites"
+  },
+  "fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498"
+}

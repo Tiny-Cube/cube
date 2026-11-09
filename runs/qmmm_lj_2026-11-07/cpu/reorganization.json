@@ -1,0 +1,797 @@
+{
+  "schema": "cube-reorganization-1",
+  "status": "completed",
+  "fingerprint": "58321a706fc88f2b64f0e82393e29c22357e9d55d7899346ed147fdd4f928e0c",
+  "input": {
+    "atoms": [
+      [
+        "F",
+        [
+          -0.75,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        "F",
+        [
+          0.75,
+          0.0,
+          0.0
+        ]
+      ]
+    ],
+    "settings": {
+      "backend": "cpu",
+      "basis": "6-31G(d,p)",
+      "xc": "b3lyp",
+      "auxbasis": "def2-universal-jkfit",
+      "unit": "Angstrom",
+      "conv_tol": 1e-10,
+      "max_cycle": 100,
+      "grid_level": 3,
+      "threads": 4,
+      "max_memory_mb": 4000,
+      "degeneracy_tolerance_ev": 0.01,
+      "site_tolerance_ev": 0.001,
+      "max_pair_leakage": 0.15
+    },
+    "carriers": [
+      "hole",
+      "electron"
+    ],
+    "environment": "qmmm",
+    "opt_maxsteps": 60,
+    "versions": {
+      "numpy": "2.5.4",
+      "pyscf": "2.15.0",
+      "gpu4pyscf-cuda13x": "1.9.1",
+      "cupy-cuda13x": "13.6.0"
+    },
+    "implementation_sha256": "f4a2ebaa750775535c3df12fe1d75161e2508e3ff103667333f5a7398af764d0",
+    "support_implementation_sha256": {
+      "/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/universal_kmc/workflow/scf.py": "a2f588364d33d4bd7e751a3f8e24d3f2a18d8e98572048099a68b2f05facb83e",
+      "/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/universal_kmc/workflow/embedding.py": "54aac4317fcb64cec51874e453c41b69ee6eb44cb9e6d59c723530e3c0b1e86c"
+    },
+    "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+    "mm_frozen": true
+  },
+  "environment": "qmmm",
+  "method": "4-points",
+  "scope": "QM_relaxation_in_frozen_point_charge_MM_plus_LJ12_6_no_outer_sphere_relaxation",
+  "results": {
+    "hole": {
+      "energies_hartree": {
+        "E0_R0": -199.49520305213284,
+        "Eq_R0": -198.92302439046782,
+        "Eq_Rq": -198.930111542504,
+        "E0_Rq": -199.4872575639373
+      },
+      "relaxation_hartree": {
+        "charged_relaxation": 0.007087152036177713,
+        "neutral_relaxation": 0.007945488195531425,
+        "total": 0.015032640231709138
+      },
+      "relaxation_ev": {
+        "charged_relaxation": 0.19285122983886074,
+        "neutral_relaxation": 0.21620774640595883,
+        "total": 0.40905897624481957
+      },
+      "reorganization_energy_ev": 0.40905897624481957,
+      "charged_optimization": {
+        "converged": true,
+        "evaluations": 6,
+        "gradient_class": "pyscf.grad.rhf.QMMMGradients_Scanner",
+        "final_gradient_rms": 5.341545603774624e-08,
+        "final_gradient_max": 9.272411599355133e-08,
+        "charge": 1,
+        "spin_2s": 1,
+        "gradient_mro": [
+          "pyscf.grad.rhf.QMMMGradients_Scanner",
+          "pyscf.grad.rhf.SCF_GradScanner",
+          "pyscf.lib.misc.GradScanner",
+          "pyscf.lib.misc.QMMMGradients",
+          "pyscf.qmmm.itrf.QMMMGrad",
+          "pyscf.df.grad.uks.Gradients",
+          "pyscf.grad.uks.Gradients",
+          "pyscf.grad.uhf.Gradients",
+          "pyscf.grad.rhf.GradientsBase",
+          "pyscf.lib.misc.StreamObject",
+          "builtins.object"
+        ],
+        "mm_frozen": true,
+        "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+        "optimized_region": "QM_atoms_only",
+        "qm_mm_gradient_verified": true
+      },
+      "single_points": {
+        "E0_R0": {
+          "fingerprint": "e44eefa2c0ecdd2c6a9aba6ea7f60c98c81b9c690a046508aa4f9a236e464806",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.7023363155229778,
+                  -4.430364393971216e-14,
+                  -4.6518285833873315e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.7023362493661248,
+                  -5.739299056198616e-14,
+                  1.081266578089061e-13
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "cpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 0,
+            "spin_2s": 0,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "a2f588364d33d4bd7e751a3f8e24d3f2a18d8e98572048099a68b2f05facb83e",
+            "environment": "qmmm",
+            "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+            "embedding_implementation_sha256": "54aac4317fcb64cec51874e453c41b69ee6eb44cb9e6d59c723530e3c0b1e86c"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/E0_R0.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/E0_R0.log",
+          "converged": true,
+          "energy_hartree": -199.49520305213284,
+          "backend": "cpu",
+          "device": null,
+          "source_class": "pyscf.qmmm.itrf.QMMMDFRKS",
+          "charge": 0,
+          "spin_2s": 0,
+          "spin_square": 0.0,
+          "environment": "qmmm",
+          "mm_frozen": true,
+          "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+          "electronic_energy_hartree": -199.4951946629929,
+          "qm_mm_vdw_energy_hartree": -8.389139939805195e-06,
+          "qm_mm_vdw_included": true,
+          "checkpoint_sha256": "ffebfdca8130f7713ccba073364b33163bac768eebc7022527a8bbd35fe9f012",
+          "elapsed_seconds": 0.29052059911191463,
+          "reused": false
+        },
+        "Eq_R0": {
+          "fingerprint": "ecb0fb4c10ca275f69d7efe6e17ba3498832cfafd8a6787c04c94fe2af4bc259",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.7023363155229778,
+                  -4.430364393971216e-14,
+                  -4.6518285833873315e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.7023362493661248,
+                  -5.739299056198616e-14,
+                  1.081266578089061e-13
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "cpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 1,
+            "spin_2s": 1,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "a2f588364d33d4bd7e751a3f8e24d3f2a18d8e98572048099a68b2f05facb83e",
+            "environment": "qmmm",
+            "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+            "embedding_implementation_sha256": "54aac4317fcb64cec51874e453c41b69ee6eb44cb9e6d59c723530e3c0b1e86c"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/hole_Eq_R0.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/hole_Eq_R0.log",
+          "converged": true,
+          "energy_hartree": -198.92302439046782,
+          "backend": "cpu",
+          "device": null,
+          "source_class": "pyscf.qmmm.itrf.QMMMDFUKS",
+          "charge": 1,
+          "spin_2s": 1,
+          "spin_square": 0.7522673954608425,
+          "environment": "qmmm",
+          "mm_frozen": true,
+          "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+          "electronic_energy_hartree": -198.92301600132788,
+          "qm_mm_vdw_energy_hartree": -8.389139939805195e-06,
+          "qm_mm_vdw_included": true,
+          "checkpoint_sha256": "b335a01a5fddcdae667b4fc139134fc0bab0f15c4f79e730b8cb641dcf3dd6cc",
+          "elapsed_seconds": 0.48737249011173844,
+          "reused": false
+        },
+        "Eq_Rq": {
+          "fingerprint": "9ad3721433493feebdc26aa70d9f53678bf1c6487e5142dbefaa982e40eff230",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.6546279847702376,
+                  -1.1589777894300826e-13,
+                  -1.3030657387948033e-13
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.6546281092903956,
+                  -1.517196637891399e-13,
+                  1.2717644913504104e-13
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "cpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 1,
+            "spin_2s": 1,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "a2f588364d33d4bd7e751a3f8e24d3f2a18d8e98572048099a68b2f05facb83e",
+            "environment": "qmmm",
+            "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+            "embedding_implementation_sha256": "54aac4317fcb64cec51874e453c41b69ee6eb44cb9e6d59c723530e3c0b1e86c"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/hole_Eq_Rq.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/hole_Eq_Rq.log",
+          "converged": true,
+          "energy_hartree": -198.930111542504,
+          "backend": "cpu",
+          "device": null,
+          "source_class": "pyscf.qmmm.itrf.QMMMDFUKS",
+          "charge": 1,
+          "spin_2s": 1,
+          "spin_square": 0.7522390450939014,
+          "environment": "qmmm",
+          "mm_frozen": true,
+          "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+          "electronic_energy_hartree": -198.93003362610625,
+          "qm_mm_vdw_energy_hartree": -7.791639774350853e-05,
+          "qm_mm_vdw_included": true,
+          "checkpoint_sha256": "e8832ca7c71364f34fc247ecd2751780d064e3223fae3a9b6bfcb80c89ee5642",
+          "elapsed_seconds": 0.4975278880447149,
+          "reused": false
+        },
+        "E0_Rq": {
+          "fingerprint": "907ab9c7c5bc76f2e0afb5c31a64403885b65ea042b43221641b8fcfc79bbf07",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.6546279847702376,
+                  -1.1589777894300826e-13,
+                  -1.3030657387948033e-13
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.6546281092903956,
+                  -1.517196637891399e-13,
+                  1.2717644913504104e-13
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "cpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 0,
+            "spin_2s": 0,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "a2f588364d33d4bd7e751a3f8e24d3f2a18d8e98572048099a68b2f05facb83e",
+            "environment": "qmmm",
+            "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+            "embedding_implementation_sha256": "54aac4317fcb64cec51874e453c41b69ee6eb44cb9e6d59c723530e3c0b1e86c"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/hole_E0_Rq.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/hole_E0_Rq.log",
+          "converged": true,
+          "energy_hartree": -199.4872575639373,
+          "backend": "cpu",
+          "device": null,
+          "source_class": "pyscf.qmmm.itrf.QMMMDFRKS",
+          "charge": 0,
+          "spin_2s": 0,
+          "spin_square": 0.0,
+          "environment": "qmmm",
+          "mm_frozen": true,
+          "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+          "electronic_energy_hartree": -199.48717964753956,
+          "qm_mm_vdw_energy_hartree": -7.791639774350853e-05,
+          "qm_mm_vdw_included": true,
+          "checkpoint_sha256": "fcdc596541a2871a340a97a432da95c86a996bce5921123577c8169b4344563a",
+          "elapsed_seconds": 0.31323747313581407,
+          "reused": false
+        }
+      }
+    },
+    "electron": {
+      "energies_hartree": {
+        "E0_R0": -199.49520305213284,
+        "Eq_R0": -199.44612313202902,
+        "Eq_Rq": -199.56674973511107,
+        "E0_Rq": -199.40901336612367
+      },
+      "relaxation_hartree": {
+        "charged_relaxation": 0.12062660308205864,
+        "neutral_relaxation": 0.08618968600916332,
+        "total": 0.20681628909122196
+      },
+      "relaxation_ev": {
+        "charged_relaxation": 3.2824170607472194,
+        "neutral_relaxation": 2.3453408169379366,
+        "total": 5.627757877685156
+      },
+      "reorganization_energy_ev": 5.627757877685156,
+      "charged_optimization": {
+        "converged": true,
+        "evaluations": 9,
+        "gradient_class": "pyscf.grad.rhf.QMMMGradients_Scanner",
+        "final_gradient_rms": 1.1179204635697593e-07,
+        "final_gradient_max": 1.997995256962891e-07,
+        "charge": -1,
+        "spin_2s": 1,
+        "gradient_mro": [
+          "pyscf.grad.rhf.QMMMGradients_Scanner",
+          "pyscf.grad.rhf.SCF_GradScanner",
+          "pyscf.lib.misc.GradScanner",
+          "pyscf.lib.misc.QMMMGradients",
+          "pyscf.qmmm.itrf.QMMMGrad",
+          "pyscf.df.grad.uks.Gradients",
+          "pyscf.grad.uks.Gradients",
+          "pyscf.grad.uhf.Gradients",
+          "pyscf.grad.rhf.GradientsBase",
+          "pyscf.lib.misc.StreamObject",
+          "builtins.object"
+        ],
+        "mm_frozen": true,
+        "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+        "optimized_region": "QM_atoms_only",
+        "qm_mm_gradient_verified": true
+      },
+      "single_points": {
+        "E0_R0": {
+          "fingerprint": "e44eefa2c0ecdd2c6a9aba6ea7f60c98c81b9c690a046508aa4f9a236e464806",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.7023363155229778,
+                  -4.430364393971216e-14,
+                  -4.6518285833873315e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.7023362493661248,
+                  -5.739299056198616e-14,
+                  1.081266578089061e-13
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "cpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 0,
+            "spin_2s": 0,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "a2f588364d33d4bd7e751a3f8e24d3f2a18d8e98572048099a68b2f05facb83e",
+            "environment": "qmmm",
+            "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+            "embedding_implementation_sha256": "54aac4317fcb64cec51874e453c41b69ee6eb44cb9e6d59c723530e3c0b1e86c"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/E0_R0.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/E0_R0.log",
+          "converged": true,
+          "energy_hartree": -199.49520305213284,
+          "backend": "cpu",
+          "device": null,
+          "source_class": "pyscf.qmmm.itrf.QMMMDFRKS",
+          "charge": 0,
+          "spin_2s": 0,
+          "spin_square": 0.0,
+          "environment": "qmmm",
+          "mm_frozen": true,
+          "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+          "electronic_energy_hartree": -199.4951946629929,
+          "qm_mm_vdw_energy_hartree": -8.389139939805195e-06,
+          "qm_mm_vdw_included": true,
+          "checkpoint_sha256": "ffebfdca8130f7713ccba073364b33163bac768eebc7022527a8bbd35fe9f012",
+          "elapsed_seconds": 0.29052059911191463,
+          "reused": false
+        },
+        "Eq_R0": {
+          "fingerprint": "303385774575904ec102d91aeeeeb698e3c7755a8b860294a339694dc56adb06",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.7023363155229778,
+                  -4.430364393971216e-14,
+                  -4.6518285833873315e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.7023362493661248,
+                  -5.739299056198616e-14,
+                  1.081266578089061e-13
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "cpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": -1,
+            "spin_2s": 1,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "a2f588364d33d4bd7e751a3f8e24d3f2a18d8e98572048099a68b2f05facb83e",
+            "environment": "qmmm",
+            "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+            "embedding_implementation_sha256": "54aac4317fcb64cec51874e453c41b69ee6eb44cb9e6d59c723530e3c0b1e86c"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/electron_Eq_R0.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/electron_Eq_R0.log",
+          "converged": true,
+          "energy_hartree": -199.44612313202902,
+          "backend": "cpu",
+          "device": null,
+          "source_class": "pyscf.qmmm.itrf.QMMMDFUKS",
+          "charge": -1,
+          "spin_2s": 1,
+          "spin_square": 0.7517459940159856,
+          "environment": "qmmm",
+          "mm_frozen": true,
+          "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+          "electronic_energy_hartree": -199.44611474288908,
+          "qm_mm_vdw_energy_hartree": -8.389139939805195e-06,
+          "qm_mm_vdw_included": true,
+          "checkpoint_sha256": "fb68d534497c57d41f535852e299c7e55c309b8a26eb75dd8591ca41fd0d2345",
+          "elapsed_seconds": 0.5139955340418965,
+          "reused": false
+        },
+        "Eq_Rq": {
+          "fingerprint": "defedf2e317b6787a61a4d214955abc8ddb718db16a37167a1ccf707440739a5",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.9860834919950037,
+                  7.682527699547229e-14,
+                  -6.078292273514718e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.9860829432388206,
+                  -2.912328513499685e-13,
+                  -2.794607899180374e-14
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "cpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": -1,
+            "spin_2s": 1,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "a2f588364d33d4bd7e751a3f8e24d3f2a18d8e98572048099a68b2f05facb83e",
+            "environment": "qmmm",
+            "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+            "embedding_implementation_sha256": "54aac4317fcb64cec51874e453c41b69ee6eb44cb9e6d59c723530e3c0b1e86c"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/electron_Eq_Rq.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/electron_Eq_Rq.log",
+          "converged": true,
+          "energy_hartree": -199.56674973511107,
+          "backend": "cpu",
+          "device": null,
+          "source_class": "pyscf.qmmm.itrf.QMMMDFUKS",
+          "charge": -1,
+          "spin_2s": 1,
+          "spin_square": 0.7527371528640607,
+          "environment": "qmmm",
+          "mm_frozen": true,
+          "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+          "electronic_energy_hartree": -199.56826819892933,
+          "qm_mm_vdw_energy_hartree": 0.001518463818269952,
+          "qm_mm_vdw_included": true,
+          "checkpoint_sha256": "de3e2bf49ab4bae055f96750533f90d3163509e5e882066eee068f8761dec60a",
+          "elapsed_seconds": 0.5520837029907852,
+          "reused": false
+        },
+        "E0_Rq": {
+          "fingerprint": "42a71aae31dc6b0a8a538bc035a05f39147e565961d9f4d654cca3b854322f25",
+          "request": {
+            "atoms": [
+              [
+                "F",
+                [
+                  -0.9860834919950037,
+                  7.682527699547229e-14,
+                  -6.078292273514718e-14
+                ]
+              ],
+              [
+                "F",
+                [
+                  0.9860829432388206,
+                  -2.912328513499685e-13,
+                  -2.794607899180374e-14
+                ]
+              ]
+            ],
+            "settings": {
+              "backend": "cpu",
+              "basis": "6-31G(d,p)",
+              "xc": "b3lyp",
+              "auxbasis": "def2-universal-jkfit",
+              "unit": "Angstrom",
+              "conv_tol": 1e-10,
+              "max_cycle": 100,
+              "grid_level": 3,
+              "threads": 4,
+              "max_memory_mb": 4000,
+              "degeneracy_tolerance_ev": 0.01,
+              "site_tolerance_ev": 0.001,
+              "max_pair_leakage": 0.15
+            },
+            "charge": 0,
+            "spin_2s": 0,
+            "versions": {
+              "numpy": "2.5.4",
+              "pyscf": "2.15.0",
+              "gpu4pyscf-cuda13x": "1.9.1",
+              "cupy-cuda13x": "13.6.0"
+            },
+            "implementation_sha256": "a2f588364d33d4bd7e751a3f8e24d3f2a18d8e98572048099a68b2f05facb83e",
+            "environment": "qmmm",
+            "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+            "embedding_implementation_sha256": "54aac4317fcb64cec51874e453c41b69ee6eb44cb9e6d59c723530e3c0b1e86c"
+          },
+          "status": "completed",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/electron_E0_Rq.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/electron_E0_Rq.log",
+          "converged": true,
+          "energy_hartree": -199.40901336612367,
+          "backend": "cpu",
+          "device": null,
+          "source_class": "pyscf.qmmm.itrf.QMMMDFRKS",
+          "charge": 0,
+          "spin_2s": 0,
+          "spin_square": 0.0,
+          "environment": "qmmm",
+          "mm_frozen": true,
+          "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+          "electronic_energy_hartree": -199.41053182994193,
+          "qm_mm_vdw_energy_hartree": 0.001518463818269952,
+          "qm_mm_vdw_included": true,
+          "checkpoint_sha256": "14397791439c8cd79188f4edc6f22a04fec76857defcc9797cb7a5cd7579ac5a",
+          "elapsed_seconds": 0.32117776991799474,
+          "reused": false
+        }
+      }
+    }
+  },
+  "embedding": {
+    "schema": "cube-frozen-mm-1",
+    "model": "fixed_point_charge_electrostatic_embedding_plus_LJ12_6",
+    "coordinate_unit": "Angstrom",
+    "charge_unit": "elementary_charge",
+    "atom_count": 4,
+    "total_charge_e": 0.0,
+    "mm_frozen": true,
+    "charges_frozen": true,
+    "electrostatics": "finite_cluster_no_Ewald",
+    "qm_mm_vdw_included": true,
+    "polarizable_mm": false,
+    "fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+    "snapshot": "mm-environment.json"
+  },
+  "neutral_optimization": {
+    "converged": true,
+    "evaluations": 6,
+    "gradient_class": "pyscf.grad.rhf.QMMMGradients_Scanner",
+    "final_gradient_rms": 2.8241659840932216e-07,
+    "final_gradient_max": 4.959177326941885e-07,
+    "charge": 0,
+    "spin_2s": 0,
+    "gradient_mro": [
+      "pyscf.grad.rhf.QMMMGradients_Scanner",
+      "pyscf.grad.rhf.SCF_GradScanner",
+      "pyscf.lib.misc.GradScanner",
+      "pyscf.lib.misc.QMMMGradients",
+      "pyscf.qmmm.itrf.QMMMGrad",
+      "pyscf.df.grad.rks.Gradients",
+      "pyscf.grad.rks.Gradients",
+      "pyscf.grad.rhf.Gradients",
+      "pyscf.grad.rhf.GradientsBase",
+      "pyscf.lib.misc.StreamObject",
+      "builtins.object"
+    ],
+    "mm_frozen": true,
+    "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+    "optimized_region": "QM_atoms_only",
+    "qm_mm_gradient_verified": true
+  },
+  "elapsed_seconds": 13.911752433050424,
+  "reused": false,
+  "output_sha256": {
+    "mm-environment.json": "1d6b558a15c6e8d9f778aabfce84edae14406245fa9c0e5ccc6bd1f5a677e7c9",
+    "neutral.optimization.json": "d096797400d68f34b461879cd87d24a0cb504ec10aec979f833400f5e8a614d7",
+    "neutral.optimization.log": "619636ae8aa660686eb8f130fcf277967073e8b90ea93c0d2d98b11f76f57e38",
+    "neutral.trace.json": "31f8954064a24d2a6b3d3e0ba9ad7fa7d3a49b4145c2080472dc1621433899a9",
+    "neutral.optimized.xyz": "973103351807676862e672a36a86bd384fc30639a8c951152c2d5a56ed181e6a",
+    "E0_R0.status.json": "2e8391cebfa5b4aef709fd8553e5b65de39f6e497c2d6dadac7310d7b3ccddea",
+    "E0_R0.log": "48817c179f12467d9fa8085c38e18b49bf809c346043eb03c6c5ef23b2677225",
+    "E0_R0.chk": "ffebfdca8130f7713ccba073364b33163bac768eebc7022527a8bbd35fe9f012",
+    "cation.optimization.json": "7c8141463f76d17ccc75e513673451f19ff5b4e894678ac60f672321490d3d57",
+    "cation.optimization.log": "2cfb073aaa142edc0978bf2b9f3ddb4e32893adcd55fcc06e59db206c70b48c0",
+    "cation.trace.json": "47e1c7786dc0e62e81a28e28ee8b7a6638e8a6667c2fb0dd0d7ae08dbe2851c0",
+    "cation.optimized.xyz": "fa03ea96817ef36916821386a8bf1ff73b7008c581f71ede19fa01867f855b2b",
+    "hole_Eq_R0.status.json": "99829b299e35bec249bf0ca512d8785987393e9b6f0975714248f482f4608197",
+    "hole_Eq_R0.log": "52c78264220ed4cc1813f12e8fb6042bec7548aed2a71f34f008378a7d817a9a",
+    "hole_Eq_R0.chk": "b335a01a5fddcdae667b4fc139134fc0bab0f15c4f79e730b8cb641dcf3dd6cc",
+    "hole_Eq_Rq.status.json": "5f95251982ad8b2e82b84f676fe7713f852be5fb58061aea029816c825e64d42",
+    "hole_Eq_Rq.log": "ac808f90234c28a0fdcb8bbbc2e5c3cfbdb87c7e48cd00e3750108005be39bcb",
+    "hole_Eq_Rq.chk": "e8832ca7c71364f34fc247ecd2751780d064e3223fae3a9b6bfcb80c89ee5642",
+    "hole_E0_Rq.status.json": "772b08b3d9f5c03d287287f523a9d80024c034264d6ef89a302959eb7647c803",
+    "hole_E0_Rq.log": "1b99557ec9787f7ee978a255ad8cd4ecd657d51e61acd32af28b9ed5eeb395e1",
+    "hole_E0_Rq.chk": "fcdc596541a2871a340a97a432da95c86a996bce5921123577c8169b4344563a",
+    "anion.optimization.json": "f891f6d90a2208c26dd14914b9a8704ade20f5e204f4866f5ff8ce3872085654",
+    "anion.optimization.log": "0dfbb5a06513f5698a4d24d7d5e1d092f223828b209762ecd2a089f5ee2c0645",
+    "anion.trace.json": "efaf240c151d8c05da88005c795fcc2ec03bf48f2b24d27467aec86508b37e4c",
+    "anion.optimized.xyz": "62057d997496e573bbd5c12e35c185da8b37a25da131d90741083948bbc94385",
+    "electron_Eq_R0.status.json": "f87f9f94ab1bfc74fa858c3778f29f46cf31a6d67096859791051496648b9bf2",
+    "electron_Eq_R0.log": "f356ca517fe80a3f9d7236b753249167af7b093b4c7d60352ffba200348b782c",
+    "electron_Eq_R0.chk": "fb68d534497c57d41f535852e299c7e55c309b8a26eb75dd8591ca41fd0d2345",
+    "electron_Eq_Rq.status.json": "f4d146c8c487d75d4f8acdc7d95be569e5c95ebd9fcee0465fe29f407b20531c",
+    "electron_Eq_Rq.log": "7745cee67e3b20b5832982cc91c45496b041b0e7716fe30c4f9e891205c05905",
+    "electron_Eq_Rq.chk": "de3e2bf49ab4bae055f96750533f90d3163509e5e882066eee068f8761dec60a",
+    "electron_E0_Rq.status.json": "8c55ee26a8b06a58bdd70ba93ada085b089e9f421ddc12de238e1f54d59024d2",
+    "electron_E0_Rq.log": "d8dab7457f4279bb55ce214f1c94a3e43ed754361ebefac307b18947c82f8e25",
+    "electron_E0_Rq.chk": "14397791439c8cd79188f4edc6f22a04fec76857defcc9797cb7a5cd7579ac5a"
+  }
+}

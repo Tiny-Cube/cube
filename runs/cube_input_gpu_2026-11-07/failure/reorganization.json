@@ -1,0 +1,60 @@
+{
+  "schema": "cube-reorganization-1",
+  "status": "failed",
+  "fingerprint": "2749bf91b14f5a7765dc9513d034d27641dd694c84ed127fc0ef14d7d9c152eb",
+  "input": {
+    "atoms": [
+      [
+        "F",
+        [
+          -0.75,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        "F",
+        [
+          0.75,
+          0.0,
+          0.0
+        ]
+      ]
+    ],
+    "settings": {
+      "backend": "cpu",
+      "basis": "6-31G(d,p)",
+      "xc": "b3lyp",
+      "auxbasis": "def2-universal-jkfit",
+      "unit": "Angstrom",
+      "conv_tol": 1e-10,
+      "max_cycle": 100,
+      "grid_level": 3,
+      "threads": 4,
+      "max_memory_mb": 4000,
+      "degeneracy_tolerance_ev": 0.01,
+      "site_tolerance_ev": 0.001,
+      "max_pair_leakage": 0.15
+    },
+    "carriers": [
+      "hole"
+    ],
+    "environment": "vacuum",
+    "opt_maxsteps": 1,
+    "versions": {
+      "numpy": "2.5.4",
+      "pyscf": "2.15.0",
+      "gpu4pyscf-cuda13x": "1.9.1",
+      "cupy-cuda13x": "13.6.0"
+    },
+    "implementation_sha256": "9ac1533cf570c9cf2f10bb0a9f8a4a1da4e49d2fa54d810cf4bf68ae56f0c953"
+  },
+  "environment": "vacuum",
+  "method": "4-points",
+  "scope": "intramolecular_vacuum_no_MM_no_outer_sphere",
+  "results": {},
+  "error": {
+    "type": "RuntimeError",
+    "message": "neutral geometry optimization did not converge in 1 steps"
+  }
+}

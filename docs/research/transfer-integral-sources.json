@@ -1,0 +1,87 @@
+{
+  "review_date": "2026-11-06",
+  "scope": "Primary publications, author records, public author preprint and official numerical documentation. Short original excerpts are cited beside independently written implementations.",
+  "sources": [
+    {
+      "id": "baumeier2010",
+      "authors": "B. Baumeier, J. Kirkpatrick, D. Andrienko",
+      "title": "Density-functional based determination of intermolecular charge transfer properties for large-scale morphologies",
+      "doi": "10.1039/C002337J",
+      "publication": "Physical Chemistry Chemical Physics 12, 11103-11113 (2010)",
+      "url": "https://doi.org/10.1039/C002337J",
+      "author_record": "https://research.tue.nl/en/publications/density-functional-based-determination-of-intermolecular-charge-t/",
+      "used_for": "Dimer-Fock projection, symmetric orthogonalization, noSCF approximations and method distinctions",
+      "access": "Author abstract checked; publisher full-text request returned 403. Two-state formula additionally checked against official FHI-aims and SCM documentation and independently verified algebraically.",
+      "code_reference": "quantum/coupling.py:lowdin"
+    },
+    {
+      "id": "schober2016",
+      "authors": "C. Schober, K. Reuter, H. Oberhofer",
+      "title": "Critical analysis of fragment-orbital DFT schemes for the calculation of electronic coupling values",
+      "doi": "10.1063/1.4940920",
+      "publication": "Journal of Chemical Physics 144, 054103 (2016)",
+      "url": "https://doi.org/10.1063/1.4940920",
+      "author_preprint": "https://arxiv.org/html/1512.00200",
+      "used_for": "Many-electron definition Eq. (1), fragment approximations and neutral/charged Hamiltonian variants, preprint Sec. II.3.1-II.3.3",
+      "access": "Author preprint full text checked. Current frozen_density explicitly uses an AO-density sum, and does not claim to implement every FO-DFT variant.",
+      "code_reference": "quantum/transfer.py module reference and frozen-density construction"
+    },
+    {
+      "id": "valeev2006",
+      "authors": "E. F. Valeev, V. Coropceanu, D. A. da Silva Filho, S. Salman, J.-L. Bredas",
+      "title": "Effect of electronic polarization on charge-transport parameters in molecular organic semiconductors",
+      "doi": "10.1021/ja061827h",
+      "publication": "Journal of the American Chemical Society 128, 9882-9886 (2006)",
+      "url": "https://doi.org/10.1021/ja061827h",
+      "author_record": "https://experts.arizona.edu/en/publications/effect-of-electronic-polarization-on-charge-transport-parameters-/",
+      "used_for": "Polarization and inequivalent site energies invalidate unrestricted use of half orbital splitting",
+      "access": "Original abstract checked through author institution and PubMed; publisher full-text request returned 403.",
+      "code_reference": "quantum/coupling.py:energy_splitting"
+    },
+    {
+      "id": "cave1996",
+      "authors": "R. J. Cave, M. D. Newton",
+      "title": "Generalization of the Mulliken-Hush treatment for the calculation of electron transfer matrix elements",
+      "doi": "10.1016/0009-2614(95)01310-5",
+      "publication": "Chemical Physics Letters 249, 15-19 (1996)",
+      "url": "https://doi.org/10.1016/0009-2614(95)01310-5",
+      "author_record": "https://scholarship.claremont.edu/hmc_fac_pub/816/",
+      "used_for": "Two-state GMH from adiabatic energies and dipoles; orbital workflow is explicitly labeled a single-particle approximation",
+      "access": "Original abstract and metadata checked; formula also corroborated against the later primary paper on pi-stacks listed below.",
+      "code_reference": "quantum/coupling.py:gmh"
+    },
+    {
+      "id": "cave1997",
+      "authors": "R. J. Cave, M. D. Newton",
+      "title": "Calculation of electronic coupling matrix elements for ground and excited state electron transfer reactions: Comparison of the generalized Mulliken-Hush and block diagonalization methods",
+      "doi": "10.1063/1.474023",
+      "publication": "Journal of Chemical Physics 106, 9213-9226 (1997)",
+      "url": "https://doi.org/10.1063/1.474023",
+      "author_record": "https://scholarship.claremont.edu/hmc_fac_pub/8/",
+      "used_for": "GMH/diabatization background and symmetric two-state half-splitting restriction",
+      "access": "Author abstract and metadata checked; repository PDF request returned 403. Half-splitting restriction is independently derived from a real symmetric two-state Hamiltonian and corroborated by official SCM documentation."
+    }
+  ],
+  "formula_crosschecks": [
+    {
+      "url": "https://www.fhi-aims.org/uploads/manual/Ch3/S48.html",
+      "location": "Eq. (3.259) and FO-DFT flavour descriptions",
+      "scope": "Official implementation documentation, not a substitute for identifying which density/charge approximation cube actually uses"
+    },
+    {
+      "url": "https://www.scm.com/doc/DFTB/Charge_transfer_integrals.html",
+      "location": "Charge transfer integrals direct method",
+      "scope": "Official two-state overlap-corrected expression and degeneracy discussion; cube uses PySCF rather than DFTB"
+    },
+    {
+      "url": "https://www.sciencedirect.com/science/article/abs/pii/S000926140600220X",
+      "title": "Donor-acceptor electronic couplings in pi-stacks: How many states must be accounted for?",
+      "scope": "Primary paper explicitly showing the two-state GMH expression and warning about multistate effects"
+    },
+    {
+      "url": "https://pyscf.org/user/gpu.html",
+      "scope": "Official GPU4PySCF conversion API and functionality boundaries; actual server execution verified separately"
+    }
+  ],
+  "copyright": "Only brief excerpts and bibliographic data are included; no full articles or external source implementations are redistributed."
+}

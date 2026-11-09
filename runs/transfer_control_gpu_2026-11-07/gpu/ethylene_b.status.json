@@ -1,0 +1,24 @@
+{
+  "source": "/home/codex/cube-transfer-validation-20261106/examples/quantum/ethylene_b.xyz",
+  "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_b.chk",
+  "log": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_b.log",
+  "settings": {
+    "backend": "gpu",
+    "basis": "def2-svp",
+    "xc": "b3lyp",
+    "auxbasis": "def2-universal-jkfit",
+    "unit": "Angstrom",
+    "conv_tol": 1e-10,
+    "max_cycle": 100,
+    "grid_level": 3,
+    "threads": 4,
+    "max_memory_mb": 4000,
+    "degeneracy_tolerance_ev": 0.01,
+    "site_tolerance_ev": 0.001,
+    "max_pair_leakage": 0.15
+  },
+  "status": "completed",
+  "energy_hartree": -78.5312860556903,
+  "converged": true,
+  "source_class": "gpu4pyscf.df.df_jk.DFRKS"
+}

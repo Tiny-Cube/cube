@@ -1,0 +1,22 @@
+# Synthetic three-site, two-coordinate model; these are NOT material parameters.
+[model]
+type = "lvc"
+file = "lvc.json"
+
+[initial]
+coordinates = [-0.5, 0.2]
+momenta = [2.0, -1.0]
+masses = [2000.0, 2000.0]
+active-state = 0
+
+[dynamics]
+dt-au = 1.0
+electronic-substeps = 4
+trajectories = 8
+max-steps = 500
+seed = 2026
+decoherence = "edc"
+output-stride = 25
+
+[output]
+directory = "../../build/surface-hopping/lvc"

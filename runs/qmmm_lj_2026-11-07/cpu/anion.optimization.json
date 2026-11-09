@@ -1,0 +1,52 @@
+{
+  "fingerprint": "6358d8662330c34f806e111de9f0e40a3b45ba08f4056bfe1e79aaffc812b7de",
+  "status": "completed",
+  "atoms": [
+    [
+      "F",
+      [
+        -0.9860834919950037,
+        7.682527699547229e-14,
+        -6.078292273514718e-14
+      ]
+    ],
+    [
+      "F",
+      [
+        0.9860829432388206,
+        -2.912328513499685e-13,
+        -2.794607899180374e-14
+      ]
+    ]
+  ],
+  "optimization": {
+    "converged": true,
+    "evaluations": 9,
+    "gradient_class": "pyscf.grad.rhf.QMMMGradients_Scanner",
+    "final_gradient_rms": 1.1179204635697593e-07,
+    "final_gradient_max": 1.997995256962891e-07,
+    "charge": -1,
+    "spin_2s": 1,
+    "gradient_mro": [
+      "pyscf.grad.rhf.QMMMGradients_Scanner",
+      "pyscf.grad.rhf.SCF_GradScanner",
+      "pyscf.lib.misc.GradScanner",
+      "pyscf.lib.misc.QMMMGradients",
+      "pyscf.qmmm.itrf.QMMMGrad",
+      "pyscf.df.grad.uks.Gradients",
+      "pyscf.grad.uks.Gradients",
+      "pyscf.grad.uhf.Gradients",
+      "pyscf.grad.rhf.GradientsBase",
+      "pyscf.lib.misc.StreamObject",
+      "builtins.object"
+    ],
+    "mm_frozen": true,
+    "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+    "optimized_region": "QM_atoms_only",
+    "qm_mm_gradient_verified": true
+  },
+  "output_sha256": {
+    "anion.trace.json": "efaf240c151d8c05da88005c795fcc2ec03bf48f2b24d27467aec86508b37e4c",
+    "anion.optimized.xyz": "62057d997496e573bbd5c12e35c185da8b37a25da131d90741083948bbc94385"
+  }
+}

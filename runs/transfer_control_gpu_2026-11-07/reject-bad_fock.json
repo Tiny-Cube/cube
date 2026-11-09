@@ -1,0 +1,15 @@
+{
+  "schema": "cube-transfer-1",
+  "status": "failed",
+  "error": {
+    "type": "ValueError",
+    "message": "saved Fock and complete MO eigenoperator disagree by more than 1e-6 Hartree"
+  },
+  "control": {
+    "schema_version": 1,
+    "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/reject-bad_fock.toml",
+    "sha256": "96ee0f4c110fcb769215b6ef64930ebfb30b9ea5efee6d5d5d3c3a48132a20bf",
+    "atom_index_base": 1,
+    "orbital_index_base": 1
+  }
+}

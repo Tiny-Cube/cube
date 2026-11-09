@@ -1,0 +1,15 @@
+{
+  "schema": "cube-transfer-1",
+  "status": "failed",
+  "error": {
+    "type": "ValueError",
+    "message": "checkpoint explicitly reports unconverged SCF; assumption cannot override it"
+  },
+  "control": {
+    "schema_version": 1,
+    "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/reject-unconverged.toml",
+    "sha256": "8406d310c3ffadcc2b0db61779570f45c27344759453a7d56857594809f91d70",
+    "atom_index_base": 1,
+    "orbital_index_base": 1
+  }
+}

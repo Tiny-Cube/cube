@@ -1,0 +1,15 @@
+{
+  "schema": "cube-transfer-1",
+  "status": "failed",
+  "error": {
+    "type": "ValueError",
+    "message": "fragment and dimer checkpoint electronic methods differ"
+  },
+  "control": {
+    "schema_version": 1,
+    "path": "/home/dav/Documents/code/codex/cube/build/transfer-control-validation/reject-wrong_model.toml",
+    "sha256": "2baf6dd793e72200d915908b894e8f701fe7fbfd1f52c4fed48422f3f4236383",
+    "atom_index_base": 1,
+    "orbital_index_base": 1
+  }
+}

@@ -1,0 +1,469 @@
+{
+  "schema": "cube-transfer-1",
+  "status": "completed",
+  "input": {
+    "fragment_a": [
+      [
+        "C",
+        [
+          -0.67,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        "C",
+        [
+          0.67,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        "H",
+        [
+          -1.2319999999999998,
+          0.928,
+          0.0
+        ]
+      ],
+      [
+        "H",
+        [
+          -1.2319999999999998,
+          -0.928,
+          0.0
+        ]
+      ],
+      [
+        "H",
+        [
+          1.2319999999999998,
+          0.928,
+          0.0
+        ]
+      ],
+      [
+        "H",
+        [
+          1.2319999999999998,
+          -0.928,
+          0.0
+        ]
+      ]
+    ],
+    "fragment_b": [
+      [
+        "C",
+        [
+          -0.67,
+          0.0,
+          3.5
+        ]
+      ],
+      [
+        "C",
+        [
+          0.67,
+          0.0,
+          3.5
+        ]
+      ],
+      [
+        "H",
+        [
+          -1.2319999999999998,
+          0.928,
+          3.5
+        ]
+      ],
+      [
+        "H",
+        [
+          -1.2319999999999998,
+          -0.928,
+          3.5
+        ]
+      ],
+      [
+        "H",
+        [
+          1.2319999999999998,
+          0.928,
+          3.5
+        ]
+      ],
+      [
+        "H",
+        [
+          1.2319999999999998,
+          -0.928,
+          3.5
+        ]
+      ]
+    ],
+    "methods": [
+      "dipro",
+      "esid",
+      "orbital_gmh"
+    ],
+    "carriers": [
+      "hole",
+      "electron"
+    ],
+    "assume_equivalent": true,
+    "orbital_indices": null,
+    "postprocessing": {
+      "backend": "cpu",
+      "threads": 4,
+      "degeneracy_tolerance_ev": 0.01,
+      "site_tolerance_ev": 0.001,
+      "max_pair_leakage": 0.15,
+      "atom_indices_zero_based": null
+    },
+    "checkpoints": {
+      "fragment_a": {
+        "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_a.chk",
+        "sha256": "693a485149b478b8b9010a487c2ff5c6da620501f5fecd420a15dae7634a2de7"
+      },
+      "fragment_b": {
+        "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_b.chk",
+        "sha256": "4b1e06f771e0bd04ea02696a1c7ed7c46b1d6b4fe819224f268233c150b10a1f"
+      },
+      "dimer": {
+        "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_ab.chk",
+        "sha256": "8038d374948975845e3789dac4a59dc87628f32fc260c3ac6a1d9bc06b16d6ce"
+      }
+    }
+  },
+  "input_sha256": "41c264de91d2c9d22cd5a7c69ce7f27f1028203b37b15d7f51e40e11519424aa",
+  "backend": "cpu",
+  "device": null,
+  "gpu_runtime": null,
+  "versions": {
+    "numpy": "2.5.4",
+    "pyscf": "2.15.0",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "cupy-cuda13x": "13.6.0"
+  },
+  "scf": {
+    "fragment_a": {
+      "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_a.chk",
+      "sha256": "693a485149b478b8b9010a487c2ff5c6da620501f5fecd420a15dae7634a2de7",
+      "energy_hartree": -78.53128605569027,
+      "convergence": "verified_export_marker",
+      "converged": true,
+      "ao_count": 48,
+      "mo_metric_error": 2.7977620220553945e-14,
+      "saved_fock_residual_hartree": 2.0305484227378656e-07,
+      "operator_source": "saved_fock_matrix",
+      "model": "b3lyp",
+      "class": "gpu4pyscf.df.df_jk.DFRKS"
+    },
+    "fragment_b": {
+      "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_b.chk",
+      "sha256": "4b1e06f771e0bd04ea02696a1c7ed7c46b1d6b4fe819224f268233c150b10a1f",
+      "energy_hartree": -78.5312860556903,
+      "convergence": "verified_export_marker",
+      "converged": true,
+      "ao_count": 48,
+      "mo_metric_error": 3.141931159689193e-14,
+      "saved_fock_residual_hartree": 2.03054870695496e-07,
+      "operator_source": "saved_fock_matrix",
+      "model": "b3lyp",
+      "class": "gpu4pyscf.df.df_jk.DFRKS"
+    },
+    "dimer": {
+      "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_ab.chk",
+      "sha256": "8038d374948975845e3789dac4a59dc87628f32fc260c3ac6a1d9bc06b16d6ce",
+      "energy_hartree": -157.0592462855602,
+      "convergence": "verified_export_marker",
+      "converged": true,
+      "ao_count": 96,
+      "mo_metric_error": 2.240534326427348e-14,
+      "saved_fock_residual_hartree": 5.248999919160724e-07,
+      "operator_source": "saved_fock_matrix",
+      "model": "b3lyp",
+      "class": "gpu4pyscf.df.df_jk.DFRKS"
+    }
+  },
+  "timings_seconds": {
+    "total": 0.02313774498179555
+  },
+  "maximum_complete_mo_projection_residual_hartree": 1.0442319697823166e-07,
+  "results": {
+    "hole": {
+      "orbital_indices_a": [
+        7
+      ],
+      "orbital_indices_b": [
+        7
+      ],
+      "fragment_overlap": [
+        [
+          1.0,
+          -0.06669859299527706
+        ],
+        [
+          -0.06669859299527706,
+          1.0
+        ]
+      ],
+      "methods": {
+        "dipro": {
+          "status": "ok",
+          "coupling_ev": [
+            [
+              0.42200034211819415
+            ]
+          ],
+          "coupling_mev": [
+            [
+              422.00034211819417
+            ]
+          ],
+          "scalar_magnitude_ev": 0.42200034211819415,
+          "frobenius_norm_ev": 0.42200034211819415,
+          "singular_values_ev": [
+            0.42200034211819415
+          ],
+          "raw_hamiltonian_hartree": [
+            [
+              -0.27047339762004774,
+              0.03347943023972948
+            ],
+            [
+              0.03347943023972948,
+              -0.2704733976204656
+            ]
+          ],
+          "orthogonal_hamiltonian_hartree": [
+            [
+              -0.2694390207220046,
+              0.015508226659532507
+            ],
+            [
+              0.015508226659532508,
+              -0.2694390207224234
+            ]
+          ],
+          "density": "converged_dimer"
+        },
+        "esid": {
+          "status": "ok",
+          "scalar_magnitude_ev": 0.4219570046725998,
+          "scalar_magnitude_mev": 421.9570046725998,
+          "dimer_orbital_indices": [
+            14,
+            15
+          ],
+          "pair_subspace_leakage": 0.001532666155614093,
+          "equivalent_fragment_assumption": true
+        },
+        "orbital_gmh": {
+          "status": "ok",
+          "scalar_magnitude_ev": 0.4219570046725998,
+          "scalar_magnitude_mev": 421.9570046725998,
+          "dimer_orbital_indices": [
+            14,
+            15
+          ],
+          "pair_subspace_leakage": 0.001532666155614093,
+          "axis": [
+            -3.1713067909523553e-12,
+            -7.138231304621306e-14,
+            1.0
+          ],
+          "projected_dipoles": [
+            [
+              -3.307020718034956,
+              3.3109581230484317
+            ],
+            [
+              3.310958123048437,
+              -3.3070207179422413
+            ]
+          ],
+          "approximation": "single_particle_orbital_GMH_not_many_electron_GMH",
+          "dipoles_au": [
+            [
+              [
+                2.1623927176856253e-11,
+                -1.0500063980182356e-11
+              ],
+              [
+                -1.049952318013872e-11,
+                1.956090492491111e-11
+              ]
+            ],
+            [
+              [
+                1.0549110955430929e-13,
+                -2.363438492223452e-13
+              ],
+              [
+                -2.363462886772333e-13,
+                1.256646696423669e-13
+              ]
+            ],
+            [
+              [
+                -3.307020718034956,
+                3.3109581230484317
+              ],
+              [
+                3.310958123048437,
+                -3.3070207179422413
+              ]
+            ]
+          ],
+          "ao_dipole_integrals_backend": "cpu_libcint"
+        }
+      }
+    },
+    "electron": {
+      "orbital_indices_a": [
+        8
+      ],
+      "orbital_indices_b": [
+        8
+      ],
+      "fragment_overlap": [
+        [
+          0.9999999999999997,
+          -0.07914310401492214
+        ],
+        [
+          -0.0791431040149222,
+          1.0000000000000004
+        ]
+      ],
+      "methods": {
+        "dipro": {
+          "status": "ok",
+          "coupling_ev": [
+            [
+              0.48518038558076465
+            ]
+          ],
+          "coupling_mev": [
+            [
+              485.18038558076466
+            ]
+          ],
+          "scalar_magnitude_ev": 0.48518038558076465,
+          "frobenius_norm_ev": 0.48518038558076465,
+          "singular_values_ev": [
+            0.48518038558076465
+          ],
+          "raw_hamiltonian_hartree": [
+            [
+              0.00772477876863068,
+              0.01710700662631187
+            ],
+            [
+              0.017107006626311875,
+              0.007724778769013749
+            ]
+          ],
+          "orthogonal_hamiltonian_hartree": [
+            [
+              0.009135904306072236,
+              0.017830050451092923
+            ],
+            [
+              0.017830050451092927,
+              0.009135904306456505
+            ]
+          ],
+          "density": "converged_dimer"
+        },
+        "esid": {
+          "status": "ok",
+          "scalar_magnitude_ev": 0.47992266299121517,
+          "scalar_magnitude_mev": 479.9226629912152,
+          "dimer_orbital_indices": [
+            16,
+            17
+          ],
+          "pair_subspace_leakage": 0.006603888149044113,
+          "equivalent_fragment_assumption": true
+        },
+        "orbital_gmh": {
+          "status": "ok",
+          "scalar_magnitude_ev": 0.47992266299121517,
+          "scalar_magnitude_mev": 479.9226629912152,
+          "dimer_orbital_indices": [
+            16,
+            17
+          ],
+          "pair_subspace_leakage": 0.006603888149044113,
+          "axis": [
+            4.069252157793891e-12,
+            -6.014737825912606e-14,
+            1.0
+          ],
+          "projected_dipoles": [
+            [
+              -3.3070207179536486,
+              3.2779194645737286
+            ],
+            [
+              3.2779194645737313,
+              -3.3070207180243387
+            ]
+          ],
+          "approximation": "single_particle_orbital_GMH_not_many_electron_GMH",
+          "dipoles_au": [
+            [
+              [
+                -2.103521838051764e-11,
+                1.333868085429124e-11
+              ],
+              [
+                1.3339026281103394e-11,
+                -1.6892022936670914e-11
+              ]
+            ],
+            [
+              [
+                2.1252769509538805e-13,
+                -1.9715826193866803e-13
+              ],
+              [
+                -1.9714937148085365e-13,
+                2.1869138444596814e-13
+              ]
+            ],
+            [
+              [
+                -3.3070207179536486,
+                3.2779194645737286
+              ],
+              [
+                3.2779194645737313,
+                -3.3070207180243387
+              ]
+            ]
+          ],
+          "ao_dipole_integrals_backend": "cpu_libcint"
+        }
+      }
+    }
+  },
+  "scope": "neutral_closed_shell_frozen_geometry_saved_operator",
+  "workflow": "saved_pyscf_checkpoints",
+  "scf_executed": false,
+  "environment_model": "not_reconstructed_or_verified_from_saved_results",
+  "operator_source": "saved_fock_matrix",
+  "control": {
+    "schema_version": 1,
+    "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu-source-cpu-projection.toml",
+    "sha256": "389a922a64a9bfa9c34a5d981c019ea554578b0198339fba234e8364ee4761d0",
+    "atom_index_base": 1,
+    "orbital_index_base": 1
+  },
+  "model_consistency": "verified_export_metadata",
+  "checkpoint_loading_and_ao_integrals_backend": "cpu",
+  "projection_residual_note": "independent saved Fock versus complete MO projection"
+}

@@ -6,3 +6,9 @@ dist/
 rust/target/
 *.mod
 *.o
+examples/quantum/results/
+examples/quantum/qmmm/results/
+/mol/
+/cube-results/
+examples/surface-hopping/cube-results/
+examples/modules/cube-results/

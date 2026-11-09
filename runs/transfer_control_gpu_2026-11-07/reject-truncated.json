@@ -1,0 +1,15 @@
+{
+  "schema": "cube-transfer-1",
+  "status": "failed",
+  "error": {
+    "type": "ValueError",
+    "message": "complete square restricted MO coefficients and full energy/occupation arrays are required; truncated checkpoints are unsupported"
+  },
+  "control": {
+    "schema_version": 1,
+    "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/reject-truncated.toml",
+    "sha256": "c9c64d21ec9cd05965a36dfc018b807366d1f9d8f3ef4865af850572d3a1c4a8",
+    "atom_index_base": 1,
+    "orbital_index_base": 1
+  }
+}

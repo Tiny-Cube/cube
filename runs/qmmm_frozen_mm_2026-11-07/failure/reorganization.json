@@ -1,0 +1,82 @@
+{
+  "schema": "cube-reorganization-1",
+  "status": "failed",
+  "fingerprint": "d9db998b518ce856e18c98a8eaa24f9b8d623ea963686ff838e52676b9cdc004",
+  "input": {
+    "atoms": [
+      [
+        "F",
+        [
+          -0.75,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        "F",
+        [
+          0.75,
+          0.0,
+          0.0
+        ]
+      ]
+    ],
+    "settings": {
+      "backend": "cpu",
+      "basis": "6-31G(d,p)",
+      "xc": "b3lyp",
+      "auxbasis": "def2-universal-jkfit",
+      "unit": "Angstrom",
+      "conv_tol": 1e-10,
+      "max_cycle": 100,
+      "grid_level": 3,
+      "threads": 4,
+      "max_memory_mb": 4000,
+      "degeneracy_tolerance_ev": 0.01,
+      "site_tolerance_ev": 0.001,
+      "max_pair_leakage": 0.15
+    },
+    "carriers": [
+      "hole",
+      "electron"
+    ],
+    "environment": "qmmm",
+    "opt_maxsteps": 1,
+    "versions": {
+      "numpy": "2.5.4",
+      "pyscf": "2.15.0",
+      "gpu4pyscf-cuda13x": "1.9.1",
+      "cupy-cuda13x": "13.6.0"
+    },
+    "implementation_sha256": "cb39853fea23b8face6c546ac5c217098edf7d3fbb0627dd54ca89dec2dcb8a3",
+    "support_implementation_sha256": {
+      "/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/universal_kmc/workflow/scf.py": "0a32f534c62492b6586495f94e066ef77f0a88b11dda1ae0646791f47c83110d",
+      "/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/universal_kmc/workflow/embedding.py": "23c35ea8d141118a09cd64dfc9796793f6fdaa63db6663d2f20983d38db292ba"
+    },
+    "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+    "mm_frozen": true
+  },
+  "environment": "qmmm",
+  "method": "4-points",
+  "scope": "QM_relaxation_in_frozen_point_charge_MM_no_QM_MM_vdw_no_outer_sphere_relaxation",
+  "results": {},
+  "embedding": {
+    "schema": "cube-frozen-mm-1",
+    "model": "fixed_point_charge_electrostatic_embedding",
+    "coordinate_unit": "Angstrom",
+    "charge_unit": "elementary_charge",
+    "atom_count": 4,
+    "total_charge_e": 0.0,
+    "mm_frozen": true,
+    "charges_frozen": true,
+    "electrostatics": "finite_cluster_no_Ewald",
+    "qm_mm_vdw_included": false,
+    "polarizable_mm": false,
+    "fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+    "snapshot": "mm-environment.json"
+  },
+  "error": {
+    "type": "RuntimeError",
+    "message": "neutral geometry optimization did not converge in 1 steps"
+  }
+}
