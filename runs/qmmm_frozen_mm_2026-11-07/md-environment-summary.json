@@ -1,0 +1,20 @@
+{
+  "scope": "environment construction only; no full material QM/MM SCF or optimization performed",
+  "frame": 2000,
+  "time_ps": 20000.0,
+  "qm_molecule": "1",
+  "qm_atom_count": 86,
+  "mm_atom_count": 5160,
+  "mm_molecular_images": 60,
+  "mm_cutoff_angstrom": 12.0,
+  "mm_total_charge_e": 3.46451997756958e-06,
+  "mm_min_qm_distance_angstrom": 1.8500543933811873,
+  "central_qm_excluded": true,
+  "snapshot_fingerprint": "d590615c20c0879eff4fea33f54e6d4fb387e8ed96e603c4cfabc3fd319943ba",
+  "source_sha256": {
+    "tpr": "c23136619981dcb39252a42ad302b7c6dd17451b512cd601c8345a61ff64d043",
+    "gro": "ba623af488f387ee2d4ab54edf0b0768aa7196b2f4a94d4e4625b1b92c3d1f01",
+    "xtc": "e65321099f0c393fcf52c0fc2692f5b9c437eac95079dcdb3374efaf8f3e17ac"
+  },
+  "geometry_not_committed": true
+}

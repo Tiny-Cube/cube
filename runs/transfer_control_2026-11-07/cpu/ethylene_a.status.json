@@ -1,0 +1,24 @@
+{
+  "source": "/home/dav/Documents/code/codex/cube/examples/quantum/ethylene_a.xyz",
+  "checkpoint": "/home/dav/Documents/code/codex/cube/build/transfer-control-validation/cpu/ethylene_a.chk",
+  "log": "/home/dav/Documents/code/codex/cube/build/transfer-control-validation/cpu/ethylene_a.log",
+  "settings": {
+    "backend": "cpu",
+    "basis": "def2-svp",
+    "xc": "b3lyp",
+    "auxbasis": "def2-universal-jkfit",
+    "unit": "Angstrom",
+    "conv_tol": 1e-10,
+    "max_cycle": 100,
+    "grid_level": 3,
+    "threads": 4,
+    "max_memory_mb": 4000,
+    "degeneracy_tolerance_ev": 0.01,
+    "site_tolerance_ev": 0.001,
+    "max_pair_leakage": 0.15
+  },
+  "status": "completed",
+  "energy_hartree": -78.53128605568958,
+  "converged": true,
+  "source_class": "pyscf.df.df_jk.DFRKS"
+}

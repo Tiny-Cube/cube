@@ -1,0 +1,23 @@
+{
+  "python": "3.13.11",
+  "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+  "machine": "x86_64",
+  "source_sha256": {
+    "src/universal_kmc/quantum/__init__.py": "d3a6c41e9acc1672d9ed9e3ba05048eceb48b1d0be249927245c3c2bcdf804cc",
+    "src/universal_kmc/quantum/coupling.py": "49de9f380812fdb854650c51d6b265ff705763f9acc1c042cbde1affa024e2c1",
+    "src/universal_kmc/quantum/transfer.py": "cba4903c3cda8689081e94febf64ea7bd3a15375eba56a87443cd4e58f8e9c68",
+    "src/universal_kmc/quantum/cli.py": "12dc25da59f381e0ff89cf0fe190de01a3926556d9a4da7b372a0adb4522a7ab",
+    "src/universal_kmc/quantum/config.py": "d12ddda4237932301dc9d09580f8d1c1bd947d88cf0d3f6921beb0b0f47c2f36",
+    "src/universal_kmc/quantum/geometry.py": "1c284d4a5c6e56b732eea44be3d417bef9619a2773a4bbe0f85f28a6522db70f",
+    "src/universal_kmc/quantum/control.py": "6c9f9b2274a57fc126dec6db44ae589f5e5b556e911e2ea755f36c03a1f63e2e",
+    "src/universal_kmc/quantum/checkpoints.py": "2a468bb06899bfaf98ca488eb6a2ef30ee91068abcca5bab1cbc09e21b63beac",
+    "scripts/run_pyscf.py": "e3671dd72ae401de15ab93eea134d409827a2608a09aea00605b14afbd8db0bf",
+    "scripts/calculate_transfer.py": "6e17fd163315615b27f4c917cbce051fe583e04e1af72c45c67e10cbd4ca3023",
+    "scripts/validate_transfer_control.py": "15be2e77ce58c03c193d9467d6b171ab6d2e9bc71632dbea1417614834a75b0a",
+    "tests/test_quantum_control.py": "11be608d040479b288eccc9718d58a9d5dbff1c53010775d6f36d4b5ed05126f",
+    "examples/quantum/transfer.toml": "a29fce7a1e6ebec5b3cdbf89b18606f29d3cd050903197cf6c77a26bc37e85d7"
+  },
+  "wheel_sha256": "2071b85080be9642e51b838dd135878dc052ed05171cd4bc36fcf8684d8fefa9",
+  "new_control_gpu_validation": "not_executed",
+  "cpu_workflow": "passed"
+}

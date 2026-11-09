@@ -1,0 +1,89 @@
+{
+  "python": "3.12.15",
+  "platform": "Linux-6.12.0-211.64.1.el10_2.x86_64-x86_64-with-glibc2.39",
+  "hardware": {
+    "device": "NVIDIA GeForce RTX 5090",
+    "compute_capability": [
+      12,
+      0
+    ],
+    "memory_bytes": 33757724672,
+    "driver_api_version": 13040,
+    "runtime_api_version": 13000,
+    "nvidia_smi": "NVIDIA GeForce RTX 5090, 615.71.09, 32607 MiB"
+  },
+  "installed_package_path": "/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/universal_kmc/quantum",
+  "installed_direct_url": {
+    "url": "file:///home/codex/cube-transfer-validation-20261106/validation/control-20261107/universal_kmc-0.1.0-py3-none-any.whl",
+    "archive_info": {}
+  },
+  "wheel_sha256": "2071b85080be9642e51b838dd135878dc052ed05171cd4bc36fcf8684d8fefa9",
+  "installed_quantum_source_matches_uploaded_source": true,
+  "source_sha256": {
+    "src/universal_kmc/quantum/__init__.py": "d3a6c41e9acc1672d9ed9e3ba05048eceb48b1d0be249927245c3c2bcdf804cc",
+    "src/universal_kmc/quantum/checkpoints.py": "2a468bb06899bfaf98ca488eb6a2ef30ee91068abcca5bab1cbc09e21b63beac",
+    "src/universal_kmc/quantum/cli.py": "12dc25da59f381e0ff89cf0fe190de01a3926556d9a4da7b372a0adb4522a7ab",
+    "src/universal_kmc/quantum/config.py": "d12ddda4237932301dc9d09580f8d1c1bd947d88cf0d3f6921beb0b0f47c2f36",
+    "src/universal_kmc/quantum/control.py": "6c9f9b2274a57fc126dec6db44ae589f5e5b556e911e2ea755f36c03a1f63e2e",
+    "src/universal_kmc/quantum/coupling.py": "49de9f380812fdb854650c51d6b265ff705763f9acc1c042cbde1affa024e2c1",
+    "src/universal_kmc/quantum/geometry.py": "1c284d4a5c6e56b732eea44be3d417bef9619a2773a4bbe0f85f28a6522db70f",
+    "src/universal_kmc/quantum/transfer.py": "cba4903c3cda8689081e94febf64ea7bd3a15375eba56a87443cd4e58f8e9c68",
+    "scripts/run_pyscf.py": "e3671dd72ae401de15ab93eea134d409827a2608a09aea00605b14afbd8db0bf",
+    "scripts/calculate_transfer.py": "6e17fd163315615b27f4c917cbce051fe583e04e1af72c45c67e10cbd4ca3023",
+    "scripts/validate_transfer_control.py": "e9731d4eda67fa09c9916f27832d45b45a37270f64f8255420e41e5c8fde35b5",
+    "pyproject.toml": "b63124d061ce7f0d6a2df84e7cca08d291fab97ea4927282bcbe8e2de80224be",
+    "uv.lock": "3c1aaddeeef63419d1b7239835c3791bfd2557e90b3cf45b050b4dc1569ea36b",
+    "examples/quantum/ethylene_a.xyz": "2c4ab4f4415f60bef47b83687fb06b2f89e17d766c534a41261bfe8727c564f6",
+    "examples/quantum/ethylene_b.xyz": "4a8bddf1f14f3c7e7be571dc76f39ea91b10393dcff042491c7be29121188a7d",
+    "examples/quantum/ethylene_ab.xyz": "7d3e5b282da8b7250a5c9a2425d1d662398fb85ab6c13b8dc590579a2eaadd8d"
+  },
+  "versions": {
+    "pyscf": "2.15.0",
+    "six": "1.17.0",
+    "cuda-toolkit": "13.5.0",
+    "nvidia-cusolver": "12.4.1.2",
+    "geometric": "1.1.1",
+    "nvidia-cufft": "12.5.0.14",
+    "nvidia-nvjitlink": "13.5.37",
+    "packaging": "26.3",
+    "gpu4pyscf-libxc-cuda13x": "0.9.0",
+    "nvidia-cusparse": "12.9.4.2",
+    "h5py": "3.16.0",
+    "nvidia-cuda-nvrtc": "13.5.37",
+    "nvidia-cublas": "13.10.0.20",
+    "nvidia-curand": "10.4.5.25",
+    "nvidia-cuda-runtime": "13.5.37",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "setuptools": "84.2.1",
+    "networkx": "3.7",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "fastrlock": "0.8.4",
+    "cupy-cuda13x": "13.6.0",
+    "universal-kmc": "0.1.0"
+  },
+  "same_checkpoint_projection_comparisons": {
+    "cpu_checkpoints": {
+      "maximum_cpu_gpu_projection_difference_ev": 1.1102230246251565e-15,
+      "couplings_ev": [
+        0.42200061151250395,
+        0.4219568844289667,
+        0.4219568844289667,
+        0.48518069653953716,
+        0.4799223069689165,
+        0.4799223069689165
+      ]
+    },
+    "gpu_checkpoints": {
+      "maximum_cpu_gpu_projection_difference_ev": 2.220446049250313e-16,
+      "couplings_ev": [
+        0.4220003421181939,
+        0.4219570046725998,
+        0.4219570046725998,
+        0.48518038558076476,
+        0.47992266299121517,
+        0.47992266299121517
+      ]
+    }
+  }
+}

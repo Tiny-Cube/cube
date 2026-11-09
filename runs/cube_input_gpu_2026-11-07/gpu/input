@@ -1,0 +1,25 @@
+$two-mol
+input = ../mini_manifest.json
+output = two
+method = b3lyp
+basis-set = 6-31G(d,p)
+transfer-integrals-method = DIPRO
+$end
+$one-mol
+input = ../mini_manifest.json
+output = one
+qc-engine = gpu-pyscf
+method = b3lyp
+basis-set = 6-31G(d,p)
+$end
+$reorganization-energy
+xyz = ../F2.xyz
+output = reorganization
+qc-engine = gpu-pyscf
+method = b3lyp
+basis-set = 6-31G(d,p)
+re-method = 4-points
+environment = vacuum
+carriers = hole,electron
+opt-maxsteps = 60
+$end

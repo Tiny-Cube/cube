@@ -1,0 +1,86 @@
+{
+  "fingerprint": "0636d657cbc034984bee032ec09070e914ce3968c86507f0869e90c6260049d2",
+  "request": {
+    "atoms": [
+      [
+        "C",
+        [
+          -0.67,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        "C",
+        [
+          0.67,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        "H",
+        [
+          -1.232,
+          0.928,
+          0.0
+        ]
+      ],
+      [
+        "H",
+        [
+          -1.232,
+          -0.928,
+          0.0
+        ]
+      ],
+      [
+        "H",
+        [
+          1.232,
+          0.928,
+          0.0
+        ]
+      ],
+      [
+        "H",
+        [
+          1.232,
+          -0.928,
+          0.0
+        ]
+      ]
+    ],
+    "settings": {
+      "backend": "gpu",
+      "basis": "6-31G(d,p)",
+      "xc": "b3lyp",
+      "auxbasis": "def2-universal-jkfit",
+      "unit": "Angstrom",
+      "conv_tol": 1e-10,
+      "max_cycle": 100,
+      "grid_level": 3,
+      "threads": 4,
+      "max_memory_mb": 4000,
+      "degeneracy_tolerance_ev": 0.01,
+      "site_tolerance_ev": 0.001,
+      "max_pair_leakage": 0.15
+    },
+    "charge": 0,
+    "spin_2s": 0,
+    "versions": {
+      "numpy": "2.5.4",
+      "pyscf": "2.15.0",
+      "gpu4pyscf-cuda13x": "1.9.1",
+      "cupy-cuda13x": "13.6.0"
+    },
+    "implementation_sha256": "c2068fdac4e21d0623718b1e6d0b334adc01a0ac716042f828ae5cd1cf95e5b5"
+  },
+  "status": "failed",
+  "checkpoint": "/home/dav/Documents/code/codex/cube/build/cube-workflow-local-gpu/gpu/one/1.chk",
+  "log": "/home/dav/Documents/code/codex/cube/build/cube-workflow-local-gpu/gpu/one/1.log",
+  "error": {
+    "type": "RuntimeError",
+    "message": "failed in block_diag kernel"
+  }
+}

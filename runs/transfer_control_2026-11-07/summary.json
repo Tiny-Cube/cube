@@ -1,0 +1,102 @@
+{
+  "versions": {
+    "numpy": "2.5.4",
+    "pyscf": "2.15.0"
+  },
+  "stage1": {
+    "cpu": {
+      "reused_existing_converged_outputs": true
+    }
+  },
+  "postprocess": {
+    "cpu-source-cpu-projection": {
+      "maximum_coupling_difference_ev": 3.624878175401136e-14,
+      "device": null,
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "rejections": {
+    "native_without_convergence_confirmation": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: standard PySCF .chk has no convergence flag; use save_transfer_checkpoint or explicitly set calculation.assume_converged=true after verifying the SCF log\n"
+    },
+    "unconverged": {
+      "error": {
+        "type": "ValueError",
+        "message": "checkpoint explicitly reports unconverged SCF; assumption cannot override it"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: checkpoint explicitly reports unconverged SCF; assumption cannot override it\n"
+    },
+    "bad_metric": {
+      "error": {
+        "type": "ValueError",
+        "message": "MO coefficients fail AO-metric orthonormality: 0.15137066231943486"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: MO coefficients fail AO-metric orthonormality: 0.15137066231943486\n"
+    },
+    "truncated": {
+      "error": {
+        "type": "ValueError",
+        "message": "complete square restricted MO coefficients and full energy/occupation arrays are required; truncated checkpoints are unsupported"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: complete square restricted MO coefficients and full energy/occupation arrays are required; truncated checkpoints are unsupported\n"
+    },
+    "wrong_frame": {
+      "error": {
+        "type": "ValueError",
+        "message": "monomer atoms must have the same elements and frozen coordinates as their mapped dimer atoms (common coordinate frame)"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: monomer atoms must have the same elements and frozen coordinates as their mapped dimer atoms (common coordinate frame)\n"
+    },
+    "wrong_model": {
+      "error": {
+        "type": "ValueError",
+        "message": "fragment and dimer checkpoint electronic methods differ"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: fragment and dimer checkpoint electronic methods differ\n"
+    },
+    "bad_fock": {
+      "error": {
+        "type": "ValueError",
+        "message": "saved Fock and complete MO eigenoperator disagree by more than 1e-6 Hartree"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: saved Fock and complete MO eigenoperator disagree by more than 1e-6 Hartree\n"
+    },
+    "stage1_nonconvergence": {
+      "returncode": 1,
+      "stdout": "overwrite output file: /home/dav/Documents/code/codex/cube/build/transfer-control-validation/nonconverged/ethylene_a.log\n",
+      "stderr": "PySCF calculation failed: refusing to export an unconverged SCF result\n"
+    }
+  },
+  "scf_kernel_blocked_during_postprocessing": true,
+  "permuted_atom_mapping": "passed",
+  "one_based_explicit_orbitals": "passed",
+  "standard_native_checkpoint": "passed_with_explicit_confirmation",
+  "native_dimer_eigenoperator_maximum_difference_ev": 2.911948873141057e-07,
+  "inapplicable_esid_exit_2": "passed",
+  "status": "passed",
+  "reference_couplings_ev_order": "hole dipro/esid/orbital_gmh; electron dipro/esid/orbital_gmh",
+  "reference_couplings_ev": [
+    0.4220006115125106,
+    0.4219568844289849,
+    0.4219568844289848,
+    0.48518069653951984,
+    0.4799223069689105,
+    0.4799223069689105
+  ]
+}

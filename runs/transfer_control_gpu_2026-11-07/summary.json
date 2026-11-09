@@ -1,0 +1,305 @@
+{
+  "versions": {
+    "numpy": "2.5.4",
+    "pyscf": "2.15.0",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "cupy-cuda13x": "13.6.0"
+  },
+  "stage1": {
+    "cpu": {
+      "returncode": 0,
+      "stdout": "output file: /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_a.log\nethylene_a.xyz -> /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_a.chk\noutput file: /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_b.log\nethylene_b.xyz -> /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_b.chk\noutput file: /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_ab.log\nethylene_ab.xyz -> /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_ab.chk\n",
+      "stderr": "",
+      "scf_records": {
+        "a": {
+          "source": "/home/codex/cube-transfer-validation-20261106/examples/quantum/ethylene_a.xyz",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_a.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_a.log",
+          "settings": {
+            "backend": "cpu",
+            "basis": "def2-svp",
+            "xc": "b3lyp",
+            "auxbasis": "def2-universal-jkfit",
+            "unit": "Angstrom",
+            "conv_tol": 1e-10,
+            "max_cycle": 100,
+            "grid_level": 3,
+            "threads": 4,
+            "max_memory_mb": 4000,
+            "degeneracy_tolerance_ev": 0.01,
+            "site_tolerance_ev": 0.001,
+            "max_pair_leakage": 0.15
+          },
+          "status": "completed",
+          "energy_hartree": -78.53128605568939,
+          "converged": true,
+          "source_class": "pyscf.df.df_jk.DFRKS"
+        },
+        "b": {
+          "source": "/home/codex/cube-transfer-validation-20261106/examples/quantum/ethylene_b.xyz",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_b.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_b.log",
+          "settings": {
+            "backend": "cpu",
+            "basis": "def2-svp",
+            "xc": "b3lyp",
+            "auxbasis": "def2-universal-jkfit",
+            "unit": "Angstrom",
+            "conv_tol": 1e-10,
+            "max_cycle": 100,
+            "grid_level": 3,
+            "threads": 4,
+            "max_memory_mb": 4000,
+            "degeneracy_tolerance_ev": 0.01,
+            "site_tolerance_ev": 0.001,
+            "max_pair_leakage": 0.15
+          },
+          "status": "completed",
+          "energy_hartree": -78.53128605568959,
+          "converged": true,
+          "source_class": "pyscf.df.df_jk.DFRKS"
+        },
+        "ab": {
+          "source": "/home/codex/cube-transfer-validation-20261106/examples/quantum/ethylene_ab.xyz",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_ab.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/cpu/ethylene_ab.log",
+          "settings": {
+            "backend": "cpu",
+            "basis": "def2-svp",
+            "xc": "b3lyp",
+            "auxbasis": "def2-universal-jkfit",
+            "unit": "Angstrom",
+            "conv_tol": 1e-10,
+            "max_cycle": 100,
+            "grid_level": 3,
+            "threads": 4,
+            "max_memory_mb": 4000,
+            "degeneracy_tolerance_ev": 0.01,
+            "site_tolerance_ev": 0.001,
+            "max_pair_leakage": 0.15
+          },
+          "status": "completed",
+          "energy_hartree": -157.05924628556002,
+          "converged": true,
+          "source_class": "pyscf.df.df_jk.DFRKS"
+        }
+      }
+    },
+    "gpu": {
+      "returncode": 0,
+      "stdout": "output file: /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_a.log\nethylene_a.xyz -> /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_a.chk\noutput file: /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_b.log\nethylene_b.xyz -> /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_b.chk\noutput file: /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_ab.log\nethylene_ab.xyz -> /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_ab.chk\n",
+      "stderr": "/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/gpu4pyscf/lib/cutensor.py:154: UserWarning: using cupy as the tensor contraction engine.\n  warnings.warn(f'using {contract_engine} as the tensor contraction engine.')\n",
+      "scf_records": {
+        "a": {
+          "source": "/home/codex/cube-transfer-validation-20261106/examples/quantum/ethylene_a.xyz",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_a.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_a.log",
+          "settings": {
+            "backend": "gpu",
+            "basis": "def2-svp",
+            "xc": "b3lyp",
+            "auxbasis": "def2-universal-jkfit",
+            "unit": "Angstrom",
+            "conv_tol": 1e-10,
+            "max_cycle": 100,
+            "grid_level": 3,
+            "threads": 4,
+            "max_memory_mb": 4000,
+            "degeneracy_tolerance_ev": 0.01,
+            "site_tolerance_ev": 0.001,
+            "max_pair_leakage": 0.15
+          },
+          "status": "completed",
+          "energy_hartree": -78.53128605569027,
+          "converged": true,
+          "source_class": "gpu4pyscf.df.df_jk.DFRKS"
+        },
+        "b": {
+          "source": "/home/codex/cube-transfer-validation-20261106/examples/quantum/ethylene_b.xyz",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_b.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_b.log",
+          "settings": {
+            "backend": "gpu",
+            "basis": "def2-svp",
+            "xc": "b3lyp",
+            "auxbasis": "def2-universal-jkfit",
+            "unit": "Angstrom",
+            "conv_tol": 1e-10,
+            "max_cycle": 100,
+            "grid_level": 3,
+            "threads": 4,
+            "max_memory_mb": 4000,
+            "degeneracy_tolerance_ev": 0.01,
+            "site_tolerance_ev": 0.001,
+            "max_pair_leakage": 0.15
+          },
+          "status": "completed",
+          "energy_hartree": -78.5312860556903,
+          "converged": true,
+          "source_class": "gpu4pyscf.df.df_jk.DFRKS"
+        },
+        "ab": {
+          "source": "/home/codex/cube-transfer-validation-20261106/examples/quantum/ethylene_ab.xyz",
+          "checkpoint": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_ab.chk",
+          "log": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/gpu/ethylene_ab.log",
+          "settings": {
+            "backend": "gpu",
+            "basis": "def2-svp",
+            "xc": "b3lyp",
+            "auxbasis": "def2-universal-jkfit",
+            "unit": "Angstrom",
+            "conv_tol": 1e-10,
+            "max_cycle": 100,
+            "grid_level": 3,
+            "threads": 4,
+            "max_memory_mb": 4000,
+            "degeneracy_tolerance_ev": 0.01,
+            "site_tolerance_ev": 0.001,
+            "max_pair_leakage": 0.15
+          },
+          "status": "completed",
+          "energy_hartree": -157.0592462855602,
+          "converged": true,
+          "source_class": "gpu4pyscf.df.df_jk.DFRKS"
+        }
+      }
+    }
+  },
+  "postprocess": {
+    "cpu-source-cpu-projection": {
+      "maximum_coupling_difference_ev": 4.835021272242557e-14,
+      "device": null,
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "cpu-source-gpu-projection": {
+      "maximum_coupling_difference_ev": 4.835021272242557e-14,
+      "device": "NVIDIA GeForce RTX 5090",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "gpu-source-cpu-projection": {
+      "maximum_coupling_difference_ev": 3.560222502918542e-07,
+      "device": null,
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "gpu-source-gpu-projection": {
+      "maximum_coupling_difference_ev": 3.560222502918542e-07,
+      "device": "NVIDIA GeForce RTX 5090",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "rejections": {
+    "native_without_convergence_confirmation": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: standard PySCF .chk has no convergence flag; use save_transfer_checkpoint or explicitly set calculation.assume_converged=true after verifying the SCF log\n"
+    },
+    "unconverged": {
+      "error": {
+        "type": "ValueError",
+        "message": "checkpoint explicitly reports unconverged SCF; assumption cannot override it"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: checkpoint explicitly reports unconverged SCF; assumption cannot override it\n"
+    },
+    "bad_metric": {
+      "error": {
+        "type": "ValueError",
+        "message": "MO coefficients fail AO-metric orthonormality: 0.15137066233226104"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: MO coefficients fail AO-metric orthonormality: 0.15137066233226104\n"
+    },
+    "truncated": {
+      "error": {
+        "type": "ValueError",
+        "message": "complete square restricted MO coefficients and full energy/occupation arrays are required; truncated checkpoints are unsupported"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: complete square restricted MO coefficients and full energy/occupation arrays are required; truncated checkpoints are unsupported\n"
+    },
+    "wrong_frame": {
+      "error": {
+        "type": "ValueError",
+        "message": "monomer atoms must have the same elements and frozen coordinates as their mapped dimer atoms (common coordinate frame)"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: monomer atoms must have the same elements and frozen coordinates as their mapped dimer atoms (common coordinate frame)\n"
+    },
+    "wrong_model": {
+      "error": {
+        "type": "ValueError",
+        "message": "fragment and dimer checkpoint electronic methods differ"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: fragment and dimer checkpoint electronic methods differ\n"
+    },
+    "bad_fock": {
+      "error": {
+        "type": "ValueError",
+        "message": "saved Fock and complete MO eigenoperator disagree by more than 1e-6 Hartree"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Transfer calculation failed: saved Fock and complete MO eigenoperator disagree by more than 1e-6 Hartree\n"
+    },
+    "stage1_nonconvergence": {
+      "returncode": 1,
+      "stdout": "output file: /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/nonconverged/ethylene_a.log\n",
+      "stderr": "PySCF calculation failed: refusing to export an unconverged SCF result\n"
+    },
+    "stage1_gpu_nonconvergence": {
+      "returncode": 1,
+      "stdout": "output file: /home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/nonconverged-gpu/ethylene_a.log\n",
+      "stderr": "/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/gpu4pyscf/lib/cutensor.py:154: UserWarning: using cupy as the tensor contraction engine.\n  warnings.warn(f'using {contract_engine} as the tensor contraction engine.')\nWARN: SCF failed to converge\nPySCF calculation failed: refusing to export an unconverged SCF result\n"
+    }
+  },
+  "cpu_gpu_scf_energy_differences_hartree": {
+    "a": 8.810729923425242e-13,
+    "b": 7.105427357601002e-13,
+    "ab": 1.7053025658242404e-13
+  },
+  "scf_kernel_blocked_during_postprocessing": true,
+  "gpu_arrays_verified_and_both_scf_kernels_blocked": true,
+  "permuted_atom_mapping": "passed",
+  "one_based_explicit_orbitals": "passed",
+  "standard_native_checkpoint": "passed_with_explicit_confirmation",
+  "native_dimer_eigenoperator_maximum_difference_ev": 2.9119493288876086e-07,
+  "gpu_additional_postprocess": {
+    "permuted": {
+      "maximum_cpu_gpu_difference_ev": 1.1102230246251565e-15,
+      "device": "NVIDIA GeForce RTX 5090"
+    },
+    "explicit-orbitals": {
+      "maximum_cpu_gpu_difference_ev": 1.1102230246251565e-15,
+      "device": "NVIDIA GeForce RTX 5090"
+    },
+    "native-dimer-confirmed": {
+      "maximum_cpu_gpu_difference_ev": 1.6653345369377348e-15,
+      "device": "NVIDIA GeForce RTX 5090"
+    }
+  },
+  "inapplicable_esid_exit_2": "passed",
+  "status": "passed",
+  "reference_couplings_ev_order": "hole dipro/esid/orbital_gmh; electron dipro/esid/orbital_gmh",
+  "reference_couplings_ev": [
+    0.4220006115125042,
+    0.4219568844289547,
+    0.4219568844289547,
+    0.4851806965395163,
+    0.4799223069689649,
+    0.4799223069689649
+  ]
+}

@@ -1,0 +1,328 @@
+{
+  "schema": "cube-transfer-1",
+  "status": "completed",
+  "input": {
+    "fragment_a": [
+      [
+        "C",
+        [
+          -0.67,
+          0.0,
+          -1.75
+        ]
+      ],
+      [
+        "C",
+        [
+          0.67,
+          0.0,
+          -1.75
+        ]
+      ],
+      [
+        "H",
+        [
+          -1.2319999999999998,
+          0.928,
+          -1.75
+        ]
+      ],
+      [
+        "H",
+        [
+          -1.2319999999999998,
+          -0.928,
+          -1.75
+        ]
+      ],
+      [
+        "H",
+        [
+          1.2319999999999998,
+          0.928,
+          -1.75
+        ]
+      ],
+      [
+        "H",
+        [
+          1.2319999999999998,
+          -0.928,
+          -1.75
+        ]
+      ]
+    ],
+    "fragment_b": [
+      [
+        "C",
+        [
+          -0.67,
+          0.0,
+          1.75
+        ]
+      ],
+      [
+        "C",
+        [
+          0.67,
+          0.0,
+          1.75
+        ]
+      ],
+      [
+        "H",
+        [
+          -1.2319999999999998,
+          0.928,
+          1.75
+        ]
+      ],
+      [
+        "H",
+        [
+          -1.2319999999999998,
+          -0.928,
+          1.75
+        ]
+      ],
+      [
+        "H",
+        [
+          1.2319999999999998,
+          0.928,
+          1.75
+        ]
+      ],
+      [
+        "H",
+        [
+          1.2319999999999998,
+          -0.928,
+          1.75
+        ]
+      ]
+    ],
+    "methods": [
+      "dipro"
+    ],
+    "carriers": [
+      "hole",
+      "electron"
+    ],
+    "assume_equivalent": false,
+    "orbital_indices": null,
+    "postprocessing": {
+      "backend": "cpu",
+      "threads": 4,
+      "degeneracy_tolerance_ev": 0.01,
+      "site_tolerance_ev": 0.001,
+      "max_pair_leakage": 0.15,
+      "atom_indices_zero_based": null
+    },
+    "checkpoints": {
+      "fragment_a": {
+        "path": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/two/1_2/a.chk",
+        "sha256": "5e2592b2bc6d485c77d06c1c2e2ae9bb562a1ad3014f1a4d3e4f6ec7ec662b92"
+      },
+      "fragment_b": {
+        "path": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/two/1_2/b.chk",
+        "sha256": "ca9d471ff4c2550dfd2e3d143b1e201fca2b552d743bbcc5158c4f5b83f5e77d"
+      },
+      "dimer": {
+        "path": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/two/1_2/ab.chk",
+        "sha256": "1c6b5b20000ad045297d6450318718c3c319d111a575ded1e8460488fca37a4c"
+      }
+    }
+  },
+  "input_sha256": "12049e7649549fb24d63d418c413fc21a31abd8600c536f375757cba0c3291a1",
+  "backend": "cpu",
+  "device": null,
+  "gpu_runtime": null,
+  "versions": {
+    "numpy": "2.5.4",
+    "pyscf": "2.15.0",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "cupy-cuda13x": "13.6.0"
+  },
+  "scf": {
+    "fragment_a": {
+      "path": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/two/1_2/a.chk",
+      "sha256": "5e2592b2bc6d485c77d06c1c2e2ae9bb562a1ad3014f1a4d3e4f6ec7ec662b92",
+      "energy_hartree": -78.59185430308119,
+      "convergence": "verified_export_marker",
+      "converged": true,
+      "ao_count": 48,
+      "mo_metric_error": 1.6385440315425273e-13,
+      "saved_fock_residual_hartree": 1.1541104427692517e-07,
+      "operator_source": "saved_fock_matrix",
+      "model": "b3lyp",
+      "class": "pyscf.df.df_jk.DFRKS"
+    },
+    "fragment_b": {
+      "path": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/two/1_2/b.chk",
+      "sha256": "ca9d471ff4c2550dfd2e3d143b1e201fca2b552d743bbcc5158c4f5b83f5e77d",
+      "energy_hartree": -78.59185430308104,
+      "convergence": "verified_export_marker",
+      "converged": true,
+      "ao_count": 48,
+      "mo_metric_error": 4.3853809472693683e-14,
+      "saved_fock_residual_hartree": 1.1541160560568642e-07,
+      "operator_source": "saved_fock_matrix",
+      "model": "b3lyp",
+      "class": "pyscf.df.df_jk.DFRKS"
+    },
+    "dimer": {
+      "path": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/two/1_2/ab.chk",
+      "sha256": "1c6b5b20000ad045297d6450318718c3c319d111a575ded1e8460488fca37a4c",
+      "energy_hartree": -157.18069025053947,
+      "convergence": "verified_export_marker",
+      "converged": true,
+      "ao_count": 96,
+      "mo_metric_error": 2.2369943375626438e-13,
+      "saved_fock_residual_hartree": 3.8283711489839334e-07,
+      "operator_source": "saved_fock_matrix",
+      "model": "b3lyp",
+      "class": "pyscf.df.df_jk.DFRKS"
+    }
+  },
+  "timings_seconds": {
+    "total": 0.029881002148613334
+  },
+  "maximum_complete_mo_projection_residual_hartree": 2.1697579938306788e-07,
+  "results": {
+    "hole": {
+      "orbital_indices_a": [
+        7
+      ],
+      "orbital_indices_b": [
+        7
+      ],
+      "fragment_overlap": [
+        [
+          0.9999999999999991,
+          -0.05318661426287772
+        ],
+        [
+          -0.053186614262877706,
+          0.9999999999999999
+        ]
+      ],
+      "methods": {
+        "dipro": {
+          "status": "ok",
+          "coupling_ev": [
+            [
+              0.42176447345527585
+            ]
+          ],
+          "coupling_mev": [
+            [
+              421.76447345527583
+            ]
+          ],
+          "scalar_magnitude_ev": 0.42176447345527585,
+          "frobenius_norm_ev": 0.42176447345527585,
+          "singular_values_ev": [
+            0.42176447345527585
+          ],
+          "raw_hamiltonian_hartree": [
+            [
+              -0.2607064722034205,
+              0.02932180782038485
+            ],
+            [
+              0.029321807820384845,
+              -0.26070647220343274
+            ]
+          ],
+          "orthogonal_hamiltonian_hartree": [
+            [
+              -0.2598821031564724,
+              0.015499558645975794
+            ],
+            [
+              0.015499558645975858,
+              -0.2598821031564844
+            ]
+          ],
+          "density": "converged_dimer"
+        }
+      }
+    },
+    "electron": {
+      "orbital_indices_a": [
+        8
+      ],
+      "orbital_indices_b": [
+        8
+      ],
+      "fragment_overlap": [
+        [
+          1.0000000000000004,
+          -0.062001072118093
+        ],
+        [
+          -0.06200107211809299,
+          0.9999999999999988
+        ]
+      ],
+      "methods": {
+        "dipro": {
+          "status": "ok",
+          "coupling_ev": [
+            [
+              0.4740213579087326
+            ]
+          ],
+          "coupling_mev": [
+            [
+              474.0213579087326
+            ]
+          ],
+          "scalar_magnitude_ev": 0.4740213579087326,
+          "frobenius_norm_ev": 0.4740213579087326,
+          "singular_values_ev": [
+            0.4740213579087326
+          ],
+          "raw_hamiltonian_hartree": [
+            [
+              0.019952376500325695,
+              0.016115930353766753
+            ],
+            [
+              0.01611593035376676,
+              0.01995237650031128
+            ]
+          ],
+          "orthogonal_hamiltonian_hartree": [
+            [
+              0.021032432928749234,
+              0.017419963744600638
+            ],
+            [
+              0.017419963744600645,
+              0.021032432928734836
+            ]
+          ],
+          "density": "converged_dimer"
+        }
+      }
+    }
+  },
+  "scope": "neutral_closed_shell_frozen_geometry_saved_operator",
+  "workflow": "saved_pyscf_checkpoints",
+  "scf_executed": false,
+  "environment_model": "not_reconstructed_or_verified_from_saved_results",
+  "operator_source": "saved_fock_matrix",
+  "control": {
+    "schema_version": 1,
+    "format": "cube-sections-1",
+    "path": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/input",
+    "sha256": "81aba6b425587b83fd0b81d76727664bd6133e435fbf502dc0b27e3d342ca052",
+    "dimer": "1_2"
+  },
+  "model_consistency": "verified_export_metadata",
+  "checkpoint_loading_and_ao_integrals_backend": "cpu",
+  "projection_residual_note": "independent saved Fock versus complete MO projection",
+  "workflow_fingerprint": "83adc0d8bfd112450c85733e416bed04880a1be0e2b7fe8fa7a321695cef2ae7"
+}

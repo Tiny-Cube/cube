@@ -1,0 +1,65 @@
+{
+  "status": "passed",
+  "frame_selection": {
+    "start": 1980,
+    "step": 20,
+    "trajectory_frames": 2001,
+    "selected": [
+      1980,
+      2000
+    ]
+  },
+  "dimers_cutoff_angstrom": 6.0,
+  "monomers_qmmm_cutoff_angstrom": 12.0,
+  "formats": [
+    "xyz",
+    "gjf"
+  ],
+  "frames": [
+    {
+      "frame": 1980,
+      "monomers": 100,
+      "dimers": 552,
+      "clusters": 100
+    },
+    {
+      "frame": 2000,
+      "monomers": 100,
+      "dimers": 550,
+      "clusters": 100
+    }
+  ],
+  "last_frame_dimer_comparison": {
+    "count": 550,
+    "ids": "identical",
+    "core_distances": "identical",
+    "coordinates_atol_angstrom": 1e-12
+  },
+  "molecule1_last_frame": {
+    "qm_atoms": 86,
+    "mm_atoms": 5160,
+    "mm_molecular_images": 60,
+    "coordinates_and_charges_equal_previous_material_benchmark": true
+  },
+  "resume_cluster_xyz_unchanged_mtime_count": 200,
+  "unit_tests": {
+    "total": 59,
+    "passed": 58,
+    "skipped": 1,
+    "skip_reason": "explicit GPU opt-in required"
+  },
+  "build": "sdist_and_wheel_passed",
+  "scope": "extraction on actual material; quantum frame dispatch on synthetic H2 dimers; Gaussian not executed",
+  "source_sha256": {
+    "src/universal_kmc/workflow/__init__.py": "70d325203eff477a0431accca96075bea70cf588b4997f02f11639767cd9cc91",
+    "src/universal_kmc/workflow/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/universal_kmc/workflow/cli.py": "d333003330e72f0f8251b613c51fdb3ad0e82b65b58add307b6c681a623d29d4",
+    "src/universal_kmc/workflow/control.py": "a615bf5e0863b41e080c2071d069395013395076231e5e21440d7a91962bab37",
+    "src/universal_kmc/workflow/dimers.py": "026cb6c90514e748f0b60785f9c94d9fb1120980137131fafd5f79e9b6e8cf01",
+    "src/universal_kmc/workflow/embedding.py": "702d249f856c7a0dd9238faf0d3e66a88f240d694972009616f5a97ff97ae782",
+    "src/universal_kmc/workflow/lj.py": "38bac353f848d6eb56211d4ed7cb6bf0f8b2a2233fe1c8434de98b4d11421df3",
+    "src/universal_kmc/workflow/reorganization.py": "f4a2ebaa750775535c3df12fe1d75161e2508e3ff103667333f5a7398af764d0",
+    "src/universal_kmc/workflow/runner.py": "0d15bc63f1a535bdc427155aa43580e7e494031c587def158e977186859f154f",
+    "src/universal_kmc/workflow/scf.py": "a2f588364d33d4bd7e751a3f8e24d3f2a18d8e98572048099a68b2f05facb83e"
+  }
+}

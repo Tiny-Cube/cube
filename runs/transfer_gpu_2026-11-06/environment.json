@@ -1,0 +1,28 @@
+{
+  "installed_packages": {
+    "cuda-toolkit": "13.5.0",
+    "cupy-cuda13x": "13.6.0",
+    "fastrlock": "0.8.4",
+    "geometric": "1.1.1",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "gpu4pyscf-libxc-cuda13x": "0.9.0",
+    "h5py": "3.16.0",
+    "networkx": "3.7",
+    "numpy": "2.5.4",
+    "nvidia-cublas": "13.10.0.20",
+    "nvidia-cuda-nvrtc": "13.5.37",
+    "nvidia-cuda-runtime": "13.5.37",
+    "nvidia-cufft": "12.5.0.14",
+    "nvidia-curand": "10.4.5.25",
+    "nvidia-cusolver": "12.4.1.2",
+    "nvidia-cusparse": "12.9.4.2",
+    "nvidia-nvjitlink": "13.5.37",
+    "packaging": "26.3",
+    "pyscf": "2.15.0",
+    "scipy": "1.18.1",
+    "setuptools": "84.2.1",
+    "six": "1.17.0",
+    "universal-kmc": "0.1.0"
+  },
+  "uv": "uv 0.10.2"
+}

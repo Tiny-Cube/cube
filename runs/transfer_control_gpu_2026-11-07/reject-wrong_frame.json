@@ -1,0 +1,15 @@
+{
+  "schema": "cube-transfer-1",
+  "status": "failed",
+  "error": {
+    "type": "ValueError",
+    "message": "monomer atoms must have the same elements and frozen coordinates as their mapped dimer atoms (common coordinate frame)"
+  },
+  "control": {
+    "schema_version": 1,
+    "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/reject-wrong_frame.toml",
+    "sha256": "9857fa2ee85326d4dda4a413060ec13212f3561a562808f6854205428daf3bd1",
+    "atom_index_base": 1,
+    "orbital_index_base": 1
+  }
+}

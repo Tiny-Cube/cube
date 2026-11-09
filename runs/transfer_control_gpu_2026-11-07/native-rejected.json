@@ -1,0 +1,15 @@
+{
+  "schema": "cube-transfer-1",
+  "status": "failed",
+  "error": {
+    "type": "ValueError",
+    "message": "standard PySCF .chk has no convergence flag; use save_transfer_checkpoint or explicitly set calculation.assume_converged=true after verifying the SCF log"
+  },
+  "control": {
+    "schema_version": 1,
+    "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/native-rejected.toml",
+    "sha256": "e6be666d45a752d561858e4a6795de9926087917f2e30bca611a808ef5118a89",
+    "atom_index_base": 1,
+    "orbital_index_base": 1
+  }
+}
