@@ -128,6 +128,26 @@ class SubmoduleSwitchTests(unittest.TestCase):
         self.assertTrue(Path(record['checkpoint']).is_file())
         self.assertTrue(record['reused'])
 
+    def test_main_selectors_filter_automatic_calls_but_not_standalone_requests(self):
+        module='$one-mol\nxyz=h2.xyz\n$end\n'
+        self.write(module,charge=1)
+        self.path.write_text(self.path.read_text().replace('$charge-carrier\ndo=1',
+            '$charge-carrier\ndo=1\none-mol=0'))
+        self.assertEqual(load_input(self.path).plan()['tasks'],[])
+        self.path.write_text(self.path.read_text().replace('$one-mol\n','$one-mol\ndo=1\n'))
+        plan=load_input(self.path).plan()
+        self.assertEqual(plan['tasks'],['one-mol'])
+        self.assertEqual(plan['module_owners']['one-mol'],['standalone'])
+        self.assertEqual(plan['entry_points']['charge-carrier']['module_selection']['one-mol'],0)
+
+    def test_main_selectors_validate_even_when_main_off(self):
+        self.path.write_text('$charge-carrier\ndo=0\none-mol=true\n$end\n')
+        with self.assertRaisesRegex(ValueError,'one-mol must be 0 or 1'):load_input(self.path)
+        self.path.write_text('$charge-carrier\ndo=1\none-mol=1\n$end\n')
+        with self.assertRaisesRegex(ValueError,'settings are missing'):load_input(self.path).execution_plan()
+        self.path.write_text('$charge-carrier\ndo=1\none-mol=1\n$end\n$one-mol\ndo=0\n$end\n')
+        with self.assertRaisesRegex(ValueError,'conflicting switches'):load_input(self.path).execution_plan()
+
     @unittest.skipUnless(importlib.util.find_spec('pyscf'), 'install the quantum extra for SCF reuse')
     def test_scientific_output_is_reusable_after_changing_orchestration(self):
         settings='$one-mol\nxyz=h2.xyz\nmethod=hf\nbasis-set=sto-3g\nthreads=1\n$end\n'
