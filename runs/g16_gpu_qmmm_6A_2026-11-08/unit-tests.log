@@ -1,0 +1,7 @@
+test_mm_self_energy_removed_and_gradient_not_negated (test_qmmm_engine_benchmark.GaussianConventionTests.test_mm_self_energy_removed_and_gradient_not_negated) ... ok
+test_unconverged_or_incomplete_quantities_are_not_accepted (test_qmmm_engine_benchmark.GaussianConventionTests.test_unconverged_or_incomplete_quantities_are_not_accepted) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.002s
+
+OK

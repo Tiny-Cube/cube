@@ -1,0 +1,128 @@
+WARN: beta  nocc = 8  HOMO -0.423708199877371 >= LUMO -0.423708199877368
+WARN: HOMO -0.423708199877367 >= LUMO -0.423708199877368
+WARN: beta  nocc = 8  HOMO -0.423767520539747 >= LUMO -0.423767520539745
+WARN: HOMO -0.423767520539745 >= LUMO -0.423767520539745
+WARN: beta  nocc = 8  HOMO -0.423648800535555 >= LUMO -0.423648800535552
+WARN: HOMO -0.423648800535552 >= LUMO -0.423648800535552
+WARN: HOMO -0.264193678431949 >= LUMO -0.264193678431949
+WARN: HOMO -0.264468683218526 >= LUMO -0.264468683218526
+WARN: HOMO -0.26391824649696 >= LUMO -0.263918246496958
+/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/gpu4pyscf/lib/cutensor.py:154: UserWarning: using cupy as the tensor contraction engine.
+  warnings.warn(f'using {contract_engine} as the tensor contraction engine.')
+WARN: HOMO -1.05223652816184 >= LUMO -1.05223652816184
+WARN: HOMO -1.05223544916677 >= LUMO -1.05223544916674
+WARN: HOMO -1.05223756153465 >= LUMO -1.05223756153464
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/gradient-check/q0_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/gradient-check/q0_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/gradient-check/q0_-0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/gradient-check/q1_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/gradient-check/q1_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/gradient-check/q1_-0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/gradient-check/q-1_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/gradient-check/q-1_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/cpu/gradient-check/q-1_-0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/gradient-check/q0_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/gradient-check/q0_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/gradient-check/q0_-0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/gradient-check/q1_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/gradient-check/q1_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/gradient-check/q1_-0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/gradient-check/q-1_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/gradient-check/q-1_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/gradient-check/q-1_-0.001.log
+{
+  "status": "passed",
+  "backends": {
+    "cpu": {
+      "elapsed_seconds_observation": 20.194412071025,
+      "resume_seconds_observation": 0.48853705101646483,
+      "couplings_ev": {
+        "hole": 0.42176447345527585,
+        "electron": 0.4740213579087326
+      },
+      "reorganization_ev": {
+        "hole": 0.4055143485654464,
+        "electron": 5.706538099646812
+      },
+      "neutral_optimization": {
+        "converged": true,
+        "evaluations": 6,
+        "gradient_class": "pyscf.grad.rhf.Gradients_Scanner",
+        "final_gradient_rms": 5.738644163530324e-08,
+        "final_gradient_max": 9.939624234789335e-08,
+        "charge": 0,
+        "spin_2s": 0
+      },
+      "resume_no_recomputation": "passed",
+      "gradients": {
+        "0": {
+          "analytic_hartree_per_bohr": 0.05416857006569664,
+          "finite_difference_hartree_per_bohr": 0.05418201727991345,
+          "absolute_error": 1.3447214216810721e-05,
+          "step_bohr": 0.001
+        },
+        "1": {
+          "analytic_hartree_per_bohr": 0.10581159401147922,
+          "finite_difference_hartree_per_bohr": 0.10583246037754179,
+          "absolute_error": 2.0866366062577413e-05,
+          "step_bohr": 0.001
+        },
+        "-1": {
+          "analytic_hartree_per_bohr": -0.23074393890204625,
+          "finite_difference_hartree_per_bohr": -0.23073147706043073,
+          "absolute_error": 1.2461841615518665e-05,
+          "step_bohr": 0.001
+        }
+      }
+    },
+    "gpu": {
+      "elapsed_seconds_observation": 20.527895350009203,
+      "resume_seconds_observation": 0.4863260530401021,
+      "couplings_ev": {
+        "hole": 0.4217643262679025,
+        "electron": 0.4740212126767088
+      },
+      "reorganization_ev": {
+        "hole": 0.4055140702967,
+        "electron": 5.706537728674407
+      },
+      "neutral_optimization": {
+        "converged": true,
+        "evaluations": 6,
+        "gradient_class": "gpu4pyscf.grad.rhf.Gradients_Scanner",
+        "final_gradient_rms": 1.6184263204970273e-08,
+        "final_gradient_max": 2.8033980470354436e-08,
+        "charge": 0,
+        "spin_2s": 0
+      },
+      "resume_no_recomputation": "passed",
+      "gradients": {
+        "0": {
+          "analytic_hartree_per_bohr": 0.05416857476847525,
+          "finite_difference_hartree_per_bohr": 0.05418201747886542,
+          "absolute_error": 1.3442710390165757e-05,
+          "step_bohr": 0.001
+        },
+        "1": {
+          "analytic_hartree_per_bohr": 0.1058116054492988,
+          "finite_difference_hartree_per_bohr": 0.10582137137760128,
+          "absolute_error": 9.76592830248535e-06,
+          "step_bohr": 0.001
+        },
+        "-1": {
+          "analytic_hartree_per_bohr": -0.23074390451493443,
+          "finite_difference_hartree_per_bohr": -0.2307314768472679,
+          "absolute_error": 1.2427667666514708e-05,
+          "step_bohr": 0.001
+        }
+      }
+    }
+  },
+  "failed_optimization_no_reorganization": "passed",
+  "coupling_tolerance": {
+    "atol_ev": 2e-05,
+    "rtol": 0.0002
+  },
+  "reorganization_cpu_gpu_atol_ev": 0.005,
+  "scope": "ethylene DIPRO and F2 vacuum four-point; timings are observations, not a general speedup benchmark"
+}

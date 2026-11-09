@@ -1,0 +1,123 @@
+{
+  "status": "passed",
+  "scope": "F2 frozen finite point-charge MM plus LJ12-6",
+  "backends": {
+    "cpu": {
+      "reorganization_ev": {
+        "hole": 0.40905897624481957,
+        "electron": 5.627757877685156
+      },
+      "elapsed_seconds_observation": 14.496722928015515,
+      "resume_seconds_observation": 0.49694112804718316,
+      "gradients": {
+        "0": {
+          "analytic_hartree_per_bohr": 0.05516809994121893,
+          "finite_difference_hartree_per_bohr": 0.055181553932470706,
+          "absolute_error": 1.3453991251778652e-05,
+          "step_bohr": 0.001
+        },
+        "1": {
+          "analytic_hartree_per_bohr": 0.10725010265385124,
+          "finite_difference_hartree_per_bohr": 0.10726351007406265,
+          "absolute_error": 1.3407420211414278e-05,
+          "step_bohr": 0.001
+        },
+        "-1": {
+          "analytic_hartree_per_bohr": -0.23026767500400516,
+          "finite_difference_hartree_per_bohr": -0.23025520522423903,
+          "absolute_error": 1.2469779766127731e-05,
+          "step_bohr": 0.001
+        }
+      },
+      "mm_frozen_checked_every_evaluation": true,
+      "same_mm_at_all_four_points": true,
+      "resume_no_recomputation": true,
+      "neutral_optimization": {
+        "converged": true,
+        "evaluations": 6,
+        "gradient_class": "pyscf.grad.rhf.QMMMGradients_Scanner",
+        "final_gradient_rms": 2.8241659840932216e-07,
+        "final_gradient_max": 4.959177326941885e-07,
+        "charge": 0,
+        "spin_2s": 0,
+        "gradient_mro": [
+          "pyscf.grad.rhf.QMMMGradients_Scanner",
+          "pyscf.grad.rhf.SCF_GradScanner",
+          "pyscf.lib.misc.GradScanner",
+          "pyscf.lib.misc.QMMMGradients",
+          "pyscf.qmmm.itrf.QMMMGrad",
+          "pyscf.df.grad.rks.Gradients",
+          "pyscf.grad.rks.Gradients",
+          "pyscf.grad.rhf.Gradients",
+          "pyscf.grad.rhf.GradientsBase",
+          "pyscf.lib.misc.StreamObject",
+          "builtins.object"
+        ],
+        "mm_frozen": true,
+        "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+        "optimized_region": "QM_atoms_only",
+        "qm_mm_gradient_verified": true
+      }
+    },
+    "gpu": {
+      "reorganization_ev": {
+        "hole": 0.4090603191493317,
+        "electron": 5.6277508111050905
+      },
+      "elapsed_seconds_observation": 14.315103070111945,
+      "resume_seconds_observation": 0.5011548460461199,
+      "gradients": {
+        "0": {
+          "analytic_hartree_per_bohr": 0.05516810455180284,
+          "finite_difference_hartree_per_bohr": 0.05518155413142267,
+          "absolute_error": 1.344957961983001e-05,
+          "step_bohr": 0.001
+        },
+        "1": {
+          "analytic_hartree_per_bohr": 0.10725008282031553,
+          "finite_difference_hartree_per_bohr": 0.10726351034406889,
+          "absolute_error": 1.342752375335654e-05,
+          "step_bohr": 0.001
+        },
+        "-1": {
+          "analytic_hartree_per_bohr": -0.2302676403623574,
+          "finite_difference_hartree_per_bohr": -0.2302552049542328,
+          "absolute_error": 1.243540812459476e-05,
+          "step_bohr": 0.001
+        }
+      },
+      "mm_frozen_checked_every_evaluation": true,
+      "same_mm_at_all_four_points": true,
+      "resume_no_recomputation": true,
+      "neutral_optimization": {
+        "converged": true,
+        "evaluations": 6,
+        "gradient_class": "gpu4pyscf.grad.rhf.QMMMGradients_Scanner",
+        "final_gradient_rms": 9.678265513889634e-07,
+        "final_gradient_max": 1.6770244550973483e-06,
+        "charge": 0,
+        "spin_2s": 0,
+        "gradient_mro": [
+          "gpu4pyscf.grad.rhf.QMMMGradients_Scanner",
+          "gpu4pyscf.grad.rhf.SCF_GradScanner",
+          "pyscf.lib.misc.GradScanner",
+          "pyscf.lib.misc.QMMMGradients",
+          "gpu4pyscf.qmmm.itrf.QMMMGrad",
+          "gpu4pyscf.df.grad.rks.Gradients",
+          "gpu4pyscf.grad.rks.Gradients",
+          "gpu4pyscf.grad.rhf.Gradients",
+          "gpu4pyscf.grad.rhf.GradientsBase",
+          "pyscf.lib.misc.StreamObject",
+          "builtins.object"
+        ],
+        "mm_frozen": true,
+        "embedding_fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450",
+        "optimized_region": "QM_atoms_only",
+        "qm_mm_gradient_verified": true
+      }
+    }
+  },
+  "mm_edit_invalidates_resume": true,
+  "failed_optimization_no_reorganization": true,
+  "cpu_gpu_lambda_tolerance_ev": 0.005
+}

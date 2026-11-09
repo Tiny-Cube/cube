@@ -1,0 +1,37 @@
+# Postprocess existing PySCF/GPU4PySCF results. No SCF runs here.
+# Paths are relative to THIS file. Generate inputs with scripts/run_pyscf.py.
+schema_version = 1
+
+[input]
+fragment_a = "results/ethylene_a.chk"
+fragment_b = "results/ethylene_b.chk"
+dimer = "results/ethylene_ab.chk"
+
+[calculation]
+methods = ["dipro"]
+carriers = ["hole", "electron"]
+backend = "cpu"  # "gpu" uses CuPy for projection and orthogonalization
+threads = 4
+# For standard native .chk WITHOUT cube's convergence metadata, first verify
+# the original SCF logs, then explicitly enable this assertion:
+# assume_converged = true
+# Optional ESID requires methods=["dipro", "esid"] AND assume_equivalent=true.
+
+[fragments]
+# Dimer atom numbers, ONE-BASED, in each monomer checkpoint's atom order.
+# The default (without this table) is all A atoms followed by all B atoms.
+# These are complete molecules, not only conjugated-plane screening atoms.
+a_atoms = "1-6"
+b_atoms = "7-12"
+
+# Optional explicit ONE-BASED MO selections; default is near-degenerate HOMO
+# manifolds for holes and LUMO manifolds for electrons (0.01 eV window).
+# [orbitals.hole]
+# a = [8]
+# b = [8]
+# [orbitals.electron]
+# a = [9]
+# b = [9]
+
+[output]
+file = "results/transfer.json"

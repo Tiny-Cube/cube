@@ -1,0 +1,326 @@
+cube: qmmm four-point reorganization F2
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/neutral.optimization.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/E0_R0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/cation.optimization.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/hole_Eq_R0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/hole_Eq_Rq.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/hole_E0_Rq.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/anion.optimization.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/electron_Eq_R0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/electron_Eq_Rq.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/reorganization/F2/electron_E0_Rq.log
+cube: completed; report: /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/cube-results/workflow.json
+
+STDERR
+geometric-optimize called with the following command line:
+/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/universal_kmc/workflow/__main__.py /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/input
+
+                                        ())))))))))))))))/
+                                    ())))))))))))))))))))))))),
+                                *)))))))))))))))))))))))))))))))))
+                        #,    ()))))))))/                .)))))))))),
+                      #%%%%,  ())))))                        .))))))))*
+                      *%%%%%%,  ))              ..              ,))))))).
+                        *%%%%%%,         ***************/.        .)))))))
+                #%%/      (%%%%%%,    /*********************.       )))))))
+              .%%%%%%#      *%%%%%%,  *******/,     **********,      .))))))
+                .%%%%%%/      *%%%%%%,  **              ********      .))))))
+          ##      .%%%%%%/      (%%%%%%,                  ,******      /)))))
+        %%%%%%      .%%%%%%#      *%%%%%%,    ,/////.       ******      ))))))
+      #%      %%      .%%%%%%/      *%%%%%%,  ////////,      *****/     ,)))))
+    #%%  %%%  %%%#      .%%%%%%/      (%%%%%%,  ///////.     /*****      ))))).
+  #%%%%.      %%%%%#      /%%%%%%*      #%%%%%%   /////)     ******      ))))),
+    #%%%%##%  %%%#      .%%%%%%/      (%%%%%%,  ///////.     /*****      ))))).
+      ##     %%%      .%%%%%%/      *%%%%%%,  ////////.      *****/     ,)))))
+        #%%%%#      /%%%%%%/      (%%%%%%      /)/)//       ******      ))))))
+          ##      .%%%%%%/      (%%%%%%,                  *******      ))))))
+                .%%%%%%/      *%%%%%%,  **.             /*******      .))))))
+              *%%%%%%/      (%%%%%%   ********/*..,*/*********       *))))))
+                #%%/      (%%%%%%,    *********************/        )))))))
+                        *%%%%%%,         ,**************/         ,))))))/
+                      (%%%%%%   ()                              ))))))))
+                      #%%%%,  ())))))                        ,)))))))),
+                        #,    ())))))))))                ,)))))))))).
+                                 ()))))))))))))))))))))))))))))))/
+                                    ())))))))))))))))))))))))).
+                                         ())))))))))))))),
+
+-=#  geomeTRIC started. Version: 1.1.1  #=-
+Current date and time: 2026-11-07 18:12:09
+
+#========================================================#
+#|     Arguments passed to driver run_optimizer():      |#
+#========================================================#
+customengine              <pyscf.geomopt.geometric_solver.PySCFEngine object at 0x7f69cb7631d0>
+input                     /tmp/tmph5yo2gof/2307815c-c511-4f93-9eee-814fc13a7617
+logIni                    /home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/pyscf/geomopt/log.ini
+maxiter                   60
+----------------------------------------------------------
+Custom engine selected.
+Bonds will be generated from interatomic distances less than 1.20 times sum of covalent radii
+Creating artificial bond to isolated atom: 1-2
+Creating artificial bond to isolated atom: 2-1
+6 internal coordinates being used (instead of 6 Cartesians)
+Internal coordinate system (atoms numbered from 1):
+Distance 1-2
+Translation-X 1-2
+Translation-Y 1-2
+Translation-Z 1-2
+Rotation-A 1-2
+Rotation-B 1-2
+Rotation-C 1-2
+<class 'geometric.internal.Distance'> : 1
+<class 'geometric.internal.TranslationX'> : 1
+<class 'geometric.internal.TranslationY'> : 1
+<class 'geometric.internal.TranslationZ'> : 1
+<class 'geometric.internal.RotationA'> : 1
+<class 'geometric.internal.RotationB'> : 1
+<class 'geometric.internal.RotationC'> : 1
+> ===== Optimization Info: ====
+> Job type: Energy minimization
+> Maximum number of optimization cycles: 60
+> Initial / maximum trust radius (Angstrom): 0.100 / 0.300
+> Convergence Criteria:
+> Will converge when all 5 criteria are reached:
+>  |Delta-E| < 1.00e-06
+>  RMS-Grad  < 3.00e-04
+>  Max-Grad  < 4.50e-04
+>  RMS-Disp  < 1.20e-03
+>  Max-Disp  < 1.80e-03
+> === End Optimization Info ===
+WARN: Mole.unit (Angstrom) is changed to Bohr
+Step    0 : Gradient = 5.517e-02/5.517e-02 (rms/max) Energy = -199.4897438183
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 1.00000e-01
+Step    1 : Displace = 1.000e-01/1.000e-01 (rms/max) Trust = 1.000e-01 (=) Grad = 1.092e-01/1.092e-01 (rms/max) E (change) = -199.4854568755 (+4.287e-03) Quality = -0.313
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 4.34938e-01
+Step    2 : Displace = 5.000e-02/5.000e-02 (rms/max) Trust = 5.000e-02 (-) Grad = 3.614e-03/3.614e-03 (rms/max) E (change) = -199.4951871523 (-9.730e-03) Quality = 0.756
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 5.58812e-01
+Step    3 : Displace = 1.711e-03/1.711e-03 (rms/max) Trust = 7.071e-02 (+) Grad = 9.573e-04/9.573e-04 (rms/max) E (change) = -199.4952019191 (-1.477e-05) Quality = 1.263
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 4.10806e-01
+Step    4 : Displace = 6.166e-04/6.166e-04 (rms/max) Trust = 1.000e-01 (+) Grad = 1.281e-05/1.281e-05 (rms/max) E (change) = -199.4952030519 (-1.133e-06) Quality = 1.016
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 4.05308e-01
+Step    5 : Displace = 8.365e-06/8.365e-06 (rms/max) Trust = 1.414e-01 (+) Grad = 4.892e-07/4.959e-07 (rms/max) E (change) = -199.4952030521 (-2.071e-10) Quality = 1.022
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 4.05308e-01
+Converged! =D
+
+    #==========================================================================#
+    #| If this code has benefited your research, please support us by citing: |#
+    #|                                                                        |#
+    #| Wang, L.-P.; Song, C.C. (2016) "Geometry optimization made simple with |#
+    #| translation and rotation coordinates", J. Chem, Phys. 144, 214108.     |#
+    #| http://dx.doi.org/10.1063/1.4952956                                    |#
+    #==========================================================================#
+    Time elapsed since start of run_optimizer: 2.282 seconds
+geometric-optimize called with the following command line:
+/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/universal_kmc/workflow/__main__.py /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/input
+
+                                        ())))))))))))))))/
+                                    ())))))))))))))))))))))))),
+                                *)))))))))))))))))))))))))))))))))
+                        #,    ()))))))))/                .)))))))))),
+                      #%%%%,  ())))))                        .))))))))*
+                      *%%%%%%,  ))              ..              ,))))))).
+                        *%%%%%%,         ***************/.        .)))))))
+                #%%/      (%%%%%%,    /*********************.       )))))))
+              .%%%%%%#      *%%%%%%,  *******/,     **********,      .))))))
+                .%%%%%%/      *%%%%%%,  **              ********      .))))))
+          ##      .%%%%%%/      (%%%%%%,                  ,******      /)))))
+        %%%%%%      .%%%%%%#      *%%%%%%,    ,/////.       ******      ))))))
+      #%      %%      .%%%%%%/      *%%%%%%,  ////////,      *****/     ,)))))
+    #%%  %%%  %%%#      .%%%%%%/      (%%%%%%,  ///////.     /*****      ))))).
+  #%%%%.      %%%%%#      /%%%%%%*      #%%%%%%   /////)     ******      ))))),
+    #%%%%##%  %%%#      .%%%%%%/      (%%%%%%,  ///////.     /*****      ))))).
+      ##     %%%      .%%%%%%/      *%%%%%%,  ////////.      *****/     ,)))))
+        #%%%%#      /%%%%%%/      (%%%%%%      /)/)//       ******      ))))))
+          ##      .%%%%%%/      (%%%%%%,                  *******      ))))))
+                .%%%%%%/      *%%%%%%,  **.             /*******      .))))))
+              *%%%%%%/      (%%%%%%   ********/*..,*/*********       *))))))
+                #%%/      (%%%%%%,    *********************/        )))))))
+                        *%%%%%%,         ,**************/         ,))))))/
+                      (%%%%%%   ()                              ))))))))
+                      #%%%%,  ())))))                        ,)))))))),
+                        #,    ())))))))))                ,)))))))))).
+                                 ()))))))))))))))))))))))))))))))/
+                                    ())))))))))))))))))))))))).
+                                         ())))))))))))))),
+
+-=#  geomeTRIC started. Version: 1.1.1  #=-
+Current date and time: 2026-11-07 18:12:11
+
+#========================================================#
+#|     Arguments passed to driver run_optimizer():      |#
+#========================================================#
+customengine              <pyscf.geomopt.geometric_solver.PySCFEngine object at 0x7f69cb32b9b0>
+input                     /tmp/tmpgb0ag9bz/462cc44d-da34-4e2a-a6cc-96ba45ba50b2
+logIni                    /home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/pyscf/geomopt/log.ini
+maxiter                   60
+----------------------------------------------------------
+Custom engine selected.
+Bonds will be generated from interatomic distances less than 1.20 times sum of covalent radii
+Creating artificial bond to isolated atom: 1-2
+Creating artificial bond to isolated atom: 2-1
+6 internal coordinates being used (instead of 6 Cartesians)
+Internal coordinate system (atoms numbered from 1):
+Distance 1-2
+Translation-X 1-2
+Translation-Y 1-2
+Translation-Z 1-2
+Rotation-A 1-2
+Rotation-B 1-2
+Rotation-C 1-2
+<class 'geometric.internal.Distance'> : 1
+<class 'geometric.internal.TranslationX'> : 1
+<class 'geometric.internal.TranslationY'> : 1
+<class 'geometric.internal.TranslationZ'> : 1
+<class 'geometric.internal.RotationA'> : 1
+<class 'geometric.internal.RotationB'> : 1
+<class 'geometric.internal.RotationC'> : 1
+> ===== Optimization Info: ====
+> Job type: Energy minimization
+> Maximum number of optimization cycles: 60
+> Initial / maximum trust radius (Angstrom): 0.100 / 0.300
+> Convergence Criteria:
+> Will converge when all 5 criteria are reached:
+>  |Delta-E| < 1.00e-06
+>  RMS-Grad  < 3.00e-04
+>  Max-Grad  < 4.50e-04
+>  RMS-Disp  < 1.20e-03
+>  Max-Disp  < 1.80e-03
+> === End Optimization Info ===
+WARN: Mole.unit (Angstrom) is changed to Bohr
+WARN: beta  nocc = 8  HOMO -0.412250792350572 >= LUMO -0.412103311824409
+WARN: HOMO -0.412103311824408 >= LUMO -0.412103311824409
+Step    0 : Gradient = 7.122e-02/7.122e-02 (rms/max) Energy = -198.9230243905
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 1.00000e-01
+Step    1 : Displace = 1.000e-01/1.000e-01 (rms/max) Trust = 1.000e-01 (=) Grad = 1.476e-01/1.476e-01 (rms/max) E (change) = -198.9170995957 (+5.925e-03) Quality = -0.300
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 5.78858e-01
+Step    2 : Displace = 5.000e-02/5.000e-02 (rms/max) Trust = 5.000e-02 (-) Grad = 4.652e-03/4.652e-03 (rms/max) E (change) = -198.9300914595 (-1.299e-02) Quality = 0.740
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 7.56237e-01
+Step    3 : Displace = 1.628e-03/1.628e-03 (rms/max) Trust = 5.000e-02 (=) Grad = 1.334e-03/1.334e-03 (rms/max) E (change) = -198.9301098598 (-1.840e-05) Quality = 1.286
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 5.39300e-01
+Step    4 : Displace = 6.547e-04/6.547e-04 (rms/max) Trust = 7.071e-02 (+) Grad = 1.909e-05/1.909e-05 (rms/max) E (change) = -198.9301115421 (-1.682e-06) Quality = 1.019
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 5.31586e-01
+Step    5 : Displace = 9.501e-06/9.501e-06 (rms/max) Trust = 1.000e-01 (+) Grad = 9.252e-08/9.272e-08 (rms/max) E (change) = -198.9301115426 (-4.914e-10) Quality = 1.434
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 5.31586e-01
+Converged! =D
+
+    #==========================================================================#
+    #| If this code has benefited your research, please support us by citing: |#
+    #|                                                                        |#
+    #| Wang, L.-P.; Song, C.C. (2016) "Geometry optimization made simple with |#
+    #| translation and rotation coordinates", J. Chem, Phys. 144, 214108.     |#
+    #| http://dx.doi.org/10.1063/1.4952956                                    |#
+    #==========================================================================#
+    Time elapsed since start of run_optimizer: 3.312 seconds
+WARN: beta  nocc = 8  HOMO -0.412250792350574 >= LUMO -0.412103311824409
+WARN: HOMO -0.412103311824408 >= LUMO -0.412103311824409
+WARN: beta  nocc = 8  HOMO -0.396786927175101 >= LUMO -0.396639203923296
+WARN: HOMO -0.396639203923295 >= LUMO -0.396639203923296
+geometric-optimize called with the following command line:
+/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/universal_kmc/workflow/__main__.py /home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/cpu/input
+
+                                        ())))))))))))))))/
+                                    ())))))))))))))))))))))))),
+                                *)))))))))))))))))))))))))))))))))
+                        #,    ()))))))))/                .)))))))))),
+                      #%%%%,  ())))))                        .))))))))*
+                      *%%%%%%,  ))              ..              ,))))))).
+                        *%%%%%%,         ***************/.        .)))))))
+                #%%/      (%%%%%%,    /*********************.       )))))))
+              .%%%%%%#      *%%%%%%,  *******/,     **********,      .))))))
+                .%%%%%%/      *%%%%%%,  **              ********      .))))))
+          ##      .%%%%%%/      (%%%%%%,                  ,******      /)))))
+        %%%%%%      .%%%%%%#      *%%%%%%,    ,/////.       ******      ))))))
+      #%      %%      .%%%%%%/      *%%%%%%,  ////////,      *****/     ,)))))
+    #%%  %%%  %%%#      .%%%%%%/      (%%%%%%,  ///////.     /*****      ))))).
+  #%%%%.      %%%%%#      /%%%%%%*      #%%%%%%   /////)     ******      ))))),
+    #%%%%##%  %%%#      .%%%%%%/      (%%%%%%,  ///////.     /*****      ))))).
+      ##     %%%      .%%%%%%/      *%%%%%%,  ////////.      *****/     ,)))))
+        #%%%%#      /%%%%%%/      (%%%%%%      /)/)//       ******      ))))))
+          ##      .%%%%%%/      (%%%%%%,                  *******      ))))))
+                .%%%%%%/      *%%%%%%,  **.             /*******      .))))))
+              *%%%%%%/      (%%%%%%   ********/*..,*/*********       *))))))
+                #%%/      (%%%%%%,    *********************/        )))))))
+                        *%%%%%%,         ,**************/         ,))))))/
+                      (%%%%%%   ()                              ))))))))
+                      #%%%%,  ())))))                        ,)))))))),
+                        #,    ())))))))))                ,)))))))))).
+                                 ()))))))))))))))))))))))))))))))/
+                                    ())))))))))))))))))))))))).
+                                         ())))))))))))))),
+
+-=#  geomeTRIC started. Version: 1.1.1  #=-
+Current date and time: 2026-11-07 18:12:16
+
+#========================================================#
+#|     Arguments passed to driver run_optimizer():      |#
+#========================================================#
+customengine              <pyscf.geomopt.geometric_solver.PySCFEngine object at 0x7f69cac76240>
+input                     /tmp/tmp7dml45tx/34282e55-ad42-4fa9-9c46-a0294e5b0dcf
+logIni                    /home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/pyscf/geomopt/log.ini
+maxiter                   60
+----------------------------------------------------------
+Custom engine selected.
+Bonds will be generated from interatomic distances less than 1.20 times sum of covalent radii
+Creating artificial bond to isolated atom: 1-2
+Creating artificial bond to isolated atom: 2-1
+6 internal coordinates being used (instead of 6 Cartesians)
+Internal coordinate system (atoms numbered from 1):
+Distance 1-2
+Translation-X 1-2
+Translation-Y 1-2
+Translation-Z 1-2
+Rotation-A 1-2
+Rotation-B 1-2
+Rotation-C 1-2
+<class 'geometric.internal.Distance'> : 1
+<class 'geometric.internal.TranslationX'> : 1
+<class 'geometric.internal.TranslationY'> : 1
+<class 'geometric.internal.TranslationZ'> : 1
+<class 'geometric.internal.RotationA'> : 1
+<class 'geometric.internal.RotationB'> : 1
+<class 'geometric.internal.RotationC'> : 1
+> ===== Optimization Info: ====
+> Job type: Energy minimization
+> Maximum number of optimization cycles: 60
+> Initial / maximum trust radius (Angstrom): 0.100 / 0.300
+> Convergence Criteria:
+> Will converge when all 5 criteria are reached:
+>  |Delta-E| < 1.00e-06
+>  RMS-Grad  < 3.00e-04
+>  Max-Grad  < 4.50e-04
+>  RMS-Disp  < 1.20e-03
+>  Max-Disp  < 1.80e-03
+> === End Optimization Info ===
+WARN: Mole.unit (Angstrom) is changed to Bohr
+WARN: HOMO -0.207702498132287 >= LUMO -0.207702498132284
+Step    0 : Gradient = 3.738e-01/3.738e-01 (rms/max) Energy = -199.4461231320
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 1.00000e-01
+Step    1 : Displace = 1.000e-01/1.000e-01 (rms/max) Trust = 1.000e-01 (=) Grad = 1.296e-01/1.296e-01 (rms/max) E (change) = -199.5344205685 (-8.830e-02) Quality = 0.658
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 6.45963e-01
+Step    2 : Displace = 5.310e-02/5.310e-02 (rms/max) Trust = 1.000e-01 (=) Grad = 6.706e-02/6.706e-02 (rms/max) E (change) = -199.5536284130 (-1.921e-02) Quality = 1.477
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 3.11765e-01
+Step    3 : Displace = 5.692e-02/5.692e-02 (rms/max) Trust = 1.414e-01 (+) Grad = 2.735e-02/2.735e-02 (rms/max) E (change) = -199.5633935388 (-9.765e-03) Quality = 1.354
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 1.84626e-01
+Step    4 : Displace = 3.919e-02/3.919e-02 (rms/max) Trust = 2.000e-01 (+) Grad = 1.036e-02/1.036e-02 (rms/max) E (change) = -199.5661093115 (-2.716e-03) Quality = 1.341
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 1.14676e-01
+Step    5 : Displace = 2.391e-02/2.391e-02 (rms/max) Trust = 2.828e-01 (+) Grad = 2.820e-03/2.820e-03 (rms/max) E (change) = -199.5666932669 (-5.840e-04) Quality = 1.247
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 8.34634e-02
+Step    6 : Displace = 8.941e-03/8.941e-03 (rms/max) Trust = 3.000e-01 (+) Grad = 4.297e-04/4.297e-04 (rms/max) E (change) = -199.5667482335 (-5.497e-05) Quality = 1.154
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 7.07480e-02
+Step    7 : Displace = 1.607e-03/1.607e-03 (rms/max) Trust = 3.000e-01 (=) Grad = 2.192e-05/2.193e-05 (rms/max) E (change) = -199.5667497247 (-1.491e-06) Quality = 1.143
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 6.71390e-02
+Step    8 : Displace = 8.638e-05/8.638e-05 (rms/max) Trust = 3.000e-01 (=) Grad = 1.936e-07/1.998e-07 (rms/max) E (change) = -199.5667497351 (-1.039e-08) Quality = 2.905
+Hessian Eigenvalues: 5.00000e-02 5.00000e-02 5.00000e-02 ... 5.00000e-02 5.00000e-02 6.71390e-02
+Converged! =D
+
+    #==========================================================================#
+    #| If this code has benefited your research, please support us by citing: |#
+    #|                                                                        |#
+    #| Wang, L.-P.; Song, C.C. (2016) "Geometry optimization made simple with |#
+    #| translation and rotation coordinates", J. Chem, Phys. 144, 214108.     |#
+    #| http://dx.doi.org/10.1063/1.4952956                                    |#
+    #==========================================================================#
+    Time elapsed since start of run_optimizer: 5.124 seconds
+WARN: HOMO -0.207702498132285 >= LUMO -0.207702498132284
+WARN: HOMO -0.402890583646855 >= LUMO -0.402890583646855

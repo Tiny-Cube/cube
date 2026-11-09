@@ -1,0 +1,45 @@
+{
+  "validation": "paths_and_settings_only_no_checkpoint_matrices_read",
+  "control": {
+    "schema_version": 1,
+    "path": "/home/dav/Documents/code/codex/cube/examples/quantum/transfer.toml",
+    "sha256": "a29fce7a1e6ebec5b3cdbf89b18606f29d3cd050903197cf6c77a26bc37e85d7",
+    "atom_index_base": 1,
+    "orbital_index_base": 1
+  },
+  "checkpoints": {
+    "fragment_a": "/home/dav/Documents/code/codex/cube/examples/quantum/results/ethylene_a.chk",
+    "fragment_b": "/home/dav/Documents/code/codex/cube/examples/quantum/results/ethylene_b.chk",
+    "dimer": "/home/dav/Documents/code/codex/cube/examples/quantum/results/ethylene_ab.chk"
+  },
+  "backend": "cpu",
+  "methods": [
+    "dipro"
+  ],
+  "carriers": [
+    "hole",
+    "electron"
+  ],
+  "assume_equivalent": false,
+  "assume_converged": false,
+  "orbital_indices_zero_based": null,
+  "atom_indices_zero_based": [
+    [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  ],
+  "output": "/home/dav/Documents/code/codex/cube/examples/quantum/results/transfer.json"
+}

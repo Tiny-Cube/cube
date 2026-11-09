@@ -1,0 +1,5 @@
+# x y z q; Angstrom/e; fixed neutral quadrupolar test environment
+3 0 0 0.02
+-3 0 0 0.02
+0 3 0 -0.02
+0 -3 0 -0.02

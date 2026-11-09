@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+"""Repository launcher; the installed command is also named cube."""
+import os
+from pathlib import Path
+import sys
+
+root = Path(__file__).resolve().parent
+environment_python = root/'.venv/bin/python'
+if sys.prefix == sys.base_prefix and environment_python.is_file():
+    os.execv(str(environment_python), [str(environment_python), str(Path(__file__).resolve()), *sys.argv[1:]])
+sys.path.insert(0, str(root/'src'))
+
+from universal_kmc.workflow.cli import main
+
+raise SystemExit(main())

@@ -1,0 +1,15 @@
+{
+  "schema": "cube-transfer-1",
+  "status": "failed",
+  "error": {
+    "type": "ValueError",
+    "message": "MO coefficients fail AO-metric orthonormality: 0.15137066233226104"
+  },
+  "control": {
+    "schema_version": 1,
+    "path": "/home/codex/cube-transfer-validation-20261106/validation/control-20261107/final/reject-bad_metric.toml",
+    "sha256": "ab55bee39c6126de0ab3484fe82ff64c6e147b00b0227365d26eaef86f275ce5",
+    "atom_index_base": 1,
+    "orbital_index_base": 1
+  }
+}

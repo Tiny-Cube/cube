@@ -1,0 +1,155 @@
+WARN: beta  nocc = 8  HOMO -0.424410384588327 >= LUMO -0.424263377405838
+WARN: HOMO -0.424263377405838 >= LUMO -0.424263377405838
+WARN: beta  nocc = 8  HOMO -0.424470140944557 >= LUMO -0.424323137155288
+WARN: HOMO -0.424323137155289 >= LUMO -0.424323137155288
+WARN: beta  nocc = 8  HOMO -0.424350549932522 >= LUMO -0.424203539368101
+WARN: HOMO -0.4242035393681 >= LUMO -0.424203539368101
+WARN: HOMO -0.265112233129015 >= LUMO -0.265112233129015
+WARN: HOMO -0.265387825725623 >= LUMO -0.265387825725624
+WARN: HOMO -0.264836213832958 >= LUMO -0.264836213832957
+/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/gpu4pyscf/lib/cutensor.py:154: UserWarning: using cupy as the tensor contraction engine.
+  warnings.warn(f'using {contract_engine} as the tensor contraction engine.')
+WARN: HOMO -1.0529222974944 >= LUMO -1.05279842579082
+WARN: HOMO -1.05292166428824 >= LUMO -1.05279779420433
+WARN: HOMO -1.0529228854599 >= LUMO -1.05279901214937
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/cpu/gradient-check/q0_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/cpu/gradient-check/q0_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/cpu/gradient-check/q0_-0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/cpu/gradient-check/q1_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/cpu/gradient-check/q1_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/cpu/gradient-check/q1_-0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/cpu/gradient-check/q-1_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/cpu/gradient-check/q-1_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/cpu/gradient-check/q-1_-0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/gradient-check/q0_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/gradient-check/q0_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/gradient-check/q0_-0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/gradient-check/q1_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/gradient-check/q1_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/gradient-check/q1_-0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/gradient-check/q-1_+0.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/gradient-check/q-1_+0.001.log
+output file: /home/codex/cube-transfer-validation-20261106/validation/qmmm-frozen-20261107/v2/run/gpu/gradient-check/q-1_-0.001.log
+{
+  "status": "passed",
+  "scope": "F2 frozen finite point-charge MM electrostatic embedding; no QM-MM vdw or MM relaxation",
+  "backends": {
+    "cpu": {
+      "reorganization_ev": {
+        "hole": 0.4096283105708833,
+        "electron": 5.758811614195518
+      },
+      "elapsed_seconds_observation": 14.983909135917202,
+      "resume_seconds_observation": 0.4617901120800525,
+      "gradients": {
+        "0": {
+          "analytic_hartree_per_bohr": 0.05453496827527182,
+          "finite_difference_hartree_per_bohr": 0.05454842079188893,
+          "absolute_error": 1.3452516617107335e-05,
+          "step_bohr": 0.001
+        },
+        "1": {
+          "analytic_hartree_per_bohr": 0.10661697099622991,
+          "finite_difference_hartree_per_bohr": 0.1066303769903243,
+          "absolute_error": 1.3405994094384255e-05,
+          "step_bohr": 0.001
+        },
+        "-1": {
+          "analytic_hartree_per_bohr": -0.23090080666994517,
+          "finite_difference_hartree_per_bohr": -0.23088833827955568,
+          "absolute_error": 1.2468390389486217e-05,
+          "step_bohr": 0.001
+        }
+      },
+      "mm_frozen_checked_every_evaluation": true,
+      "same_mm_at_all_four_points": true,
+      "resume_no_recomputation": true,
+      "neutral_optimization": {
+        "converged": true,
+        "evaluations": 6,
+        "gradient_class": "pyscf.grad.rhf.QMMMGradients_Scanner",
+        "final_gradient_rms": 1.314253486177194e-07,
+        "final_gradient_max": 2.2764955076581828e-07,
+        "charge": 0,
+        "spin_2s": 0,
+        "gradient_mro": [
+          "pyscf.grad.rhf.QMMMGradients_Scanner",
+          "pyscf.grad.rhf.SCF_GradScanner",
+          "pyscf.lib.misc.GradScanner",
+          "pyscf.lib.misc.QMMMGradients",
+          "pyscf.qmmm.itrf.QMMMGrad",
+          "pyscf.df.grad.rks.Gradients",
+          "pyscf.grad.rks.Gradients",
+          "pyscf.grad.rhf.Gradients",
+          "pyscf.grad.rhf.GradientsBase",
+          "pyscf.lib.misc.StreamObject",
+          "builtins.object"
+        ],
+        "mm_frozen": true,
+        "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+        "optimized_region": "QM_atoms_only",
+        "qm_mm_gradient_verified": true
+      }
+    },
+    "gpu": {
+      "reorganization_ev": {
+        "hole": 0.40962987164213893,
+        "electron": 5.758802499930039
+      },
+      "elapsed_seconds_observation": 14.405585849890485,
+      "resume_seconds_observation": 0.4668307669926435,
+      "gradients": {
+        "0": {
+          "analytic_hartree_per_bohr": 0.05453497288585574,
+          "finite_difference_hartree_per_bohr": 0.05454842106189517,
+          "absolute_error": 1.3448176039432269e-05,
+          "step_bohr": 0.001
+        },
+        "1": {
+          "analytic_hartree_per_bohr": 0.10661695115437198,
+          "finite_difference_hartree_per_bohr": 0.10663037727454139,
+          "absolute_error": 1.3426120169413025e-05,
+          "step_bohr": 0.001
+        },
+        "-1": {
+          "analytic_hartree_per_bohr": -0.23090077202829562,
+          "finite_difference_hartree_per_bohr": -0.2308883380237603,
+          "absolute_error": 1.2434004535322174e-05,
+          "step_bohr": 0.001
+        }
+      },
+      "mm_frozen_checked_every_evaluation": true,
+      "same_mm_at_all_four_points": true,
+      "resume_no_recomputation": true,
+      "neutral_optimization": {
+        "converged": true,
+        "evaluations": 6,
+        "gradient_class": "gpu4pyscf.grad.rhf.QMMMGradients_Scanner",
+        "final_gradient_rms": 1.2227682821618732e-06,
+        "final_gradient_max": 2.1186229908209953e-06,
+        "charge": 0,
+        "spin_2s": 0,
+        "gradient_mro": [
+          "gpu4pyscf.grad.rhf.QMMMGradients_Scanner",
+          "gpu4pyscf.grad.rhf.SCF_GradScanner",
+          "pyscf.lib.misc.GradScanner",
+          "pyscf.lib.misc.QMMMGradients",
+          "gpu4pyscf.qmmm.itrf.QMMMGrad",
+          "gpu4pyscf.df.grad.rks.Gradients",
+          "gpu4pyscf.grad.rks.Gradients",
+          "gpu4pyscf.grad.rhf.Gradients",
+          "gpu4pyscf.grad.rhf.GradientsBase",
+          "pyscf.lib.misc.StreamObject",
+          "builtins.object"
+        ],
+        "mm_frozen": true,
+        "embedding_fingerprint": "75f3255b19890903bba2468b4fc7f3b1e7df71026dcbbfc56e6a8195d873f498",
+        "optimized_region": "QM_atoms_only",
+        "qm_mm_gradient_verified": true
+      }
+    }
+  },
+  "mm_edit_invalidates_resume": true,
+  "failed_optimization_no_reorganization": true,
+  "cpu_gpu_lambda_tolerance_ev": 0.005
+}

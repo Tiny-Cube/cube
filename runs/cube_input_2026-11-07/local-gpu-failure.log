@@ -1,0 +1,8 @@
+cube: SCF /home/dav/Documents/code/codex/cube/build/cube-workflow-local-gpu/gpu/one/1
+output file: /home/dav/Documents/code/codex/cube/build/cube-workflow-local-gpu/gpu/one/1.log
+
+STDERR
+/home/dav/Documents/code/codex/cube/.venv/lib/python3.13/site-packages/gpu4pyscf/lib/cutensor.py:154: UserWarning: using cupy as the tensor contraction engine.
+  warnings.warn(f'using {contract_engine} as the tensor contraction engine.')
+CUDA Error in block_diag: no kernel image is available for execution on the device
+cube: RuntimeError: failed in block_diag kernel

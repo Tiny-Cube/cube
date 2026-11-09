@@ -12,10 +12,17 @@ license = "MIT"
 license-files = ["LICENSE"]
 dependencies = []
 
+[project.optional-dependencies]
+quantum = ["numpy>=2.0,<2.6", "pyscf>=2.8,<3"]
+workflow = ["numpy>=2.0,<2.6", "MDAnalysis>=2.11,<3", "pyscf>=2.8,<3", "geometric>=1.1,<2"]
+quantum-cuda13 = ["numpy>=2.0,<2.6", "pyscf>=2.8,<3", "gpu4pyscf-cuda13x==1.9.1", "cupy-cuda13x==13.6.0", "cuda-toolkit[cublas,cudart,cufft,curand,cusolver,cusparse,nvrtc]==13.5.0"]
+
 [project.scripts]
 ukmc = "universal_kmc.cli:main"
+cube-transfer = "universal_kmc.quantum.cli:main"
+cube = "universal_kmc.workflow.cli:main"
 
 [tool.uv.build-backend]
 module-name = "universal_kmc"
-source-include = ["benchmarks/**", "docs/**", "examples/**", "cpp/**", "fortran/**", "rust/Cargo.toml", "rust/Cargo.lock", "rust/src/**", "rust/tests/**", "rust/examples/**", "tests/**", "scripts/**", "CMakeLists.txt", "Makefile", "uv.lock"]
+source-include = ["cube", "input", "benchmarks/**", "docs/**", "examples/**", "cpp/**", "fortran/**", "rust/Cargo.toml", "rust/Cargo.lock", "rust/src/**", "rust/tests/**", "rust/examples/**", "tests/**", "scripts/**", "CMakeLists.txt", "Makefile", "uv.lock"]
 source-exclude = ["build/**", "dist/**", "rust/target/**", "**/__pycache__/**", "**/*.pyc"]
