@@ -1,9 +1,9 @@
 $charge-carrier
-do = 1                         # 1 开启载流子计算入口，0 关闭
+do = 0                         # 1 开启载流子计算入口，0 关闭
 $end
 
 $exciton
-do = 0                         # 1 开启激子计算入口，0 关闭
+do = 1                         # 1 开启激子计算入口，0 关闭
 $end
 
 $surface-hopping
