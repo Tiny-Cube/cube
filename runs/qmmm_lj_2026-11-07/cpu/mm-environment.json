@@ -1,0 +1,79 @@
+{
+  "schema": "cube-frozen-mm-1",
+  "model": "fixed_point_charge_electrostatic_embedding_plus_LJ12_6",
+  "coordinate_unit": "Angstrom",
+  "charge_unit": "elementary_charge",
+  "coordinates_angstrom": [
+    [
+      3.0,
+      0.0,
+      0.0
+    ],
+    [
+      -3.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      3.0,
+      0.0
+    ],
+    [
+      0.0,
+      -3.0,
+      0.0
+    ]
+  ],
+  "charges_e": [
+    0.02,
+    0.02,
+    -0.02,
+    -0.02
+  ],
+  "atom_count": 4,
+  "total_charge_e": 0.0,
+  "mm_frozen": true,
+  "charges_frozen": true,
+  "electrostatics": "finite_cluster_no_Ewald",
+  "qm_mm_vdw_included": true,
+  "polarizable_mm": false,
+  "provenance": {
+    "source": "explicit_file",
+    "path": "/home/codex/cube-transfer-validation-20261106/validation/qmmm-material-lj-20261107/preflight/mm.pc",
+    "sha256": "305e8990f8878e0247774ceee25086cd07ac915089e7b21f054f5066bda8c3c2",
+    "selection": "all supplied sites"
+  },
+  "lennard_jones": {
+    "schema": "cube-qmmm-lj-1",
+    "model": "bare_LJ12_6_finite_cluster_no_switch_no_tail_correction",
+    "qm_types": [
+      0,
+      0
+    ],
+    "mm_types": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "c6_kj_mol_nm6": [
+      [
+        7.644119039999999e-05
+      ]
+    ],
+    "c12_kj_mol_nm12": [
+      [
+        1.4608138974422625e-08
+      ]
+    ],
+    "provenance": {
+      "source": "synthetic_gradient_test_not_material_force_field",
+      "qm_initial_geometry_fingerprint": "c3f1cdc343178b51c9f47585859f2bcf46a55cc1d75a496cdf94c6b29d740875",
+      "mm_sites_fingerprint": "d7cc2513beff647526d8cbcd7a8f9540305ded6e17e9804b0f30db758b6dd45f",
+      "parameter_file_sha256": "7a8f972121d9d6eaf5522d3b7bbc73a3a4a404ef908541d83959cbb08d56bdbd"
+    },
+    "implementation_sha256": "38bac353f848d6eb56211d4ed7cb6bf0f8b2a2233fe1c8434de98b4d11421df3"
+  },
+  "fingerprint": "9645f9ef24fee246eb546303246ba9d679979aca57e00201d5496060d39cc450"
+}

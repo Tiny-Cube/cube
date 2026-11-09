@@ -1,0 +1,6 @@
+# x y z q; Angstrom / elementary charge
+# Small symmetric test environment, not a fitted material force field.
+ 3  0 0  0.02
+-3  0 0  0.02
+ 0  3 0 -0.02
+ 0 -3 0 -0.02

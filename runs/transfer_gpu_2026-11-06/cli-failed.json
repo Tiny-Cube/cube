@@ -1,0 +1,8 @@
+{
+  "schema": "cube-transfer-1",
+  "status": "failed",
+  "error": {
+    "type": "RuntimeError",
+    "message": "fragment_a SCF did not converge; no coupling is emitted"
+  }
+}

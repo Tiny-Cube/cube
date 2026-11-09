@@ -1,0 +1,242 @@
+[
+  {
+    "evaluation": 1,
+    "energy_hartree": -199.49018940793556,
+    "coordinates_angstrom": [
+      [
+        -0.75,
+        0.0,
+        0.0
+      ],
+      [
+        0.75,
+        0.0,
+        0.0
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        -0.05416857006567177,
+        -1.2646782707543265e-15,
+        9.550922278597875e-16
+      ],
+      [
+        0.054168570065675326,
+        -7.997857363061394e-16,
+        1.1958683388775643e-16
+      ]
+    ],
+    "gradient_rms": 0.03127423850903373,
+    "gradient_max": 0.054168570065675326,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.49018940793556,
+      "backend": "cpu",
+      "device": null,
+      "source_class": "pyscf.scf.hf.DFRKS_Scanner",
+      "charge": 0,
+      "spin_2s": 0,
+      "spin_square": 0.0
+    }
+  },
+  {
+    "evaluation": 2,
+    "energy_hartree": -199.48557224327527,
+    "coordinates_angstrom": [
+      [
+        -0.6499999999968076,
+        1.461248880537039e-14,
+        -1.1316981566429319e-14
+      ],
+      [
+        0.6499999999967674,
+        8.799900201190765e-15,
+        -8.705906870901019e-16
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        0.10999645792424317,
+        1.5110044961951316e-15,
+        1.6132554005807213e-15
+      ],
+      [
+        -0.10999645792424317,
+        -5.412145321514926e-16,
+        -1.1607650867902743e-15
+      ]
+    ],
+    "gradient_rms": 0.06350648459246713,
+    "gradient_max": 0.10999645792424317,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.48557224327527,
+      "backend": "cpu",
+      "device": null,
+      "source_class": "pyscf.scf.hf.DFRKS_Scanner",
+      "charge": 0,
+      "spin_2s": 0,
+      "spin_square": 0.0
+    }
+  },
+  {
+    "evaluation": 3,
+    "energy_hartree": -199.4954575512441,
+    "coordinates_angstrom": [
+      [
+        -0.699999999998416,
+        1.1785332145789097e-14,
+        -1.4799738482415104e-14
+      ],
+      [
+        0.6999999999983715,
+        1.1561943094043905e-14,
+        1.8677528128142912e-17
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        0.004479665915251729,
+        -1.0838518484920461e-15,
+        -1.5503987786389037e-16
+      ],
+      [
+        -0.004479665914644215,
+        5.039570861598955e-16,
+        -1.4208047739260287e-15
+      ]
+    ],
+    "gradient_rms": 0.002586336321874803,
+    "gradient_max": 0.004479665915251729,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.4954575512441,
+      "backend": "cpu",
+      "device": null,
+      "source_class": "pyscf.scf.hf.DFRKS_Scanner",
+      "charge": 0,
+      "spin_2s": 0,
+      "spin_square": 0.0
+    }
+  },
+  {
+    "evaluation": 4,
+    "energy_hartree": -199.49548027801507,
+    "coordinates_angstrom": [
+      [
+        -0.7021227265540348,
+        3.6604271657207225e-14,
+        -9.590259579725559e-15
+      ],
+      [
+        0.7021227265405849,
+        4.0832039908288394e-16,
+        2.98778870874463e-14
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        0.0011962325279792907,
+        -7.272834803403371e-16,
+        1.1902748026583794e-15
+      ],
+      [
+        -0.001196232528149821,
+        1.8462412585319847e-15,
+        1.789493757655607e-15
+      ]
+    ],
+    "gradient_rms": 0.0006906451720914579,
+    "gradient_max": 0.001196232528149821,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.49548027801507,
+      "backend": "cpu",
+      "device": null,
+      "source_class": "pyscf.scf.hf.DFRKS_Scanner",
+      "charge": 0,
+      "spin_2s": 0,
+      "spin_square": 0.0
+    }
+  },
+  {
+    "evaluation": 5,
+    "energy_hartree": -199.49548205758663,
+    "coordinates_angstrom": [
+      [
+        -0.7028960860954178,
+        5.661649839217965e-14,
+        -4.321272302821243e-14
+      ],
+      [
+        0.7028960860866934,
+        -5.141120352332615e-14,
+        -2.1927712974700034e-14
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        2.0160756928788715e-05,
+        -2.585851300127004e-15,
+        -1.1728909615189105e-15
+      ],
+      [
+        -2.0160762520760045e-05,
+        1.6052221390748848e-15,
+        7.992926293845654e-16
+      ]
+    ],
+    "gradient_rms": 1.1639820054165966e-05,
+    "gradient_max": 2.0160762520760045e-05,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.49548205758663,
+      "backend": "cpu",
+      "device": null,
+      "source_class": "pyscf.scf.hf.DFRKS_Scanner",
+      "charge": 0,
+      "spin_2s": 0,
+      "spin_square": 0.0
+    }
+  },
+  {
+    "evaluation": 6,
+    "energy_hartree": -199.4954820581843,
+    "coordinates_angstrom": [
+      [
+        -0.7029093433179396,
+        1.112120048041388e-13,
+        -1.8646562143731093e-14
+      ],
+      [
+        0.7029093434296293,
+        -8.503307219778492e-14,
+        -3.883354286766465e-14
+      ]
+    ],
+    "gradient_hartree_per_bohr": [
+      [
+        9.929120281526593e-08,
+        -6.486434602436669e-16,
+        -4.553428758332094e-16
+      ],
+      [
+        -9.929120281526593e-08,
+        4.882378177128065e-17,
+        -2.0696797243807767e-15
+      ]
+    ],
+    "gradient_rms": 5.732580267355552e-08,
+    "gradient_max": 9.929120281526593e-08,
+    "scf": {
+      "converged": true,
+      "energy_hartree": -199.4954820581843,
+      "backend": "cpu",
+      "device": null,
+      "source_class": "pyscf.scf.hf.DFRKS_Scanner",
+      "charge": 0,
+      "spin_2s": 0,
+      "spin_square": 0.0
+    }
+  }
+]

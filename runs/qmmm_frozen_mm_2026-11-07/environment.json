@@ -1,0 +1,35 @@
+{
+  "python": "3.12.15",
+  "platform": "Linux-6.12.0-211.64.1.el10_2.x86_64-x86_64-with-glibc2.39",
+  "packages": {
+    "universal-kmc": "0.1.0",
+    "pyscf": "2.15.0",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "cupy-cuda13x": "13.6.0",
+    "numpy": "2.5.4",
+    "geometric": "1.1.1"
+  },
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "cuda_runtime": 13000,
+  "cuda_driver": 13040,
+  "wheel_sha256": "e29e25192ce020ea0cbc7c51a4007272279b36a6d36dbfd60aeb75797a04d163",
+  "installed_source_sha256": {
+    "universal_kmc.workflow.embedding": "23c35ea8d141118a09cd64dfc9796793f6fdaa63db6663d2f20983d38db292ba",
+    "universal_kmc.workflow.control": "5dcfa2b0826d995eb4cbe9fbb457265a966498de3c3645813374550bc215caab",
+    "universal_kmc.workflow.scf": "0a32f534c62492b6586495f94e066ef77f0a88b11dda1ae0646791f47c83110d",
+    "universal_kmc.workflow.reorganization": "cb39853fea23b8face6c546ac5c217098edf7d3fbb0627dd54ca89dec2dcb8a3",
+    "universal_kmc.workflow.runner": "912f73a432322c665c970a0ca2982330e55cfeaa4aeb7986552b2032ae613323",
+    "universal_kmc.quantum.checkpoints": "75a9e26d86c9eb58322c2c37110075ee8e2e0ce68526047a8a905b81460d5020"
+  },
+  "validation_scripts_sha256": {
+    "validate_qmmm_workflow.py": "e5ef2db2d8ab242cd5007164e7c9241bafb7a38895632d6964c105ec80d48c4a",
+    "validate_cube_workflow.py": "a76f42dc4c3265df1800b727e98ce4e8075503a0ca86fb7a11bafb3908981645"
+  },
+  "driver_version": "615.71.09",
+  "gpu_memory_mib": 32607,
+  "compute_capability": "12.0",
+  "cpu": "Intel Xeon Platinum 8380",
+  "scf_threads": 4,
+  "source_base_commit": "312f71b",
+  "installed_source_matches_workspace": true
+}

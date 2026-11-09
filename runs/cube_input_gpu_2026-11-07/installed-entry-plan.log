@@ -1,0 +1,69 @@
+{
+  "schema": "cube-workflow-1",
+  "control": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/input",
+  "control_sha256": "c07c428e727f7f48186e83a1980dc3e66341ae6ef65edba71ad024d3218dff13",
+  "tasks": [
+    "one-mol",
+    "two-mol",
+    "reorganization-energy"
+  ],
+  "sections": {
+    "two-mol": {
+      "qc-engine": "gpu-pyscf",
+      "method": "b3lyp",
+      "basis-set": "6-31G(d,p)",
+      "threads": 4,
+      "grid-level": 3,
+      "conv-tol": 1e-10,
+      "max-cycle": 100,
+      "max-memory-mb": 4000,
+      "auxbasis": "def2-universal-jkfit",
+      "input": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/mini_manifest.json",
+      "output": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/two",
+      "transfer-integrals-method": [
+        "dipro"
+      ],
+      "assume-equivalent": false,
+      "carriers": [
+        "hole",
+        "electron"
+      ]
+    },
+    "one-mol": {
+      "qc-engine": "gpu-pyscf",
+      "method": "b3lyp",
+      "basis-set": "6-31G(d,p)",
+      "threads": 4,
+      "grid-level": 3,
+      "conv-tol": 1e-10,
+      "max-cycle": 100,
+      "max-memory-mb": 4000,
+      "auxbasis": "def2-universal-jkfit",
+      "input": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/mini_manifest.json",
+      "output": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/one"
+    },
+    "reorganization-energy": {
+      "qc-engine": "gpu-pyscf",
+      "method": "b3lyp",
+      "basis-set": "6-31G(d,p)",
+      "threads": 4,
+      "grid-level": 3,
+      "conv-tol": 1e-10,
+      "max-cycle": 100,
+      "max-memory-mb": 4000,
+      "auxbasis": "def2-universal-jkfit",
+      "output": "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/reorganization",
+      "xyz": [
+        "/home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/F2.xyz"
+      ],
+      "carriers": [
+        "hole",
+        "electron"
+      ],
+      "environment": "vacuum",
+      "re-method": "4-points",
+      "opt-maxsteps": 60
+    }
+  },
+  "note": "plan only; no trajectory extraction, SCF, optimization or GPU probe performed"
+}

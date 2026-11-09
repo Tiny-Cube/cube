@@ -1,8 +1,64 @@
 # cube — 有机分子载流子输运计算软件
 
-cube 面向有机分子晶体、非晶和聚合物的载流子输运研究。当前可用基础为下面的四语言通用 KMC、速率函数和真实体系验证；完整材料工作流正在规划中，现有 Python 分发名仍为 `universal-kmc`、命令仍为 `ukmc`。
+cube 面向有机分子晶体、非晶和聚合物的载流子输运研究。当前可用功能包括四语言通用 KMC、速率函数、真实体系验证，以及可选的 CPU/GPU 转移积分、vacuum 与冻结 MM 静电嵌入四点法重组能；完整材料输运工作流仍在建设。Python 分发名仍为 `universal-kmc`，KMC 命令为 `ukmc`，独立量化命令为 `cube-transfer`。
 
 [软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)
+
+## cube input 统一入口
+
+提供可执行脚本 `cube`，默认读取 `$get_dimers_monomers/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 轨迹按起始帧/帧间隔提取单体、core 距离 dimer 和完整冻结 MM 簇、按 `format` 选择 XYZ/GJF、CPU/GPU 单体与 dimer 量化、DIPRO，以及 vacuum / 冻结 MM 静电嵌入四点法。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
+
+```bash
+uv sync --locked --extra workflow
+./cube input --plan
+./cube input --only get_dimers_monomers
+```
+
+[控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。`--resume` 复用选定且已实现阶段的一致成功结果；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。
+
+`input` 最前面的 `$charge-carrier/$exciton/$surface-hopping` 是主模块，负责组织完整计算。下层子模块也有 `do`：`1` 独立请求执行，即使所有主模块关闭也有效；`0` 禁用该子模块；省略时由主模块自动调度。同一模块的多个请求只执行一次。载流子已可准备参数，迁移率最终求解仍未接通；激子/表面跳跃完整入口在本公共分支明确提示未实现。详见[入口路由](docs/cube-input.md#顶层计算入口与模块路由)与[分支开发说明](docs/development-branches.md)。
+
+独立单体示例（所有主模块均为 0，只有 one-mol 为 1）：`uv run --extra quantum cube examples/modules/input`。无需为调用基础功能开启载流子、激子或表面跳跃计算。
+
+新增 `frame_step` 多帧提取和 `monomers-qmmm-cutoff` 单体环境簇，支持后续量化逐帧调度；真实轨迹 1980/2000 帧及断点续算结果见[多帧提取验证](runs/frame_extraction_2026-11-08/README.md)。
+
+GRO 三维簇查看器已迁至独立项目 [cube-view](https://github.com/Tiny-Cube/cube-view)，实现、uv 环境、测试和发布均在新仓库维护。查看器使用 `uv run cube-view structure.gro --cutoff 6 --open`，不依赖本项目。
+
+`cube input` 的小分子流程已在 RTX 5090 通过 CPU/GPU 对照，包括 DIPRO、GPU 梯度优化、vacuum 四点重组能及断点续算，见 [GPU 工作流实测](runs/cube_input_gpu_2026-11-07/README.md)。实际 MD 的全部量化任务尚未运行。
+
+新增冻结 MM 的 QM/MM 四点法：环境坐标、电荷固定，只优化 QM 分子；可从 GROMACS 帧自动选取完整邻近分子，或读取外部点电荷文件。CPU/GPU 优化、梯度、四点能量及续算已实测，见 [原静电模型验证](runs/qmmm_frozen_mm_2026-11-07/README.md)。现在另支持原 TPR 的 QM–MM LJ12-6 排斥/色散，根目录 `input` 已启用；见[范德华参数与异机导出](docs/cube-input.md#加入原力场的-qmmm-范德华作用)。未包含可极化 MM。
+
+独立的 G16/GPU 同模型比较工具已完成小体系能量、梯度和完整四点法数值预检；2026-11-08 的真实 6 Å 材料计时提交时处于等待旧 CPU 任务的队列中，尚无加速倍数，见[对比范围与验证记录](runs/g16_gpu_qmmm_6A_2026-11-08/README.md)。
+
+## 新增：GPU 转移积分
+
+[理论公式、原始论文与使用方法](docs/transfer-integrals.md) · [RTX 5090 实测](runs/transfer_gpu_2026-11-06/README.md)
+
+提供收敛二聚体投影 DIPRO、中性 frozen-density 近似、受适用性检查约束的 ESID，以及明确标注单电子近似的 orbital GMH。支持空穴/电子与多轨道耦合块；SCF 失败不会输出伪有效参数。代码注释引用各方法原论文。量化依赖可选，通用 KMC 仍可独立安装。
+
+支持你指定的两阶段流程：**单体/dimer XYZ → 独立 PySCF 脚本 → `.chk` 输出 → TOML 控制文件与独立转移积分脚本 → JSON**。详见[完整使用说明](docs/pyscf-transfer-workflow.md)。CPU 示例：
+
+```bash
+uv run --locked --extra quantum python scripts/run_pyscf.py \
+  examples/quantum/ethylene_a.xyz examples/quantum/ethylene_b.xyz \
+  examples/quantum/ethylene_ab.xyz --output-dir examples/quantum/results
+uv run --locked --extra quantum python scripts/calculate_transfer.py examples/quantum/transfer.toml
+```
+
+第二阶段只读取已有结果，不重新运行 SCF。两阶段可分别选择 CPU/GPU，控制文件指定三份 checkpoint、计算方法、载流子和输出路径。标准 `.log` 通常没有完整轨道矩阵，不能替代 `.chk`。
+
+原有 XYZ 直接计算命令仍可使用：
+
+```bash
+uv sync --locked --extra quantum-cuda13
+uv run --locked --extra quantum-cuda13 cube-transfer \
+  --fragment-a examples/quantum/ethylene_a.xyz \
+  --fragment-b examples/quantum/ethylene_b.xyz \
+  --backend gpu --basis def2-svp --xc b3lyp \
+  --method dipro --method frozen_density --output build/transfer.json
+```
+
+CPU 使用 `--extra quantum` 和 `--backend cpu`。GPU 量化适配器不等于已经实现 GPU KMC；QM/MM 重组能使用 `cube input`，详见[冻结 MM 控制说明](docs/cube-input.md#冻结-mm-的-qmmm-四点法)。独立转移积分仍使用真空模型。
 
 ## 当前基础：通用 KMC
 
@@ -109,7 +165,7 @@ cargo run --quiet --manifest-path rust/Cargo.toml --release --bin ukmc-rust -- e
 
 检查涵盖：任意状态与动态事件、禁用事件、指数等待时间与分支概率、截止时间、吸收态、非法输入、跨语言轨迹、通用排队例子、两态时间占据、反应守恒、固定时间扩散和出生死亡解析结果。
 
-当前支持有限事件目录、分段恒定速率的 CTMC。持续随时间变化的 hazard、非指数等待时间、无限速率/Zeno 过程需要不同算法，不能直接套此内核。未实现 dependency graph/Fenwick tree 加速、MPI/GPU、通用检查点或 VOTCA 数据库导入。
+当前支持有限事件目录、分段恒定速率的 CTMC。持续随时间变化的 hazard、非指数等待时间、无限速率/Zeno 过程需要不同算法，不能直接套此内核。KMC 核心尚未实现 dependency graph/Fenwick tree 加速、MPI/GPU、通用检查点或 VOTCA 数据库导入；GPU 电子结构适配器为上述独立可选模块。
 
 默认 MINSTD 随机流主要用于四语言回归，可替换随机源；其周期和精度有限，长程生产模拟或并行独立流请接入合适的随机数生成器。Fortran 参数错误目前 `error stop 2`，其他版本分别使用异常或 `Result`。详见算法文档。
 

@@ -1,0 +1,7 @@
+cube: SCF /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/one/1
+cube: SCF /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/one/2
+cube: SCF /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/two/1_2/ab
+cube: vacuum four-point reorganization F2
+cube: completed; report: /home/codex/cube-transfer-validation-20261106/validation/cube-workflow-20261107/run/gpu/cube-results/workflow.json
+
+STDERR

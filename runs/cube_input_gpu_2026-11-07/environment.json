@@ -1,0 +1,24 @@
+{
+  "python": "3.12.15",
+  "platform": "Linux-6.12.0-211.64.1.el10_2.x86_64-x86_64-with-glibc2.39",
+  "packages": {
+    "universal-kmc": "0.1.0",
+    "pyscf": "2.15.0",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "cupy-cuda13x": "13.6.0",
+    "numpy": "2.5.4",
+    "geometric": "1.1.1"
+  },
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "cuda_runtime": 13000,
+  "cuda_driver": 13040,
+  "installed_workflow": "/home/codex/cube-transfer-validation-20261106/.venv/lib64/python3.12/site-packages/universal_kmc/workflow/__init__.py",
+  "wheel_sha256": "1fd43aac4c7814cfc45241c7644e66bb8056b03bb0f9b39fb70b72353c917097",
+  "script_sha256": "d3fe80af678664898f12aec22298b739ea47ce07c36a5b86aa7ece1232e391d3",
+  "source_commit": "3a50c65",
+  "driver_version": "615.71.09",
+  "gpu_memory_mib": 32607,
+  "compute_capability": "12.0",
+  "cpu": "Intel Xeon Platinum 8380",
+  "threads_per_scf": 4
+}

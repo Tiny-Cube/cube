@@ -1,0 +1,35 @@
+{
+  "fingerprint": "a46cac27896a8b51069aabc9e4fd78bbc42864256e58b1237163a14f4e297b43",
+  "status": "completed",
+  "atoms": [
+    [
+      "F",
+      [
+        -0.9990972277017578,
+        -8.949965093478435e-14,
+        9.500581876377787e-14
+      ]
+    ],
+    [
+      "F",
+      [
+        0.9990972276950465,
+        3.1741338706605627e-13,
+        7.711364708954402e-14
+      ]
+    ]
+  ],
+  "optimization": {
+    "converged": true,
+    "evaluations": 9,
+    "gradient_class": "gpu4pyscf.grad.rhf.Gradients_Scanner",
+    "final_gradient_rms": 7.789130804917417e-07,
+    "final_gradient_max": 1.3491172676793894e-06,
+    "charge": -1,
+    "spin_2s": 1
+  },
+  "output_sha256": {
+    "anion.trace.json": "58ac245295d8be32b21cad65fa59cee18d91a9aad87bae27c68f20904861cc45",
+    "anion.optimized.xyz": "aa300cf2e66d8472283d37f942df59a642a106a8c88d970e48edbe8720a7dee2"
+  }
+}

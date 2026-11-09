@@ -1,0 +1,35 @@
+{
+  "fingerprint": "91b525b3df4bafeb39c71eb503d9acbbd357179305bed75731a400e2a55da3c8",
+  "status": "completed",
+  "atoms": [
+    [
+      "F",
+      [
+        -0.9990971958049583,
+        -7.825403876311323e-14,
+        -2.9246044152072957e-13
+      ]
+    ],
+    [
+      "F",
+      [
+        0.9990971955331113,
+        1.4212500436648432e-15,
+        2.974660372222466e-13
+      ]
+    ]
+  ],
+  "optimization": {
+    "converged": true,
+    "evaluations": 9,
+    "gradient_class": "pyscf.grad.rhf.Gradients_Scanner",
+    "final_gradient_rms": 7.854823702324995e-07,
+    "final_gradient_max": 1.360495385682725e-06,
+    "charge": -1,
+    "spin_2s": 1
+  },
+  "output_sha256": {
+    "anion.trace.json": "8ece8725347a623dc52768177967bc2b0c538fa24d8b6958a53ec3efe0fab5f6",
+    "anion.optimized.xyz": "e2bd825455d5065d512f5b35143a7107e16321c88a9376d5981cbd2aa04dd764"
+  }
+}
