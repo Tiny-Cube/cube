@@ -1,0 +1,28 @@
+$charge-carrier
+do = 0
+$end
+$exciton
+do = 0
+$end
+$surface-hopping
+do = 0
+$end
+
+# Main workflows are off; this single submodule still runs independently.
+$get_dimers_monomers
+do = 0
+$end
+$one-mol
+do = 1
+xyz = h2.xyz
+method = hf
+basis-set = sto-3g
+threads = 1
+output = ../../build/modules/one-mol
+$end
+$two-mol
+do = 0
+$end
+$reorganization-energy
+do = 0
+$end

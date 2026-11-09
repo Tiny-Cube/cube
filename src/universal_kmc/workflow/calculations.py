@@ -59,12 +59,14 @@ def section_names():
     return (*CALCULATIONS, *MODULE_SECTIONS)
 
 
-def route_sections(available, entries, only=None):
-    """Entries gate modules first; --only narrows that gate and never overrides it.
+def route_sections(available, entries, only=None, *, module_switches=None):
+    """Compose main workflows and independently requested shared modules.
 
-    Legacy controls without any calculation entry retain direct module execution.
-    Entry + module selectors restrict both the entry set and its module subset.
+    Submodule do=1 requests execution without a main calculation; do=0 disables
+    that submodule. Omitted do retains automatic main-workflow/legacy dispatch.
+    --only narrows the selected union and never overrides an explicit do=0.
     """
+    switches = module_switches or {}
     requested = {EXTRACTION if s == 'get_dimer' else s for s in (only or ())}
     if not requested <= set(available):
         raise ValueError('--only must name a section present in input')
@@ -78,14 +80,23 @@ def route_sections(available, entries, only=None):
                   for module in MODULE_ORDER}
     else:
         owners = {module: ['legacy'] for module in MODULE_ORDER}
+    for module in MODULE_ORDER:
+        if switches.get(module) == 0:
+            owners[module] = []
+        elif switches.get(module) == 1:
+            # Module requests are independent of main selection and ownership.
+            owners[module] = [name for name in owners[module] if name != 'legacy']+['standalone']
     tasks = [module for module in MODULE_ORDER if module in available and owners[module]
              and (not module_filter or module in module_filter)]
     calculations = enabled if not module_filter else []
     return {'routing': 'calculation_entries' if entries else 'legacy_modules',
+            'requested_modules': [module for module in tasks if switches.get(module) == 1],
+            'module_switches': {module: switches.get(module) for module in MODULE_ORDER if module in available},
             'enabled_calculations': enabled, 'calculation_tasks': calculations,
             'disabled_tasks': disabled, 'tasks': tasks,
             'module_owners': {module: owners[module] for module in tasks},
-            'skipped_modules': {module: ('no_enabled_calculation_requires_module' if not owners[module]
+            'skipped_modules': {module: ('disabled_by_module_do' if switches.get(module) == 0 else
+                                        'no_enabled_calculation_requires_module' if not owners[module]
                                         else 'not_selected_by_only')
                                 for module in MODULE_ORDER if module in available and module not in tasks},
             'unsupported_tasks': [name for name in calculations if CALCULATIONS[name].unavailable_reason],

@@ -92,6 +92,7 @@ def run_workflow(control, *, only=None, resume=False):
     report = {'schema': 'cube-workflow-1', 'status': 'running', 'control': str(control.path),
               'control_sha256': control.sha256,
               'tasks': {}, 'task_order': tasks, 'routing': plan['routing'],
+              'requested_modules': plan['requested_modules'], 'module_switches': plan['module_switches'],
               'module_owners': plan['module_owners'], 'skipped_modules': plan['skipped_modules'],
               'calculations': {name: {'status': 'disabled' if entry['do'] == 0 else
                                      'preparing' if entry['selected'] else 'not_selected'}
@@ -264,7 +265,7 @@ def run_workflow(control, *, only=None, resume=False):
             for name in plan['enabled_calculations']:
                 modules = [task for task in tasks if name in plan['module_owners'].get(task, [])]
                 if name not in plan['calculation_tasks']:
-                    result = {'status': 'modules_completed', 'modules': modules}
+                    result = {'status': 'modules_completed' if modules else 'not_selected', 'modules': modules}
                 elif CALCULATIONS[name].solver is None:
                     result = {'status': 'prepared', 'reason': 'solver_not_implemented', 'modules': modules}
                 else:

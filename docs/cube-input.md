@@ -74,26 +74,59 @@ $end
 
 ## 顶层计算入口与模块路由
 
-控制文件最前面的 `$charge-carrier`、`$exciton`、`$surface-hopping` 是三种计算入口，后面的提取/量化段是可复用模块。字段 `do` 严格接受 `0/1`，省略字段或入口时视为关闭。只要存在任意入口段，就采用入口路由；三个入口全为 0 时，所有下层模块都不执行，也不校验关闭模块的数据文件是否存在或运行科学依赖。未知字段、重复字段等语法错误仍会报告。
+控制文件最前面的 `$charge-carrier`、`$exciton`、`$surface-hopping` 是主模块，负责组织计算流程；下面的提取、单体、dimer、重组能等是可复用子模块，也可独立执行。
 
-| 入口 | 当前允许的公共模块 | 完整求解状态 |
+| 所在层 | `do=1` | `do=0` | 省略 `do` |
+|---|---|---|---|
+| 主模块 | 请求完整计算流程 | 不运行该主模块 | 关闭 |
+| 子模块 | 独立请求执行，无需主模块开启 | 禁用该子模块，主流程也不隐式启用 | 自动调度，兼容已有控制文件 |
+
+所有 `do` 严格接受 `0/1`。普通运行的任务是主流程需求与独立子模块请求的并集，同一子模块只执行一次。三个主模块全部关闭时，子模块 `do=1` 仍有效；只有主模块全关且没有独立子模块请求时才不启动任务。关闭模块的数据路径和物理设置不验证，但未知字段、重复字段、错误 `do` 等语法问题仍报告。
+
+| 主模块 | 当前自动组织的子模块 | 完整求解状态 |
 |---|---|---|
-| `$charge-carrier` | 提取、单体、dimer/转移积分、重组能 | 可以运行已实现的参数准备链；迁移率求解尚未接通 |
+| `$charge-carrier` | 提取、单体、dimer/转移积分、重组能 | 可以运行参数准备链；迁移率求解尚未接通 |
 | `$exciton` | 结构提取 | 激发态参数、激子耦合与扩散求解尚未接通 |
 | `$surface-hopping` | 结构提取、`surface-hopping-dynamics` | 本分支支持模型 FSSH；真实材料量化／输运尚未接通 |
 
-开启入口后，仅执行该入口允许、且控制文件中存在的模块；多个入口共用的模块合并后只运行一次。激子/表面跳跃不会自动复用载流子的基态轨道与中性/带电四点法。已选量化模块缺少独立数据源时，仍会按所属入口的权限添加提取依赖；DIPRO 所需片段单点保持原有按需复用。
+这张表描述主模块当前自动调用的功能，不限制子模块独立执行。激子/表面跳跃不会把载流子基态参数自动当成激发态参数。独立子模块使用与主流程相同的实现、参数检查、结果格式和续算机制。
 
-`--only charge-carrier` 选择一个完整入口；`--only one-mol --only two-mol` 只运行已开启入口内的模块子集；两种选择混用时取指定入口内的模块子集。`--only` **不能覆盖 do=0，也不能运行所选入口不允许的模块**。旧 `$get_dimer` 别名继续支持。完全不含任何入口段的旧控制文件保留直接按模块执行的兼容模式，用于已有独立单点/四点法脚本。
+例如所有主模块关闭时，仍可只运行单体量化：
 
-`--plan` 只做解析与路由：`enabled_calculations` 显示开启的入口，`calculation_tasks` 显示本次完整入口请求，`tasks` 显示公共模块顺序，`module_owners` 显示每个模块所属的开启入口，`skipped_modules` 记录未运行的模块及原因。`inactive_sections` 保留不属于开启入口的原始模块配置。
+```text
+$charge-carrier
+do = 0
+$end
+$exciton
+do = 0
+$end
+$surface-hopping
+do = 0
+$end
+$one-mol
+do = 1
+xyz = h2.xyz
+method = hf
+basis-set = sto-3g
+$end
+```
 
-- 载流子完整入口完成现有模块后，`workflow.json` 报告 `status=prepared`、`calculations.charge-carrier.reason=solver_not_implemented`，退出码为 2；不会把参数准备说成迁移率完成。
-- 明确选择已实现模块子集且成功时，退出码为 0，入口状态为 `modules_completed`。
-- 激子完整入口当前在预检报 `NotImplementedError`。本分支表面跳跃支持 `$surface-hopping-dynamics`，字段为 `input = dynamics.toml` 和可选 `output = directory`，见 [模型 FSSH 控制](surface-hopping.md)。完整入口缺少该模块时，在 MD/量化前报错；仍可用 `--only get_dimers_monomers` 单独选择公共结构准备。模型运行不自动消费提取文件，也不启动基态量化。
-- 全部入口关闭时，入口标记 `disabled`，实际任务为空，正常结束且不启动科学计算。
+执行 `cube input` 即可，不需要额外的独立运行参数。完整可运行例子见 `examples/modules/input`。独立提取、two-mol 和重组能采用同一方式，在相应段设置 `do=1`。
 
-新增计算类型只需在 `workflow/calculations.py` 注册允许的模块和可选 solver 回调；解析器、CLI 选项和公共模块去重从注册表派生。solver 尚未实现时保留明确的准备/未实现状态，不用其他计算近似替代。注册方法与并行开发分支见[开发说明](development-branches.md)。
+独立量化优先使用自己的 `input`/`xyz`。没有现成数据时可添加未禁用的提取模块作为依赖；提取 `do=0` 时会要求开启提取或提供已有数据，在计算前报错。two-mol 内部仍按需计算 dimer 所需的单体片段，这不同于运行整个 one-mol 批处理；不因 one-mol 批处理关闭就使用无效的转移积分。
+
+`--only charge-carrier` 筛选主流程，独立子模块请求仍保留；`--only one-mol --only two-mol` 将任务缩小到所选子模块及必要依赖，不请求完整主模块求解。两类筛选混用时，主模块名称筛选自动调用方，模块名称筛选任务；独立请求不受调用方归属限制。`--only` 不会覆盖任何显式 `do=0`。旧 `$get_dimer` 别名继续支持。完全没有主模块段的旧文件仍按模块直接执行，显式禁用同样生效。
+
+`--plan` 仅解析和路由：`requested_modules` 记录独立请求，`module_switches` 记录 0/1/null（自动），`module_owners` 记录调用来源（主模块名称或 `standalone`，旧直接模式为 `legacy`），`skipped_modules` 说明跳过原因。多个来源共用一个模块任务。`inactive_sections` 保留不活动模块配置。
+
+- 独立子模块成功时正常结束，退出码为 0；不会执行未请求的迁移率、激子或 surface-hopping 求解器。
+- 载流子完整流程目前结束为 `prepared`，退出码 2，不把参数准备当作迁移率完成。
+- 主模块的必需依赖被禁用且没有已有数据时，应补充输入或开启依赖；不静默跳过后宣称完整求解成功。
+- 激子／surface-hopping 的完整求解能力以相应分支为准；独立基础模块的执行不依赖这些完整求解器是否已实现。
+
+本分支的 `$surface-hopping-dynamics` 同样接受 `do`、`input = dynamics.toml`、可选 `output = directory`。主模块关闭而此模块 `do=1` 时只运行模型 FSSH；完整 surface-hopping 主模块请求缺少或禁用 dynamics 时会在科学计算前报错。详见 [模型使用说明](surface-hopping.md)。
+
+新增主模块在 `workflow/calculations.py` 注册自动组织的模块和 solver；基础子模块仍可被任何主模块复用或单独执行。分支与接口说明见 [开发说明](development-branches.md)。
 
 ## 提取定义和输出格式
 

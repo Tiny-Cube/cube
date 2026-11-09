@@ -15,12 +15,13 @@ uv run cube examples/surface-hopping/input --resume
 
 ```text
 $surface-hopping-dynamics
+do = 1
 input = tully1.toml
 output = ../../build/surface-hopping/tully1
 $end
 ```
 
-`input` 是 TOML 控制文件，路径相对于当前 section 控制文件；模块 `output` 覆盖 TOML 的输出目录。若仅使用模型，无需添加结构提取段。完整入口缺少该模块时会在启动 MD/QC 前报错；`do=0` 跳过它。`--only` 仍受入口门控。若显式加入共享结构提取段，它会按既有规则提取，但模型不会自动使用该结构。
+`input` 是 TOML 控制文件，路径相对于当前 section 控制文件；模块 `output` 覆盖 TOML 的输出目录。该子模块 `do=1` 可在所有主模块关闭时独立运行；`do=0` 禁用它；省略 `do` 由主模块自动调度。若仅使用模型，无需添加结构提取段。完整 surface-hopping 主模块缺少或禁用此模块时在 MD/QC 前报错。`--only` 缩小请求，不覆盖显式关闭。若显式加入共享结构提取段，它会按既有规则提取，但模型不会自动使用该结构。
 
 也可直接运行专用脚本：
 

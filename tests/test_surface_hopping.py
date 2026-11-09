@@ -215,5 +215,21 @@ class SurfaceControlTests(unittest.TestCase):
         report=json.loads((self.root/'cube-results/workflow.json').read_text())
         self.assertEqual(report['calculations']['surface-hopping']['status'],'partial')
 
+    def test_dynamics_child_runs_independently_and_explicit_disable_is_respected(self):
+        from universal_kmc.workflow.control import load_input
+        from universal_kmc.workflow.runner import run_workflow
+        path=self.root/'input'
+        path.write_text('$surface-hopping\ndo=0\n$end\n$surface-hopping-dynamics\ndo=1\ninput=dynamics.toml\noutput=independent\n$end\n')
+        control=load_input(path)
+        self.assertEqual(control.plan()['calculation_tasks'],[])
+        self.assertEqual(control.plan()['requested_modules'],['surface-hopping-dynamics'])
+        with redirect_stdout(io.StringIO()):self.assertEqual(run_workflow(control),0)
+        report=json.loads((self.root/'cube-results/workflow.json').read_text())
+        self.assertEqual(report['calculations']['surface-hopping']['status'],'disabled')
+        self.assertEqual(report['task_order'],['surface-hopping-dynamics'])
+        path.write_text('$surface-hopping\ndo=1\n$end\n$surface-hopping-dynamics\ndo=0\ninput=absent.toml\n$end\n')
+        with self.assertRaisesRegex(ValueError,'requires.*surface-hopping-dynamics'):
+            load_input(path).execution_plan()
+
 
 if __name__=='__main__':unittest.main()

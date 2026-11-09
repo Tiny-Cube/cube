@@ -16,7 +16,9 @@ uv sync --locked --extra workflow
 
 [控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。`--resume` 复用选定且已实现阶段的一致成功结果；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。
 
-`input` 最前面的 `$charge-carrier/$exciton/$surface-hopping` 是计算入口，`do=0/1` 决定后面的哪些模块可执行；全关则不执行下层模块，`--only` 不能绕过入口。公共模块按注册表归属合并，未来可注册新计算类型。载流子已可准备参数，迁移率最终求解仍未接通；激子完整入口明确提示未实现。本分支已接入模型 surface hopping，真实材料的非绝热量化／输运待接通。详见[入口路由](docs/cube-input.md#顶层计算入口与模块路由)与[分支开发说明](docs/development-branches.md)。
+`input` 最前面的 `$charge-carrier/$exciton/$surface-hopping` 是主模块，负责组织完整计算。下层子模块也有 `do`：`1` 独立请求执行，即使所有主模块关闭也有效；`0` 禁用该子模块；省略时由主模块自动调度。同一模块的多个请求只执行一次。载流子已可准备参数，迁移率最终求解仍未接通；激子完整入口尚未实现；本分支支持模型 FSSH，真实材料接口待接通。详见[入口路由](docs/cube-input.md#顶层计算入口与模块路由)与[分支开发说明](docs/development-branches.md)。
+
+独立单体示例（所有主模块均为 0，只有 one-mol 为 1）：`uv run --extra quantum cube examples/modules/input`。无需为调用基础功能开启载流子、激子或表面跳跃计算。
 
 ## 模型 Surface hopping（本开发分支）
 

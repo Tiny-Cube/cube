@@ -9,11 +9,11 @@ from universal_kmc.quantum.config import SCFConfig
 
 from .calculations import (CALCULATIONS, EXTRACTION, QUANTUM_SECTIONS, SURFACE_DYNAMICS, route_sections, section_names)
 
-COMMON = {'qc-engine', 'method', 'basis-set', 'auxbasis', 'threads', 'grid-level',
+COMMON = {'do', 'qc-engine', 'method', 'basis-set', 'auxbasis', 'threads', 'grid-level',
           'conv-tol', 'max-cycle', 'max-memory-mb', 'input', 'output'}
 ALLOWED = {
-    SURFACE_DYNAMICS: {'input', 'output'},
-    EXTRACTION: {'tpr', 'gro', 'xtc', 'frame', 'frame_step', 'dimers_cutoff', 'fragment-file',
+    SURFACE_DYNAMICS: {'do', 'input', 'output'},
+    EXTRACTION: {'do', 'tpr', 'gro', 'xtc', 'frame', 'frame_step', 'dimers_cutoff', 'fragment-file',
                  'monomers-qmmm-cutoff', 'output', 'format'},
     'one-mol': COMMON | {'molecules', 'xyz'},
     'two-mol': COMMON | {'dimers', 'transfer-integrals-method', 'carriers', 'assume-equivalent'},
@@ -96,11 +96,12 @@ class WorkflowInput:
     sha256: str
     sections: dict
     inactive_sections: dict = field(default_factory=dict)
+    module_switches: dict = field(default_factory=dict)
 
     def plan(self, only=None):
         entries = {name: self.sections[name] for name in CALCULATIONS if name in self.sections}
         available = self.sections.keys() | self.inactive_sections.keys()
-        route = route_sections(available, entries, only)
+        route = route_sections(available, entries, only, module_switches=self.module_switches)
         # An input-less quantum module needs the selected entry's shared extraction.
         if EXTRACTION in self.sections and any(
                 task in QUANTUM_SECTIONS and 'input' not in self.sections[task]
@@ -108,6 +109,12 @@ class WorkflowInput:
             if EXTRACTION not in route['tasks']:
                 owners = [name for name in route['enabled_calculations']
                           if EXTRACTION in CALCULATIONS[name].modules]
+                if any('standalone' in route['module_owners'].get(task, []) for task in route['tasks']
+                       if task in QUANTUM_SECTIONS and 'input' not in self.sections[task] and 'xyz' not in self.sections[task]):
+                    owners.append('standalone')
+                if self.module_switches.get(EXTRACTION) == 0:
+                    raise ValueError(f'${EXTRACTION} do=0 but a selected module needs extracted data; '
+                                     'enable extraction or provide input/xyz')
                 if entries and not owners:
                     raise ValueError('selected calculation needs an explicit data source or an owned extraction module')
                 route['tasks'].insert(0, EXTRACTION)
@@ -180,8 +187,25 @@ def load_input(filename='input'):
         if value not in ('0', '1'):
             raise ValueError(f'${name}: do must be 0 or 1')
         normalized[name] = {'do': int(value)}
-    route = route_sections(sections, normalized)
+    switches = {}
+    for name, settings in sections.items():
+        if name in CALCULATIONS:
+            continue
+        value = settings.get('do')
+        if value is not None and value not in ('0', '1'):
+            raise ValueError(f'${name}: do must be 0 or 1')
+        switches[name] = int(value) if value is not None else None
+    route = route_sections(sections, normalized, module_switches=switches)
     active_modules = set(route['tasks'])
+    # Independent requests share the same data prerequisites as main workflows.
+    needs_extraction = [name for name in QUANTUM_SECTIONS if name in active_modules
+                        and 'input' not in sections[name] and 'xyz' not in sections[name]]
+    if needs_extraction and EXTRACTION in sections:
+        if switches.get(EXTRACTION) == 0:
+            raise ValueError(f'${EXTRACTION} do=0 but selected modules need extracted data; '
+                             'enable extraction or provide input/xyz')
+        if any('standalone' in route['module_owners'][name] for name in needs_extraction):
+            active_modules.add(EXTRACTION)
     inactive = {name: settings for name, settings in sections.items()
                 if name not in CALCULATIONS and name not in active_modules}
     if SURFACE_DYNAMICS in active_modules:
@@ -294,7 +318,9 @@ def load_input(filename='input'):
         for key in ('method', 'basis-set', 'auxbasis', 'grid-level', 'conv-tol'):
             if str(normalized['two-mol'][key]).lower() != str(normalized['one-mol'][key]).lower():
                 raise ValueError(f'DIPRO requires matching one-mol/two-mol {key}')
-    return WorkflowInput(path, hashlib.sha256(raw).hexdigest(), normalized, inactive)
+    # Routing flags are reported separately and must not change scientific
+    # fingerprints/checkpoints when switching between main and standalone use.
+    return WorkflowInput(path, hashlib.sha256(raw).hexdigest(), normalized, inactive, switches)
 
 
 def scf_config(settings):

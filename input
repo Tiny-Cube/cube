@@ -13,13 +13,15 @@ $end
 # cube 完整控制文件：MD 提取 → 单体 → dimer/转移积分 → QM/MM 重组能。
 # 所有相对路径均以本文件所在目录为基准，# 后为注释。
 # 检查配置：./cube input --plan（不会启动量化计算）
-# 入口决定下面哪些模块会被调用；--only 仅缩小已开启入口的范围。
+# 主模块按需组织子模块；子模块 do=1 也可独立运行，do=0 禁用，省略 do 自动调度。
+# 主模块全关时，只要子模块 do=1，仍会执行该子模块及必要依赖。
 # 载流子目前可运行参数准备链；迁移率求解尚未接通，完成准备后报告 prepared。
 # 激子专用求解尚未接通；表面跳跃的模型示例见 examples/surface-hopping/input。
 # 本材料准备配置没有 $surface-hopping-dynamics，完整入口会在 MD/QC 前明确提示。
 
 # ---------- 1. 从 GROMACS 轨迹提取完整分子和 dimer ----------
 $get_dimers_monomers
+do = 1                         # 可独立运行；不要求开启任何主模块
 tpr = ../anneal_a.tpr
 gro = ../anneal_a_fix.gro
 xtc = ../anneal_a.xtc
@@ -38,6 +40,7 @@ $end
 
 # ---------- 2. 单分子真空单点：为转移积分提供片段轨道 ----------
 $one-mol
+do = 1
 qc-engine = gpu-pyscf           # GPU：gpu-pyscf；CPU：pyscf
 method = b3lyp
 basis-set = 6-31G(d,p)
@@ -59,6 +62,7 @@ $end
 
 # ---------- 3. 二聚体真空单点及转移积分 ----------
 $two-mol
+do = 1
 qc-engine = gpu-pyscf
 method = b3lyp
 basis-set = 6-31G(d,p)
@@ -82,6 +86,7 @@ $end
 
 # ---------- 4. 固定 MM 环境，只优化 QM 分子的四点法 ----------
 $reorganization-energy
+do = 1
 qc-engine = gpu-pyscf
 method = b3lyp
 basis-set = 6-31G(d,p)
