@@ -108,7 +108,8 @@ class WorkflowInput:
                 and 'xyz' not in self.sections[task] for task in route['tasks']):
             if EXTRACTION not in route['tasks']:
                 owners = [name for name in route['enabled_calculations']
-                          if EXTRACTION in CALCULATIONS[name].modules]
+                          if EXTRACTION in CALCULATIONS[name].modules
+                          and entries[name].get(EXTRACTION, 1) == 1]
                 if any('standalone' in route['module_owners'].get(task, []) for task in route['tasks']
                        if task in QUANTUM_SECTIONS and 'input' not in self.sections[task] and 'xyz' not in self.sections[task]):
                     owners.append('standalone')
@@ -128,6 +129,13 @@ class WorkflowInput:
     def execution_plan(self, only=None):
         plan = self.plan(only)
         for name in plan['calculation_tasks']:
+            for module, selected in self.sections[name].items():
+                if module == 'do' or selected == 0:
+                    continue
+                if self.module_switches.get(module) == 0:
+                    raise ValueError(f'${name} requests {module}=1 but ${module} do=0; resolve the conflicting switches')
+                if module not in self.sections:
+                    raise ValueError(f'${name} requests {module}=1 but ${module} settings are missing; no MD/QC tasks were started')
             missing = set(CALCULATIONS[name].required_modules)-set(plan['tasks'])
             if missing:
                 raise ValueError(f'${name} requires {", ".join("$"+m for m in sorted(missing))}; '
@@ -169,7 +177,7 @@ def load_input(filename='input'):
             key = key.lower()
             if active == EXTRACTION and key == 'cutoff':
                 key = 'dimers_cutoff'
-            allowed = {'do'} if active in CALCULATIONS else ALLOWED[active]
+            allowed = {'do', *CALCULATIONS[active].modules} if active in CALCULATIONS else ALLOWED[active]
             if key not in allowed or key in sections[active]:
                 raise ValueError(f'unknown or duplicate key {key!r} in ${active}')
             sections[active][key] = _value(value)
@@ -187,6 +195,12 @@ def load_input(filename='input'):
         if value not in ('0', '1'):
             raise ValueError(f'${name}: do must be 0 or 1')
         normalized[name] = {'do': int(value)}
+        for module in CALCULATIONS[name].modules:
+            if module in sections[name]:
+                selection = sections[name][module]
+                if selection not in ('0', '1'):
+                    raise ValueError(f'${name}: {module} must be 0 or 1')
+                normalized[name][module] = int(selection)
     switches = {}
     for name, settings in sections.items():
         if name in CALCULATIONS:
