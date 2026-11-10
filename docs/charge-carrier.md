@@ -87,6 +87,24 @@ $end
 
 reorganization-index.json 内容为 `{"1":"path/1/reorganization.json","2":"path/2/reorganization.json"}`，其中路径相对该索引文件。couplings 使用 cube 输出列 dimer、mol_i、mol_j、VH_meV、VL_meV；dimer 与镜像必须逐项对应 manifest。所有所需通道／位点参数必须完整。
 
+重组能模块还会在每帧的重组能输出根目录生成 `hole.csv` 和 `electron.csv`（只生成
+`carriers` 请求的通道）。例如默认位置为 `mol/frame2000/reorganization/hole.csv`，
+每个分子一行，`mol` 对应 manifest 的分子 ID；直接输入 XYZ 时使用文件名标识。
+自定义 `output` 时表格放在该目录，多帧则分别放在其中的 `frameNNNN` 目录。
+
+```csv
+mol,E0_R0,Eq_R0,Eq_Rq,E0_Rq,charged_relaxation,neutral_relaxation,total
+```
+
+四点能量 `E0_R0`、`Eq_R0`、`Eq_Rq`、`E0_Rq` 单位为 **Hartree**；
+`charged_relaxation`、`neutral_relaxation`、`total` 单位为 **eV**。
+其中 `charged_relaxation = (Eq_R0 - Eq_Rq) × Hartree转eV系数`，
+`neutral_relaxation = (E0_Rq - E0_R0) × Hartree转eV系数`，`total` 为两项之和，即重组能。
+CSV 表头保持上述格式，不插入单位行；`workflow.json` 的 `csv` 和 `csv_units` 同时记录路径及单位。
+每完成一个分子更新汇总，`--resume` 复用结果时也会重建表格。表格仅包含本次选择中完成的分子；
+运行失败或尚未完成时可能只有部分行，整体完成状态以 `workflow.json` 为准。
+完整的四点 JSON、优化结构、日志和检查点继续保存在各分子子目录，供审计和 KMC 读取。
+
 site-energy-model 可选 uniform（明确忽略位点无序）或 four-point-adiabatic。后者使用 `[Eq(Rq)-E0(R0)]` 的电子形成能近似，空穴为中性→阳离子，电子为中性→阴离子，单位转换为 eV；不包含熵和振动自由能，也不保证已有电子结构方法适合目标材料。
 
 自动成对重组能采用 `charged_relaxation_i + neutral_relaxation_j`，并核对反向表达式在 rtol=1e-4、atol=1e-6 eV 内一致。库内允许的微小优化数值误差不取绝对值。一般不等价分子／环境未通过该检查时，要求在显式网络中给出物理定义的成对 lambda；不会直接平均两个总重组能。冻结 MM 结果只包含该模型中的 QM 松弛，不推断 MM 外球松弛。

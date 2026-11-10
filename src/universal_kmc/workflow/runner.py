@@ -221,9 +221,12 @@ def run_workflow(control, *, only=None, resume=False):
                                              'csv': str(directory/'transfer_integrals.csv'), 'outputs': outputs}
                 else:
                     from .reorganization import calculate_reorganization
+                    from .reorganization_csv import write_reorganization_csv, UNITS
                     directory = Path(settings.get('output', data['root']/'reorganization'))
                     records = _select(data['monomers'], settings.get('molecules'), 'molecules')
                     outputs = {}
+                    csv_results = {}
+                    csv_paths = write_reorganization_csv(csv_results, directory, settings['carriers'])
                     frame = fixed_environment = pair_parameters = None
                     if settings['environment'] == 'qmmm':
                         from .embedding import read_charges, load_gromacs_environment, cluster_from_frame
@@ -246,10 +249,13 @@ def run_workflow(control, *, only=None, resume=False):
                         print(f'cube: {settings["environment"]} four-point reorganization {record["id"]}', flush=True)
                         result = calculate_reorganization(_atoms(record), settings, directory/record['id'], resume=resume,
                                                           embedding=environment)
+                        csv_results[record['id']] = result
+                        csv_paths = write_reorganization_csv(csv_results, directory, settings['carriers'])
                         outputs[record['id']] = {'output': str(directory/record['id']/'reorganization.json'),
                             'reorganization_ev': {c:v['reorganization_energy_ev'] for c,v in result['results'].items()},
                             'reused': result['reused']}
-                    task_result = {'status': 'completed', 'environment': settings['environment'], 'count': len(outputs), 'outputs': outputs}
+                    task_result = {'status': 'completed', 'environment': settings['environment'], 'count': len(outputs),
+                                   'csv': csv_paths, 'csv_units': UNITS, 'outputs': outputs}
                 results[frame_label] = task_result
                 report['tasks'][task] = (task_result if not multi else {
                     'status': ('running' if len(results) < len(sources) else
