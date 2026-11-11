@@ -17,6 +17,7 @@ import numpy as np
 from universal_kmc.quantum.cli import _write_result
 from universal_kmc.quantum.coupling import host
 from universal_kmc.quantum.transfer import _versions
+from universal_kmc import reorganization as reorganization_core
 from .control import scf_config
 from .dimers import file_hash, fingerprint, xyz_text
 from .scf import make_mean_field, run_single_point, scf_record
@@ -24,11 +25,8 @@ from .scf import make_mean_field, run_single_point, scf_record
 
 def four_point_terms(e0_r0, eq_r0, eq_rq, e0_rq):
     """Return signed relaxation terms in caller units; never take abs()."""
-    values = np.asarray([e0_r0, eq_r0, eq_rq, e0_rq], dtype=float)
-    if not np.isfinite(values).all():
-        raise ValueError('four-point energies must be finite')
-    charged, neutral = float(eq_r0-eq_rq), float(e0_rq-e0_r0)
-    return {'charged_relaxation': charged, 'neutral_relaxation': neutral, 'total': charged+neutral}
+    terms = reorganization_core.four_point_relaxations(e0_r0, eq_r0, eq_rq, e0_rq)
+    return {'charged_relaxation': terms['on_b'], 'neutral_relaxation': terms['on_a'], 'total': terms['sum']}
 
 
 def _optimize(atoms, config, charge, directory, maxsteps, *, resume=False, embedding=None):
@@ -142,7 +140,8 @@ def calculate_reorganization(atoms, settings, directory, *, resume=False, embedd
     request = {'atoms': atoms, 'settings': asdict(config), 'carriers': settings['carriers'],
                'environment': settings['environment'], 'opt_maxsteps': settings['opt-maxsteps'],
                'versions': _versions(), 'implementation_sha256': file_hash(__file__)}
-    request['support_implementation_sha256'] = {p: file_hash(p) for p in (scf.__file__, embedding_module.__file__)}
+    request['support_implementation_sha256'] = {p: file_hash(p) for p in
+        (scf.__file__, embedding_module.__file__, reorganization_core.__file__)}
     if embedding is not None:
         request.update(embedding_fingerprint=embedding.fingerprint, mm_frozen=True)
     key = fingerprint(request)
