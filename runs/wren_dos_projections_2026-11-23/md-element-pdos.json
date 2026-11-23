@@ -1,0 +1,66 @@
+{
+  "system": "anneal_a GROMACS trajectory, selected monomer 1",
+  "mode": "monomer-orbitals",
+  "scope": "isolated_molecular_orbital_ensemble_no_inter_molecular_coupling",
+  "method": "restricted density-fitted HF/STO-3G (Weigend), vacuum",
+  "conv_tol": 1e-07,
+  "threads": 4,
+  "spin_weight": 2,
+  "sigma_ev": 0.1,
+  "frames": [
+    {
+      "frame": 1980,
+      "molecule": "1",
+      "atoms": 86,
+      "spatial_orbitals": 302,
+      "homo_ev": -4.437104221980318,
+      "lumo_ev": 3.254573064961149,
+      "checkpoint_sha256": "17285f67c01d79dde23a43e5749e3b1d5121f4514dd7768acce014c207175636"
+    },
+    {
+      "frame": 2000,
+      "molecule": "1",
+      "atoms": 86,
+      "spatial_orbitals": 302,
+      "homo_ev": -4.503522620077358,
+      "lumo_ev": 3.510912977631289,
+      "checkpoint_sha256": "a762bd695fb10f233d52678ae7dbdbfb3e7bc9c259afc03a514cd09d8e606afc"
+    }
+  ],
+  "input_index_sha256": "dad0d3eaea14a95e68f8ce4512676e813cc5c4f938e0d4e914e429b03eba842d",
+  "elapsed_seconds": 536.8703195480048,
+  "unit": "spin_states_per_molecule_per_eV",
+  "expected_integral": 604.0,
+  "finite_grid_integral": 604.0,
+  "elements": {
+    "pdos": "pdos.csv",
+    "basis": "symmetric_lowdin_atomic_orbitals",
+    "elements": [
+      "C",
+      "H",
+      "N",
+      "O",
+      "S"
+    ],
+    "expected_integral_per_element": {
+      "C": 339.9999999999999,
+      "H": 71.99999999999997,
+      "N": 40.00000000000009,
+      "O": 80.00000000000007,
+      "S": 72.00000000000003
+    },
+    "finite_grid_integral_per_element": {
+      "C": 340.0000000000013,
+      "H": 71.99999999999991,
+      "N": 39.99999999999992,
+      "O": 79.99999999999983,
+      "S": 72.00000000000006
+    },
+    "max_abs_element_sum_residual_per_ev": 6.536993168992922e-13
+  },
+  "reference": "scipy.linalg.sqrtm(S) @ C from each checkpoint, AO label grouping, independent Gaussian summation",
+  "sampled_grid_points": 250,
+  "max_abs_element_curve_difference_vs_reference": 9.414691248821327e-14,
+  "max_abs_orbital_difference_ev_vs_previous_8thread_run": 5.866240826435387e-11,
+  "material_sampling_converged": false
+}

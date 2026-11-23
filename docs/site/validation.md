@@ -4,6 +4,10 @@
 
 Linux Release 构建通过全部 9 组 CTest，四语言测试逐事件核对同一随机种子的模型轨迹。从 uv 生成的源码包解压到新目录后，重新配置、编译并通过相同 9 组检查。Python-only 配置通过 wheel 测试与安装前缀重定位；原生 Debug 构建通过 Ninja 与 Ninja Multi-Config 验证。独立的 C++ 和 Fortran 应用都能用 `find_package(Wren 0.2 CONFIG REQUIRED)` 链接安装库。
 
+仅启用 Python 时，CTest 也运行 Python 科学模块回归。仅启用 `WREN_BUILD_DOCS` 时，
+可独立构建 HTML 并安装 `Documentation` 组件。已用从完整 CMake 前缀安装的
+`wren-dos` 在仓库外运行非正交示例，得到每晶胞 4 个自旋态。
+
 ## 已有依据
 
 - 载流子与模型 FSSH 分支已在 Wren 工作区合并，更名后的回归包含四语言 KMC 一致性测试。
@@ -17,6 +21,25 @@ Linux Release 构建通过全部 9 组 CTest，四语言测试逐事件核对同
 使用 Weigend 辅助基，用时约 452 s；DOS 积分与 604 个自旋态相符。这不是基组/辅助基收敛的
 材料 DOS，两帧也不足以估计时间采样不确定性。结果保留在仓库 runs/wren_2026-11-23/validation.json。
 只有终态和科学输出核对完成才计入验证，运行中任务不算完成。
+
+## 非正交片段与 PySCF 元素投影
+
+非正交单链用解析色散 $E(k)=(\epsilon+2t\cos k)/(1+2s\cos k)$ 核对。双位点模型在
+复数 Bloch 相位下，用 SciPy 的广义 Hermitian 求解器独立核对能级、Löwdin 位点权重和
+$H\mapsto H+aS$ 的能量平移。周期 PySCF 测试使用 LiH 晶胞的三个 k 点。
+
+重新计算 `anneal_a` 的第 1980、2000 帧，每帧选同一个 86 原子单体（编号 1）。
+CPU 四线程、密度拟合 HF/STO-3G、Weigend 辅助基、Gaussian 标准差 0.1 eV，
+两帧运行共 536.9 秒。每分子有 302 个空间轨道，计入自旋后积分为 604。
+元素积分为 C 340、H 72、N 40、O 80、S 72。各能量点的元素和相对总 DOS 最大绝对
+偏差为 $6.54\times10^{-13}$ 态/(eV·分子)。另从两份检查点读取波函数，以 SciPy
+矩阵平方根和 AO 标签独立重建 250 个网格点，每个元素曲线的最大绝对偏差为
+$9.42\times10^{-14}$ 态/(eV·分子)。[数值记录](https://github.com/Tiny-Cube/cube/blob/feat/wren/runs/wren_dos_projections_2026-11-23/md-element-pdos.json)
+
+![两帧的前线轨道态密度。实线为总 DOS，色块为碳、氢、氮、氧、硫的贡献。](_static/md-element-dos.png)
+
+图中能量以单体 HF 轨道能为参考，两幅图分别放大占据和虚轨道的前线能区。
+这是两帧真空单体的数值验收，体相能谱还需要分子间耦合、环境模型和采样收敛验证。
 
 ## 尚不能宣称完成
 
