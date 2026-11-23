@@ -18,3 +18,8 @@ GPU 报告为 gpu/validation.json，同机 86 原子 CPU/GPU 对照为 gpu/md-co
 CPU 48.62 s、RTX5090 3.92 s（8 线程、HF/STO-3G+Weigend、单次、GPU 预热）；
 最大轨道差 0.835 meV。不要将不同主机的 CPU 两帧 452 s 与服务器 GPU 单帧直接相除。
 GitHub 文档构建也已通过：https://github.com/Tiny-Cube/cube/actions/runs/45168889194 。
+
+## 在线文档
+
+Sites owner-private 发布已成功，文档源码提交 446923fe4c8b1ebc8d7c9dcf68fde39f2175bf2e，
+部署标识 appgdep_6b042e8513248191abee4d43d72a680f。该版本仅所有者可访问，未改变为公开站点。

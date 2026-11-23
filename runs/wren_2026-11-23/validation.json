@@ -24,7 +24,10 @@
       "logo",
       "Chinese search"
     ],
-    "public_deployment_verified": false
+    "public_deployment_verified": false,
+    "private_deployment_verified": true,
+    "private_site_source_commit": "446923fe4c8b1ebc8d7c9dcf68fde39f2175bf2e",
+    "private_deployment_id": "appgdep_6b042e8513248191abee4d43d72a680f"
   },
   "dos_cases": {
     "h2": {
