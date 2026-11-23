@@ -1,0 +1,19 @@
+$reorganization-energy
+do = 1
+xyz = benzene.xyz
+state-a = S0
+state-b = S1
+qc-engine = pyscf
+method = b3lyp
+basis-set = 6-31g
+auxbasis = none
+threads = 2
+grid-level = 3
+conv-tol = 1e-10
+max-cycle = 100
+max-memory-mb = 1200
+opt-maxsteps = 40
+environment = vacuum
+re-method = 4-points
+output = ../../build/benzene-s0-s1
+$end

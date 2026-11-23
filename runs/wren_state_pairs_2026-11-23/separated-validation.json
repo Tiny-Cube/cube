@@ -1,0 +1,69 @@
+{
+  "control": "examples/reorganization/separated.input",
+  "model": "vacuum finite cluster with frozen Na+ MM point charge and resolved illustrative LJ",
+  "status": "completed",
+  "states": {
+    "a": {
+      "name": "neutral",
+      "charge": 0,
+      "multiplicity": 1,
+      "root": 0,
+      "solver": "scf"
+    },
+    "b": {
+      "name": "anion",
+      "charge": -1,
+      "multiplicity": 2,
+      "root": 0,
+      "solver": "scf"
+    }
+  },
+  "scf": {
+    "backend": "cpu",
+    "basis": "sto-3g",
+    "xc": "hf",
+    "auxbasis": "weigend",
+    "unit": "Angstrom",
+    "conv_tol": 1e-10,
+    "max_cycle": 100,
+    "grid_level": 3,
+    "threads": 1,
+    "max_memory_mb": 4000,
+    "degeneracy_tolerance_ev": 0.01,
+    "site_tolerance_ev": 0.001,
+    "max_pair_leakage": 0.15
+  },
+  "mm_charge_e": 1.0,
+  "four_points_same_embedding": true,
+  "four_points_scf_converged": true,
+  "energies_hartree": {
+    "E_A_RA": -74.98872314013371,
+    "E_B_RA": -74.58530650970674,
+    "E_B_RB": -74.74135602813372,
+    "E_A_RB": -74.8037891869675
+  },
+  "relaxation_ev": {
+    "on_a": 5.032309187810292,
+    "on_b": 4.246323684151726,
+    "sum": 9.278632871962017
+  },
+  "verified_minima_by_hessian": false,
+  "optimizations": {
+    "a": {
+      "charge": 0,
+      "spin_2s": 0,
+      "evaluations": 6,
+      "converged": true,
+      "final_gradient_rms": 1.0036921255471858e-06,
+      "final_gradient_max": 1.6025518840834252e-06
+    },
+    "b": {
+      "charge": -1,
+      "spin_2s": 1,
+      "evaluations": 9,
+      "converged": true,
+      "final_gradient_rms": 1.007207139653323e-06,
+      "final_gradient_max": 2.0618682277095957e-06
+    }
+  }
+}

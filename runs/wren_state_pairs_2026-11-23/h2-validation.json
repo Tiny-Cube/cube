@@ -1,0 +1,115 @@
+{
+  "system": "H2, neutral closed shell, vacuum; numerical validation of these methods",
+  "settings": {
+    "qc-engine": "pyscf",
+    "environment": "vacuum",
+    "re-method": "4-points",
+    "method": "hf",
+    "basis-set": "6-31g",
+    "auxbasis": "none",
+    "threads": 1,
+    "grid-level": 3,
+    "conv-tol": 1e-10,
+    "max-cycle": 100,
+    "max-memory-mb": 1200,
+    "opt-maxsteps": 55
+  },
+  "versions": {
+    "pyscf": "2.15.0",
+    "geometric": "1.1.1",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1"
+  },
+  "four_point": {
+    "states": {
+      "a": {
+        "name": "S0",
+        "charge": 0,
+        "multiplicity": 1,
+        "root": 0,
+        "solver": "scf"
+      },
+      "b": {
+        "name": "S1",
+        "charge": 0,
+        "multiplicity": 1,
+        "root": 1,
+        "solver": "tda"
+      }
+    },
+    "energies_hartree": {
+      "E_A_RA": -1.1268278288467508,
+      "E_B_RA": -0.5625524516306171,
+      "E_B_RB": -0.6577410443819334,
+      "E_A_RB": -0.9894646418231001
+    },
+    "relaxation_ev": {
+      "on_a": 3.7378427070380136,
+      "on_b": 2.5902135420566417,
+      "sum": 6.328056249094655
+    },
+    "geometries": {
+      "RA": {
+        "coordinates_angstrom": [
+          [
+            -6.484694649835177e-17,
+            0.0,
+            -0.3649724203322906
+          ],
+          [
+            -6.484694649835177e-17,
+            0.0,
+            0.3649724203322932
+          ]
+        ],
+        "bond_angstrom": 0.7299448406645839,
+        "evaluations": 6,
+        "final_gradient_rms_hartree_per_bohr": 6.6912680850589035e-06
+      },
+      "RB": {
+        "coordinates_angstrom": [
+          [
+            -6.484694649835177e-17,
+            0.0,
+            -0.7719910945958907
+          ],
+          [
+            -6.484694649835177e-17,
+            0.0,
+            0.7719910945958965
+          ]
+        ],
+        "bond_angstrom": 1.5439821891917873,
+        "evaluations": 8,
+        "final_gradient_rms_hartree_per_bohr": 3.057179846011091e-07
+      }
+    },
+    "converged": {
+      "RA": true,
+      "RB": true
+    },
+    "minimum_tested_gap_ev": 9.026658861916706,
+    "minimum_adjacent_S1_amplitude_overlap": 0.9919653995044027
+  },
+  "vertical_gradient": {
+    "reference": "S0",
+    "gradient_state": "S1",
+    "reference_max_abs_gradient_hartree_per_bohr": 1.1666706869140064e-05,
+    "input": "h2-vg.json",
+    "modes": [
+      {
+        "id": "stretch",
+        "wavenumber_cm1": 4646.402588878927,
+        "gradient_ev_per_angstrom_sqrt_u": -15.061498714194562,
+        "curvature_ev_per_angstrom2_u": 79.39141093354816,
+        "quantum_ev": 0.5760805005801004,
+        "displacement_angstrom_sqrt_u": 0.1897119415953102,
+        "relaxation_ev": 1.4286730822025593,
+        "huang_rhys": 2.4799886140286245
+      }
+    ],
+    "relaxation_on_S1_ev": 1.4286730822025593,
+    "direct_inverse_curvature_ev": 1.4286730822025597
+  },
+  "fully_optimized_on_S1_minus_harmonic_ev": 1.1615404598540824
+}

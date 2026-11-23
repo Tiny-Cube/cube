@@ -3,10 +3,7 @@
 `$reorganization-energy` 是可独立运行、供各主模块复用的子模块。目标是指定任意两个
 电子态及重组算法，不能把重组能定义限定成 hole/electron。
 
-当前自动量化工作流仍支持中性/阳离子、阴离子的 vacuum 或冻结 MM 点电荷+LJ 四点法。
-通用 A/B 四点分析核心已实现，其他方法和任意态的自动量化尚未接通。
-具体路线见 [设计](plans/2026-11-11-general-reorganization-design.md) 和
-[方法/软件调研](research/reorganization-methods.md)。
+可运行的控制文件、SCF/TDA 适用范围、垂直梯度与轨迹能隙方法见[重组能手册](site/reorganization.md)。本页保留底层四点分析 API 和载流子字段映射。
 
 ## 分析来自任意程序的四个总能量
 
@@ -14,7 +11,7 @@
 示例值是两条不同曲率的合成谐势能面，不是材料的 S0/S1 计算结果。
 
 ```python
-from universal_kmc.reorganization import (
+from wren.reorganization import (
     ElectronicState, FourPointEnergies, analyze_four_point_pair,
 )
 

@@ -15,7 +15,7 @@ wren 面向有机分子晶体、非晶和聚合物的载流子输运研究。当
 
 [网页手册源码](docs/site/index.md) · [DOS 理论](docs/site/dos-theory.md) · [DOS 使用](docs/site/dos-guide.md) · [软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)
 
-## cube input 统一入口
+## wren input 统一入口
 
 提供可执行脚本 `cube`，默认读取 `$get_dimers_monomers/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 轨迹按起始帧/帧间隔提取单体、core 距离 dimer 和完整冻结 MM 簇、按 `format` 选择 XYZ/GJF、CPU/GPU 单体与 dimer 量化、DIPRO，以及 vacuum / 冻结 MM 静电嵌入四点法。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
 
@@ -43,7 +43,7 @@ GRO 三维簇查看器已迁至独立项目 [cube-view](https://github.com/Tiny-
 
 新增冻结 MM 的 QM/MM 四点法：环境坐标、电荷固定，只优化 QM 分子；可从 GROMACS 帧自动选取完整邻近分子，或读取外部点电荷文件。CPU/GPU 优化、梯度、四点能量及续算已实测，见 [原静电模型验证](runs/qmmm_frozen_mm_2026-11-07/README.md)。现在另支持原 TPR 的 QM–MM LJ12-6 排斥/色散，根目录 `input` 已启用；见[范德华参数与异机导出](docs/cube-input.md#加入原力场的-qmmm-范德华作用)。未包含可极化 MM。
 
-重组能正在整理为独立于载流子种类的[通用态对模块](docs/reorganization.md)。已提供无需量化依赖的任意 A/B 四点总能量分析 API；现有 hole/electron 量化流程复用该数学核心。自动 S0/S1 求解、振动模方法和 GDMA 多极嵌入尚未接通，见[方法调研](docs/research/reorganization-methods.md)。
+通用 `$reorganization-energy` 支持显式态对、CPU PySCF 真空 S₀/S₁ 四点优化、冻结 MM 的基态电荷/自旋扇区、外部能量导入、振动模垂直梯度与双系综能隙分析。控制文件和输出定义见[重组能手册](docs/site/reorganization.md)。
 
 独立的 G16/GPU 同模型比较工具已完成小体系能量、梯度和完整四点法数值预检；2026-11-08 的真实 6 Å 材料计时提交时处于等待旧 CPU 任务的队列中，尚无加速倍数，见[对比范围与验证记录](runs/g16_gpu_qmmm_6A_2026-11-08/README.md)。
 
@@ -113,34 +113,17 @@ for record in engine.run(max_steps=10000, until=1000.0):
 
 ## 安装、构建、验证
 
-需要 Python ≥ 3.11、uv；原生版本需要 C++17 编译器、Cargo/Rust、gfortran 与 ar。没有第三方运行时依赖。
+顶层构建使用 CMake 3.25+，编译 C++17、Fortran 和 Cargo/Rust，通过 uv 构建 Python 3.11+ 的 wheel。Linux 下按以下命令构建、测试和安装。Python 科学依赖采用项目锁文件。
 
 ```bash
-uv sync --locked
-uv run python examples/generic.py
-uv build                            # wheel + sdist
-
-uv run python scripts/build.py      # 三种原生版本、静态库和示例
-uv run python scripts/check.py      # 完整构建、全部测试、跨语言检查、打包
-```
-
-脚本默认使用 `c++` / `gfortran`，可通过 `CXX` / `FC` 指定兼容编译器。脚本的 Fortran 检查参数面向 gfortran；其他编译器可使用 CMake 或自行配置参数。`scripts/check.py` 默认把 uv 缓存放在系统临时目录；若直接运行 uv 遇到缓存目录无写权限，可设置 `UV_CACHE_DIR=/tmp/ukmc-uv-cache`。
-
-可选 CMake 构建 C++/Fortran（本机未实测；已验证的构建入口为上面的 scripts/build.py）：
-
-```bash
-cmake -S . -B build/cmake
-cmake --build build/cmake
+uv sync --locked --extra workflow --extra dos --extra transport --extra dynamics
+cmake -S . -B build/cmake -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE="$PWD/.venv/bin/python"
+cmake --build build/cmake --parallel
 ctest --test-dir build/cmake --output-on-failure
+cmake --install build/cmake --prefix "$HOME/.local"
 ```
 
-运行通用回调示例：
-
-```bash
-./build/generic-cpp
-cargo run --manifest-path rust/Cargo.toml --release --example generic --offline
-./build/generic-fortran
-```
+`build/cmake/bin/` 提供三种原生 CLI 和通用排队示例。Python 包在 `build/cmake/dist/`。`cmake --build build/cmake --target wren_package` 同时生成 wheel 和源码包。其他选项、安装目录和下游 CMake 库接口见[安装手册](docs/site/installation.md)。
 
 ## 核心契约
 
@@ -171,9 +154,9 @@ A=\sum_i a_i(x),\quad \Delta t=-\log(u_1)/A,\quad P(i\mid x)=a_i(x)/A.
 
 ```bash
 uv run ukmc examples/two_state.kmc 10000 42 10 > build/python.csv
-./build/ukmc-cpp examples/two_state.kmc 10000 42 10 > build/cpp.csv
-cargo run --quiet --manifest-path rust/Cargo.toml --release --bin ukmc-rust -- examples/two_state.kmc 10000 42 10 > build/rust.csv
-./build/ukmc-fortran examples/two_state.kmc 10000 42 10 > build/fortran.csv
+./build/cmake/bin/ukmc-cpp examples/two_state.kmc 10000 42 10 > build/cpp.csv
+./build/cmake/bin/ukmc-rust examples/two_state.kmc 10000 42 10 > build/rust.csv
+./build/cmake/bin/ukmc-fortran examples/two_state.kmc 10000 42 10 > build/fortran.csv
 ```
 
 [文件格式](docs/format.md) · [算法与统计注意事项](docs/algorithm.md) · [参考来源与设计选择](docs/references.md) · [验证记录](docs/validation.md)

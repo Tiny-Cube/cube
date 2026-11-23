@@ -1,7 +1,7 @@
 # Wren：分子材料的电子结构与动力学
 
 Wren 从分子动力学结构出发，组织电子结构计算、重组能、载流子 KMC 和模型表面跳跃。
-软件原名 cube；Python 包和主命令现为 `wren`，旧命令保留为兼容别名。
+软件原名 cube。CMake 统筹多语言编译、测试和安装，Python 包由 uv 构建。主命令为 `wren`。
 
 本手册区分**已验证实现**与**设计中的能力**。不能把孤立单体轨道直方图称为完整材料 DOS，
 也不能把 Tully 模型 FSSH 验证称为真实材料的量化驱动非绝热动力学。
@@ -13,6 +13,8 @@ Wren 从分子动力学结构出发，组织电子结构计算、重组能、载
 installation
 workflow
 dos-guide
+reorganization
+fragment-hopping
 modules
 validation
 ```
@@ -33,12 +35,13 @@ references
 | 有序晶体或无序超胞的电子谱 | 带晶格及原位置的完整帧 | PySCF PBC k 点 DOS；周期 KS/HF 谱，不自动等于准粒子谱 |
 | 研究分子间耦合如何改变 DOS | 明确定义的有符号有效 Hamiltonian | Bloch 求和与对角化；必须收敛 k 网格/超胞 |
 | 零场独立载流子输运 | 位点能、耦合、重组能、周期网络 | Marcus KMC、扩散/迁移率张量与诊断 |
-| 模型非绝热跃迁 | Tully 或多态 LVC 参数 | FSSH、动量调整、可选退相干；真实量化接口待扩展 |
+| 分子两态的形变能或重组自由能 | XYZ、已有四点能量、梯度/振动模或两态能隙轨迹 | 按态和方法输出弛豫或系综估计 |
+| 模型非绝热跃迁 | Tully、多态 LVC 或距离相关片段耦合 | FSSH、动量调整、可选退相干；真实量化接口待扩展 |
 
 ## 可复现实例
 
 ```bash
-uv sync --locked --extra dos --extra dynamics
+uv sync --locked --extra dos --extra dynamics --extra transport
 uv run wren examples/dos/input
 uv run wren examples/charge-carrier/input
 uv run wren examples/surface-hopping/input

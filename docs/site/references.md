@@ -15,6 +15,9 @@
 | Marcus | Marcus, *On the Theory of Oxidation–Reduction Reactions Involving Electron Transfer. I*, JCP **24**, 966 (1956), [DOI](https://doi.org/10.1063/1.1742723) |
 | FSSH | Tully, *Molecular dynamics with electronic transitions*, JCP **93**, 1061 (1990), [DOI](https://doi.org/10.1063/1.459170) |
 | 退相干修正 | Granucci, Persico, *Critical appraisal of the fewest switches algorithm for surface hopping*, JCP **126**, 134114 (2007), [DOI](https://doi.org/10.1063/1.2715585) |
+| 激发态四点与梯度 | Hirata, Head-Gordon, *Time-dependent density functional theory within the Tamm–Dancoff approximation*, [DOI](https://doi.org/10.1016/S0009-2614(99)01149-5) |
+| 垂直梯度与谐模型 | Avila Ferrer, Santoro, *Comparison of vertical and adiabatic harmonic approaches for the calculation of the vibrational structure of electronic spectra*, [DOI](https://doi.org/10.1039/C2CP41169E) |
+| 凝聚相能隙采样 | *Efficient Calculation of Electrostatic Energies for Large-Scale Nonadiabatic Molecular Dynamics in a Site Basis*, [DOI](https://doi.org/10.1021/acs.jctc.5c01753) |
 | PySCF | Sun et al., *Recent developments in the PySCF program package*, JCP **153**, 024109 (2020), [DOI](https://doi.org/10.1063/5.0006074) |
 | GPU4PySCF | *Introducing GPU Acceleration into the Python-Based Simulations of Chemistry Framework*, [DOI](https://doi.org/10.1021/acs.jpca.4c05876) |
 

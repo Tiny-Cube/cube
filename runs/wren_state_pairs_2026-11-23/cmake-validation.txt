@@ -1,0 +1,45 @@
+Wren CMake verification (Linux, 2026-11-23)
+
+cmake version 4.4.5
+1.13.2
+c++ (GCC) 16.2.1 20260810
+GNU Fortran (GCC) 16.2.1 20260810
+cargo 1.94.1 (29ea6fb6a 2026-03-24)
+uv 0.12.24 (5411378eb 2026-10-08 x86_64-unknown-linux-gnu)
+
+Release: cmake -S . -B build/cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE=<project .venv python>
+cmake --build build/cmake --parallel --target all wren_benchmarks wren_package
+ctest --test-dir build/cmake --output-on-failure
+Test project /home/dav/Documents/code/codex/wren/build/cmake
+    Start 7: python_wheel_cli
+    Start 9: python_suite
+1/9 Test #7: python_wheel_cli .................   Passed    0.61 sec
+    Start 8: four_language_conformance
+2/9 Test #8: four_language_conformance ........   Passed    7.13 sec
+    Start 5: rust
+3/9 Test #5: rust .............................   Passed    0.30 sec
+    Start 4: generic_fortran
+4/9 Test #4: generic_fortran ..................   Passed    0.00 sec
+    Start 3: fortran
+5/9 Test #3: fortran ..........................   Passed    0.00 sec
+    Start 6: generic_rust
+6/9 Test #6: generic_rust .....................   Passed    0.00 sec
+    Start 1: cpp
+7/9 Test #1: cpp ..............................   Passed    0.01 sec
+    Start 2: generic_cpp
+8/9 Test #2: generic_cpp ......................   Passed    0.00 sec
+9/9 Test #9: python_suite .....................   Passed   28.44 sec
+
+100% tests passed out of 9
+
+Total Test time (real) =  28.44 sec
+
+Source distribution extracted to a fresh temporary directory and rebuilt through CMake.
+100% tests passed out of 9
+
+Total Test time (real) =  24.66 sec
+
+Ninja and Ninja Multi-Config Debug native builds independently tested with all 7 native+conformance CTests.
+CMake consumer compiled and executed both C++ and Fortran programs with find_package(Wren 0.2 CONFIG REQUIRED).
+Python-only build: wheel smoke passed and relocated prefix containing a space ran bin/wren --help.
+The Python suite includes optional-backend skips; see per-test details from ctest -V.

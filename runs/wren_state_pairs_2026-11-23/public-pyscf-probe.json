@@ -1,0 +1,68 @@
+{
+  "hf": {
+    "gradient_provider": "gpu4pyscf.grad.tdrhf",
+    "amplitudes_array": "cupy",
+    "gpu_gradient_hartree_per_bohr": -0.1604475035739008,
+    "cpu_finite_difference_hartree_per_bohr": -0.16044684072925072,
+    "cpu_explicit_S1_hartree": -0.583307248536558,
+    "gpu_S1_hartree": -0.583304005088033,
+    "cpu": {
+      "energies_hartree": [
+        -1.1268278288467442,
+        -0.5625524056624178,
+        -0.657741044200931,
+        -0.9894646418233175
+      ],
+      "bond_angstrom": [
+        0.7299448406955759,
+        1.5439821891905834
+      ]
+    },
+    "gpu": {
+      "energies_hartree": [
+        -1.1268278288456899,
+        -0.5625494707509294,
+        -0.657740906647948,
+        -0.9894646422462576
+      ],
+      "bond_angstrom": [
+        0.7299448096359641,
+        1.5439821868513997
+      ]
+    },
+    "max_energy_difference_hartree": 2.9349114883947536e-06
+  },
+  "b3lyp": {
+    "gradient_provider": "gpu4pyscf.grad.tdrks",
+    "amplitudes_array": "cupy",
+    "gpu_gradient_hartree_per_bohr": -0.1371806333447137,
+    "cpu_finite_difference_hartree_per_bohr": -0.13718170849185485,
+    "cpu_explicit_S1_hartree": -0.6362130796211932,
+    "gpu_S1_hartree": -0.6362135867745521,
+    "cpu": {
+      "energies_hartree": [
+        -1.17548241091309,
+        -0.622488741437967,
+        -0.6889018138904682,
+        -1.076967718430922
+      ],
+      "bond_angstrom": [
+        0.7427858902147992,
+        1.4073544625858825
+      ]
+    },
+    "gpu": {
+      "energies_hartree": [
+        -1.175482410913005,
+        -0.6224896798441724,
+        -0.6889018663284074,
+        -1.0769677184837831
+      ],
+      "bond_angstrom": [
+        0.7427858905505236,
+        1.4073544622695984
+      ]
+    },
+    "max_energy_difference_hartree": 9.384062054085263e-07
+  }
+}

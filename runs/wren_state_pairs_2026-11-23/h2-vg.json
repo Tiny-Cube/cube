@@ -1,0 +1,64 @@
+{
+  "schema": "wren-vertical-gradient-1",
+  "method": "RHF/6-31G analytical reference Hessian and singlet TDA target gradient",
+  "environment": "vacuum",
+  "states": {
+    "a": {
+      "name": "S0",
+      "charge": 0,
+      "multiplicity": 1,
+      "root": 0,
+      "solver": "scf"
+    },
+    "b": {
+      "name": "S1",
+      "charge": 0,
+      "multiplicity": 1,
+      "root": 1,
+      "solver": "tda"
+    }
+  },
+  "reference": "a",
+  "reference_stationary": true,
+  "mode_subspace": "H2 bond stretch",
+  "cartesian": {
+    "atom_ids": [
+      "H1",
+      "H2"
+    ],
+    "masses_u": [
+      1.00782503223,
+      1.00782503223
+    ],
+    "gradient_ev_per_angstrom": [
+      [
+        0.0,
+        0.0,
+        10.691675318841414
+      ],
+      [
+        0.0,
+        0.0,
+        -10.691675318841416
+      ]
+    ]
+  },
+  "modes": [
+    {
+      "id": "stretch",
+      "wavenumber_cm1": 4646.402588878927,
+      "mass_weighted_direction": [
+        [
+          -8.366108276186706e-48,
+          0.0,
+          -0.7071067811865475
+        ],
+        [
+          -8.145104744458625e-43,
+          0.0,
+          0.7071067811865475
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "system": "C6H6, 12 atoms; isolated molecule, ideal hexagonal starting geometry",
+  "backend": "CPU PySCF, conventional restricted B3LYP/singlet TDA",
+  "settings": {
+    "backend": "cpu",
+    "basis": "6-31g",
+    "xc": "b3lyp",
+    "auxbasis": "none",
+    "unit": "Angstrom",
+    "conv_tol": 1e-10,
+    "max_cycle": 100,
+    "grid_level": 3,
+    "threads": 2,
+    "max_memory_mb": 1200,
+    "degeneracy_tolerance_ev": 0.01,
+    "site_tolerance_ev": 0.001,
+    "max_pair_leakage": 0.15
+  },
+  "versions": {
+    "pyscf": "2.15.0",
+    "geometric": "1.1.1",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1"
+  },
+  "state_policy": "energy_ordered_S1_with_gap_and_adjacent_evaluation_character_checks",
+  "energies_hartree": {
+    "E_A_RA": -232.19870779686306,
+    "E_B_RA": -231.9930860422901,
+    "E_B_RB": -231.99828775172296,
+    "E_A_RB": -232.19352792193894
+  },
+  "relaxation_ev": {
+    "on_a": 0.1409515760956647,
+    "on_b": 0.14154572334163482,
+    "sum": 0.2824972994372995
+  },
+  "optimization_converged": {
+    "RA": true,
+    "RB": true
+  },
+  "geometry_evaluations": {
+    "RA": 4,
+    "RB": 6
+  },
+  "minimum_S1_gap_to_S0_or_S2_ev": 1.1080638282239397,
+  "minimum_adjacent_S1_amplitude_overlap": 0.9981985221174448,
+  "frequency_analysis_performed": false,
+  "material_environment_included": false
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "wren-qmmm-cluster-export-1",
+  "frame": 2000,
+  "molecule": "1",
+  "cutoff_angstrom": 6.0,
+  "qm_atom_count": 86,
+  "mm_atom_count": 1892,
+  "mm_molecular_image_count": 22,
+  "mm_charge_e": 1.2703239917755127e-06,
+  "bare_qm_mm_lj": true,
+  "manifest_sha256": "c90f3d3b5547cfab87170540dd7bae3adb1a883b074ef3e5b1b07f7fb41b11b1",
+  "source_sha256": {
+    "tpr": "c23136619981dcb39252a42ad302b7c6dd17451b512cd601c8345a61ff64d043",
+    "gro": "ba623af488f387ee2d4ab54edf0b0768aa7196b2f4a94d4e4625b1b92c3d1f01",
+    "xtc": "e65321099f0c393fcf52c0fc2692f5b9c437eac95079dcdb3374efaf8f3e17ac"
+  },
+  "file_sha256": {
+    "coordinates.extxyz": "fea08640d202b7e2d9a5712b6b2d04ce4a12d9775334d45b2a4de4073c726206",
+    "forcefield.json": "f054702a71b6db134e82cc20b39162eeff9f1a8b2106450a988a760d9c40d4b0",
+    "topology.json": "0227dbbdc00064c939648d2b43994b0c05a72674982e85e790b22ccb341b2a1a"
+  },
+  "verification": {
+    "qm_elements_and_order_equal": true,
+    "qm_coordinates_exact": true,
+    "mm_coordinate_order_exact": true,
+    "mm_charge_order_exact": true,
+    "original_lj_hartree": -0.16945100859760134,
+    "imported_lj_hartree": -0.16945100859760134,
+    "max_qm_lj_gradient_difference_hartree_per_bohr": 0.0,
+    "max_abs_reference_qm_lj_gradient_hartree_per_bohr": 0.006867641659346973
+  }
+}

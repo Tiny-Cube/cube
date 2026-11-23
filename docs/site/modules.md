@@ -33,10 +33,7 @@ $$\lambda_A=E_A(R_B)-E_A(R_A),\quad
 的形变能通常均为 lambda，此时和为 2lambda；等价分子间跳跃常组合中性和带电分子的形变代价。
 不能对任意态对都自动相加或除以二。
 
-通用 A/B 数学 API 已实现，自动优化仍是中性/阳离子/阴离子的四点流程。固定 MM 时不包括
-环境外球弛豫。正常模、S0/S1 自动求解与 GDMA 高阶嵌入正在规划；
-[PySCF 激发态优化](https://pyscf.org/user/geomopt.html#excited-states)及
-[ORCA ESD](https://www.faccts.de/docs/orca/6.1/manual/contents/spectroscopyproperties/esd.html)是接口参考。
+独立的重组能入口支持 S₀/S₁ 真空 TDA 四点优化、显式电荷/自旋扇区的 SCF 四点优化、外部总能量导入、垂直梯度和双系综线性响应。详见[重组能输入、理论与限制](reorganization.md)。
 
 ## Surface hopping
 
@@ -53,5 +50,5 @@ uv run --extra dynamics wren examples/surface-hopping/input
 uv run --extra dynamics wren-surface-hopping examples/surface-hopping/tully1.toml --check
 ```
 
-现有 provider 不是量化驱动的真实材料 MD；片段移动基、耦合导数、态追踪和 GPU ensemble
+距离相关的有符号耦合及其梯度也可驱动有限簇中的片段位点动力学。见[片段位点模型](fragment-hopping.md)。片段移动基、耦合导数、态追踪和 GPU ensemble
 还需逐项实现。不得把模型算例成功等同于实际材料的非绝热输运已被验证。
