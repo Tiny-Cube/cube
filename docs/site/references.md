@@ -22,6 +22,8 @@
 | 凝聚相能隙采样 | *Efficient Calculation of Electrostatic Energies for Large-Scale Nonadiabatic Molecular Dynamics in a Site Basis*, [DOI](https://doi.org/10.1021/acs.jctc.5c01753) |
 | PySCF | Sun et al., *Recent developments in the PySCF program package*, JCP **153**, 024109 (2020), [DOI](https://doi.org/10.1063/5.0006074) |
 | GPU4PySCF | *Introducing GPU Acceleration into the Python-Based Simulations of Chemistry Framework*, [DOI](https://doi.org/10.1021/acs.jpca.4c05876) |
+| 周期高斯密度拟合 | Sun et al., *Gaussian and plane-wave mixed density fitting for periodic systems*, JCP **147**, 164119 (2017), [DOI](https://doi.org/10.1063/1.4998644) |
+| 萘晶胞的实验坐标 | Fabbiani et al., *Exploration of the high-pressure behaviour of polycyclic aromatic hydrocarbons*, Acta Cryst. B **62** (2006), [结构、压力与坐标表](https://doi.org/10.1107/S0108768106026814) |
 
 官方接口：[PySCF PBC](https://pyscf.org/user/pbc/scf.html)、
 [PySCF QM/MM](https://pyscf.org/user/qmmm.html)、

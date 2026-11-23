@@ -1,0 +1,17 @@
+[dos]
+mode = "periodic"
+input = "naphthalene-cell.json"
+output = "../../build/dos/naphthalene-periodic"
+qc-engine = "pyscf"
+dos-backend = "cpu"
+method = "pbe"
+pseudo = "gth-pbe"
+basis-set = "gth-szv"
+auxbasis = "auto"
+threads = 4
+grid-level = 2
+precision = 1e-7
+conv-tol = 1e-8
+kmesh = [2, 1, 1]
+element-projections = true
+sigma = 0.1

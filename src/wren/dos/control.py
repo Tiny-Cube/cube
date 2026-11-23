@@ -132,8 +132,6 @@ def normalize(raw, base):
     result['qc-engine'] = str(raw.get('qc-engine', 'pyscf')).lower()
     if result['dos-backend'] not in ('cpu', 'gpu') or result['qc-engine'] not in ('pyscf', 'gpu-pyscf'):
         raise ValueError('invalid DOS backend or QC engine')
-    if mode == 'periodic' and result['qc-engine'] != 'pyscf':
-        raise ValueError('periodic GPU DOS is not validated; explicitly request pyscf')
     default_basis = {'periodic': 'gth-szv', 'vertical-dscf': 'aug-cc-pvdz'}.get(mode, '6-31G(d,p)')
     for key, default in (('method', 'b3lyp'), ('basis-set', default_basis),
                          ('auxbasis', 'auto' if mode == 'periodic' else 'def2-universal-jkfit'), ('pseudo', 'gth-pbe')):

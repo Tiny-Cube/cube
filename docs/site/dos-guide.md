@@ -6,7 +6,7 @@
 |---|---|---|
 | `monomer-orbitals` | 单体 XYZ、单帧 manifest 或 frames.json | 中性闭壳层单体的 HF/KS 轨道谱；CPU/GPU 分子 SCF |
 | `vertical-dscf` | 单体 XYZ、单帧 manifest 或 frames.json | 固定输入几何，从三个电荷态的单点总能量分别构建第一电离、电子添加能级分布 |
-| `periodic` | 带原始分子位置与晶格的完整 manifest | CPU PySCF PBC KRHF/KRKS、全 k 网格；不裁剪分子子集 |
+| `periodic` | 带原始分子位置与晶格的完整 manifest | PySCF 或 GPU4PySCF 周期 KRHF/KRKS，完整晶胞与等权 k 网格 |
 | `tight-binding` | 位点能、带符号矩阵元，可提供片段重叠 | 正交或非正交模型的 Bloch 谱、位点投影和参与数 |
 
 单体轨道分布用于观察构象、化学环境模型下的能级变化；当前单体模式使用真空独立分子，
@@ -92,7 +92,15 @@ uv run --extra dos wren-dos examples/dos/periodic.toml
 使用 `kmesh=[n1,n2,n3]` 的完整均匀网格、等权求和；`basis-set`、`pseudo`、
 `auxbasis`、`precision` 等必须针对周期计算收敛。`auxbasis="auto"` 使用 PySCF 自动辅助基。
 默认 `max-atoms=500` 是防止意外启动巨大超胞量化的显式限额，不是对物理体系的裁剪规则。
-当前周期 GPU SCF 不接受未验证请求，也不回退 CPU。
+在 TOML 中设置 `qc-engine = "gpu-pyscf"` 启用 GPU 周期 SCF，设置 `dos-backend = "gpu"` 在 GPU 上计算元素投影与展宽。两个选项可独立设置。周期 DFT 两端均采用 Gaussian density fitting 和 `grid-level` 指定的 Becke 网格。每帧的 `spectra.json` 记录实际 SCF 后端、显卡、电子数、每个 k 点的轨道占据与带边位置。
+
+随附的实验萘晶胞含两个分子，来自 298 K、0.4 GPa 的单晶衍射精修。用同一结构逐步加密三个倒空间方向的采样，可以分别观察总能、带隙和 DOS 形状的变化。[晶体结构与精修条件](https://doi.org/10.1107/S0108768106026814)
+
+```bash
+uv run --extra dos wren-dos examples/dos/naphthalene-periodic.toml --kmesh-study 1x1x1 2x2x2 3x3x3
+```
+
+`<output>-kmesh/kmesh-study.json` 给出每个网格的采样间隙、最小直接间隙，以及相对上一个网格的变化量。各网格目录保留总 DOS、元素 PDOS 和原始能级。采样间隙允许价带顶和导带底来自不同 k 点，直接间隙在同一 k 点取差。`dos_total_variation` 使用同一晶胞的原始能量零点、相同 Gaussian 宽度和覆盖所有轨道的公共能量网格，计算两条谱之差的绝对值积分除以两倍每晶胞态数。该量接近 0 表示两次展宽谱接近 ；带边、基组、结构采样仍需分别检查。使用 `--resume` 可复用输入和文件校验均通过的已完成网格。
 
 周期计算没有天然共同真空零点。不同帧/晶胞之间的谱需明确平均静电势、真空能级或合适
 参考的对齐；未对齐原始谱不能解释为绝对输运位点无序，也不应逐分子将 HOMO 强行归零。

@@ -25,9 +25,7 @@ GPU 分子量化使用锁定的 GPU4PySCF/CuPy/CUDA 依赖，需要实际兼容�
 uv sync --locked --extra workflow --extra quantum-cuda13
 ```
 
-请求 GPU 后不静默回退 CPU。当前周期 DOS 的 GPU SCF 尚未验证，输入要求显式使用 CPU；
-单体 DOS 可指定 `qc-engine = gpu-pyscf`，DOS 数值展宽/有效 Hamiltonian 对角化可以独立选择
-`dos-backend = gpu`，已有 RTX 5090 的数值核验。
+单体与周期 DOS 均可指定 `qc-engine = gpu-pyscf`。数值展宽、元素投影与有效 Hamiltonian 对角化可独立选择 `dos-backend = gpu`。周期量化使用 GPU4PySCF 的 PBC 接口，运行记录包含实际 SCF 类和显卡型号。
 
 ## 用 CMake 构建和安装 Wren
 

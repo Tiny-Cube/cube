@@ -14,6 +14,25 @@ from wren.dos.control import normalize
 
 
 class DosControlTests(unittest.TestCase):
+    @unittest.skipUnless(importlib.util.find_spec('numpy'), 'DOS math needs NumPy')
+    def test_mesh_study_edges_and_full_spectrum_change(self):
+        import numpy as np
+        from wren.dos.mesh_study import shape_change
+        from wren.dos.periodic import band_edges
+        bands = np.array([[-2., 2.], [-1., 3.]])
+        occ = np.array([[2., 0.], [2., 0.]])
+        edges = band_edges(bands, occ)
+        self.assertEqual((edges['vbm_k_index'], edges['cbm_k_index']), (1, 0))
+        self.assertEqual((edges['sampled_gap_ev'], edges['minimum_sampled_direct_gap_ev']), (3., 4.))
+        self.assertFalse(edges['partial_occupation'])
+        self.assertIsNone(band_edges(bands, np.full_like(occ, 2.))['sampled_gap_ev'])
+        self.assertEqual(band_edges(bands, np.ones_like(occ))['sampled_gap_ev'], 0.)
+        base = {'orbital_energies_ev': [[0., 1.]], 'kpoint_weights': [1.]}
+        doubled = {'orbital_energies_ev': [[0., 1.]]*2, 'kpoint_weights': [.5, .5]}
+        self.assertAlmostEqual(shape_change(base, doubled, .1), 0.)
+        shifted = dict(base, orbital_energies_ev=[[3., 4.]])
+        self.assertAlmostEqual(shape_change(base, shifted, .1), 1., places=8)
+
     def test_check_is_dependency_free_and_paths_are_relative_to_control(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -31,8 +50,8 @@ assert all(name not in sys.modules for name in ('numpy','pyscf','cupy','MDAnalys
             self.assertEqual(json.loads(process.stdout)['sections']['dos']['xyz'], str(root/'h2.xyz'))
             with self.assertRaises(ValueError):
                 normalize({'xyz': 'h2.xyz', 'sigma': 0}, root)
-            with self.assertRaisesRegex(ValueError, 'periodic GPU'):
-                normalize({'mode': 'periodic', 'input': 'h2.xyz', 'qc-engine': 'gpu-pyscf'}, root)
+            periodic = normalize({'mode': 'periodic', 'input': 'h2.xyz', 'qc-engine': 'gpu-pyscf'}, root)
+            self.assertEqual(periodic['qc-engine'], 'gpu-pyscf')
             for mode in ('vertical-dscf', 'tight-binding'):
                 with self.assertRaisesRegex(ValueError, 'element-projections'):
                     normalize({'mode': mode, 'input': 'h2.xyz', 'element-projections': True}, root)
@@ -200,6 +219,12 @@ class DosWorkflowTests(unittest.TestCase):
             with redirect_stdout(io.StringIO()):
                 result = run(settings)
             projected = result['element_projections']
+            frame, = json.loads((root/'out/spectra.json').read_text())['frames']
+            self.assertTrue(frame['scf_converged'])
+            self.assertEqual(frame['scf']['modeled_electrons_per_cell'], 4)
+            self.assertAlmostEqual(frame['scf']['occupation_integral_per_cell'], 4.)
+            self.assertIsNone(frame['scf']['xc_grid'])
+            self.assertLessEqual(frame['band_edges']['sampled_gap_ev'], frame['band_edges']['minimum_sampled_direct_gap_ev'])
             self.assertEqual(projected['elements'], ['H', 'Li'])
             for symbol, count in projected['expected_integral_per_element'].items():
                 self.assertAlmostEqual(projected['finite_grid_integral_per_element'][symbol], count, places=8)

@@ -184,6 +184,11 @@ def run(settings, *, resume=False):
         from wren.workflow import scf as scf_module
         from wren.quantum import checkpoints
         request['implementation_sha256'].update({p: file_hash(p) for p in (scf_module.__file__, checkpoints.__file__)})
+    if mode == 'periodic':
+        from . import periodic
+        from wren.quantum.transfer import _versions
+        request['implementation_sha256'][periodic.__file__] = file_hash(periodic.__file__)
+        request['versions'] = _versions()
     if mode == 'vertical-dscf':
         from . import charging
         from wren.quantum import geometry
@@ -290,52 +295,14 @@ def run(settings, *, resume=False):
                     result.update(scope='isolated_molecular_orbital_ensemble_no_inter_molecular_coupling',
                                   normalization='spin_states_per_molecule_per_eV')
                 else:
-                    if cfg.backend != 'cpu':
-                        raise ValueError('periodic GPU DOS is not validated; request pyscf explicitly')
-                    if settings.get('molecules'):
-                        raise ValueError('periodic DOS must use the full cell, not a molecule subset')
-                    if 'lattice_angstrom' not in data:
-                        raise ValueError('periodic DOS needs an MD manifest with a full lattice')
-                    atoms = []
-                    for r in records:
-                        center = np.asarray(r.get('transport_position_angstrom'), dtype=float)
-                        if center.shape != (3,):
-                            raise ValueError('periodic DOS needs original transport_position_angstrom; re-extract this frame')
-                        atoms.extend(zip(r['elements'], (np.asarray(r['coordinates_angstrom'])+center).tolist(), strict=True))
-                    if len(atoms) > settings['max-atoms']:
-                        raise ValueError('periodic cell exceeds max-atoms; choose an explicitly justified smaller cell or raise the limit')
-                    from pyscf.pbc import gto, scf, dft
-                    cell = gto.Cell(atom=atoms, a=data['lattice_angstrom'], unit='Angstrom',
-                                    basis=cfg.basis, pseudo=settings['pseudo'], precision=settings['precision'],
-                                    max_memory=cfg.max_memory_mb, verbose=4, output=str(here/'pbc.log'))
-                    mf = None
-                    try:
-                        cell.build()
-                        points, kw = kmesh(settings['kmesh'])
-                        ks = cell.get_abs_kpts(points)
-                        mf = (scf.KRHF(cell, ks) if cfg.xc.lower() == 'hf' else dft.KRKS(cell, ks, xc=cfg.xc)).density_fit(
-                            auxbasis=None if cfg.auxbasis == 'auto' else cfg.auxbasis)
-                        mf.conv_tol, mf.max_cycle = cfg.conv_tol, cfg.max_cycle
-                        if hasattr(mf, 'grids'):
-                            mf.grids.level = cfg.grid_level
-                        from pyscf import lib
-                        lib.num_threads(cfg.threads)
-                        mf.kernel()
-                        if not mf.converged:
-                            raise RuntimeError('periodic SCF did not converge')
-                        values = np.asarray(mf.mo_energy)*HARTREE2EV
-                        if settings.get('element-projections'):
-                            for c, s in zip(mf.mo_coeff, mf.get_ovlp(), strict=True):
-                                element_frames[-1].append(element_probabilities(cell, c, s, backend=settings['dos-backend']))
-                        spectra.append(values.ravel()); weights.append(np.repeat(2*kw, values.shape[1]))
-                        frame_info.update(orbital_energies_ev=values.tolist(), occupations=np.asarray(mf.mo_occ).tolist(),
-                                          kpoints_fractional=points.tolist(), kpoint_weights=kw.tolist(),
-                                          total_energy_hartree=float(mf.e_tot), scf_converged=True)
-                        result.update(scope='periodic_restricted_HF_or_Kohn_Sham_spectrum_not_quasiparticle',
-                                      normalization='spin_states_per_cell_per_eV')
-                    finally:
-                        if cell.stdout is not None:
-                            cell.stdout.close()
+                    periodic_frame, levels, band_weights, groups = periodic.calculate(data, records, settings, cfg, here/'pbc.log')
+                    frame_info.update(periodic_frame)
+                    spectra.append(levels)
+                    weights.append(band_weights)
+                    if groups:
+                        element_frames[-1].extend(groups)
+                    result.update(scope='periodic_restricted_HF_or_Kohn_Sham_spectrum_not_quasiparticle',
+                                  normalization='spin_states_per_cell_per_eV')
                 frame_records.append(frame_info)
                 print(f'wren: DOS {label} spectrum completed', flush=True)
         minimum = min(float(e.min()) for e in spectra)-8*settings['sigma']
