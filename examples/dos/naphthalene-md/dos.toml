@@ -1,0 +1,19 @@
+[dos]
+mode = "periodic"
+input = "frames.json"
+output = "../../../build/dos/naphthalene-md"
+qc-engine = "gpu-pyscf"
+dos-backend = "gpu"
+method = "pbe"
+pseudo = "gth-pbe"
+basis-set = "gth-szv"
+auxbasis = "auto"
+threads = 4
+grid-level = 2
+precision = 1e-7
+conv-tol = 1e-8
+kmesh = [2, 1, 1]
+element-projections = true
+sigma = 0.1
+periodic-reference = "cell-mean-local"
+block-size-frames = 2

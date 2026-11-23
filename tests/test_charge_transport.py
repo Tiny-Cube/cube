@@ -33,7 +33,7 @@ class CarrierControlTests(unittest.TestCase):
             p=Path(directory);path=p/'input'
             path.write_text('$charge-carrier\ndo=0\nkmc=0\n$end\n$kmc\ndo=0\ninput=missing.json\nbackend=unused\n$end\n')
             self.assertEqual(load_input(path).plan()['tasks'],[])
-            for settings in ({'samples':'4'},{'duration':'nan'},{'fit-start':'1'}, {'backend':'gpu'},{'seed':'-1'}):
+            for settings in ({'samples':'4'},{'duration':'nan'},{'fit-start':'1'}, {'backend':'unavailable'},{'seed':'-1'}):
                 with self.assertRaises(ValueError):normalize(settings,p)
 
 

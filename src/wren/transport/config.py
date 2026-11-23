@@ -25,7 +25,7 @@ def normalize(settings,base):
        'trace-trajectories':integer('trace-trajectories',3,0),'exact-max-sites':integer('exact-max-sites',512),
        'backend':s.get('backend','python').lower(),
        'carriers':[v.strip().lower() for v in s.get('carriers','hole,electron').split(',')]}
-    if n['backend']!='python':raise ValueError('material KMC currently supports backend=python; native generic KMC engines remain separately available')
+    if n['backend'] not in ('python','gpu'):raise ValueError('material KMC backend must be python or gpu')
     if n['fit-start']>=.9:raise ValueError('kmc fit-start must be >0 and <0.9')
     if not n['carriers'] or len(set(n['carriers']))!=len(n['carriers']) or not set(n['carriers'])<={'hole','electron'}:
         raise ValueError('kmc carriers must select hole and/or electron without duplicates')

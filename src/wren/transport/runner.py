@@ -38,6 +38,16 @@ def run_network(data,settings,directory,sources,*,resume=False):
              'network':data,'sources':sources,'numpy_version':np.__version__,'python_version':platform.python_version(),
              'implementation_sha256':{Path(m.__file__).name:sha256(m.__file__) for m in (network,simulation,assembly,core,rates)},
              'runner_sha256':sha256(__file__)}
+    sampler = 'wren.Engine + outgoing edges + independent SHA256-seeded random.Random streams'
+    backend = settings.get('backend', 'python')
+    if backend not in ('python', 'gpu'):
+        raise ValueError('material KMC backend must be python or gpu')
+    if backend == 'gpu':
+        from . import gpu
+        request['gpu_runtime'] = gpu.device_info()
+        request['implementation_sha256'].update({'gpu.py': sha256(gpu.__file__), 'walk.cu': sha256(gpu.KERNEL)})
+        simulate = gpu.simulate
+        sampler = 'CUDA direct SSA + CSR outgoing channels + independent SHA256-seeded Python MT19937 streams'
     key=hashlib.sha256(json.dumps(request,sort_keys=True,allow_nan=False).encode()).hexdigest()
     if output.exists():
         old=json.loads(output.read_text())
@@ -55,8 +65,7 @@ def run_network(data,settings,directory,sources,*,resume=False):
     record={'schema':'cube-charge-transport-1','status':'running','fingerprint':key,
             'scope':'static_snapshot_zero_field_independent_single_carrier_Marcus',
             'input':request,'carriers':{},'limitations':['no exclusion or carrier-carrier interactions',
-                'static snapshot, not a time-dependent trajectory network','no outer-sphere relaxation inferred',
-                'CPU Python application backend; GPU and native material ensembles are not yet connected']}
+                'static snapshot, not a time-dependent trajectory network','no outer-sphere relaxation inferred']}
     _write_result(output,record);artifacts=[];started=time.perf_counter()
     try:
         _write_result(directory/'network.json',data);artifacts.append('network.json')
@@ -87,7 +96,7 @@ def run_network(data,settings,directory,sources,*,resume=False):
                 'periodic_transport_rank':rank,'exact_reference':reference,'estimate':estimate,
                 'trajectories':settings['trajectories'],'duration_s':settings['duration'],
                 'total_events':sum(counts),'events_per_trajectory':counts,
-                'sampler':'wren.Engine + outgoing edges + independent SHA256-seeded random.Random streams',
+                'sampler':sampler,
                 'initial_distribution':'zero-field Boltzmann equilibrium over the connected network'}
             _write_result(output,record)
         record.update(status='completed' if all(v['status']=='completed' for v in record['carriers'].values()) else 'partial',

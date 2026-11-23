@@ -2373,6 +2373,12 @@ transport = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
+transport-cuda13 = [
+    { name = "cuda-toolkit", extra = ["cudart", "nvrtc"] },
+    { name = "cupy-cuda13x" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+]
 workflow = [
     { name = "geometric" },
     { name = "mdanalysis" },
@@ -2384,7 +2390,9 @@ workflow = [
 [package.metadata]
 requires-dist = [
     { name = "cuda-toolkit", extras = ["cublas", "cudart", "cufft", "curand", "cusolver", "cusparse", "nvrtc"], marker = "extra == 'quantum-cuda13'", specifier = "==13.5.0" },
+    { name = "cuda-toolkit", extras = ["cudart", "nvrtc"], marker = "extra == 'transport-cuda13'", specifier = "==13.5.0" },
     { name = "cupy-cuda13x", marker = "extra == 'quantum-cuda13'", specifier = "==13.6.0" },
+    { name = "cupy-cuda13x", marker = "extra == 'transport-cuda13'", specifier = "==13.6.0" },
     { name = "furo", marker = "extra == 'docs'", specifier = ">=2024.8" },
     { name = "geometric", marker = "extra == 'workflow'", specifier = ">=1.1,<2" },
     { name = "gpu4pyscf-cuda13x", marker = "extra == 'quantum-cuda13'", specifier = "==1.9.1" },
@@ -2396,6 +2404,7 @@ requires-dist = [
     { name = "numpy", marker = "extra == 'quantum'", specifier = ">=2.0,<2.6" },
     { name = "numpy", marker = "extra == 'quantum-cuda13'", specifier = ">=2.0,<2.6" },
     { name = "numpy", marker = "extra == 'transport'", specifier = ">=2.0,<2.6" },
+    { name = "numpy", marker = "extra == 'transport-cuda13'", specifier = ">=2.0,<2.6" },
     { name = "numpy", marker = "extra == 'workflow'", specifier = ">=2.0,<2.6" },
     { name = "pyscf", marker = "extra == 'dos'", specifier = ">=2.8,<3" },
     { name = "pyscf", marker = "extra == 'quantum'", specifier = ">=2.8,<3" },
@@ -2404,4 +2413,4 @@ requires-dist = [
     { name = "scipy", marker = "extra == 'dos'", specifier = ">=1.13" },
     { name = "sphinx", marker = "extra == 'docs'", specifier = ">=8,<10" },
 ]
-provides-extras = ["dos", "docs", "dynamics", "transport", "quantum", "workflow", "quantum-cuda13"]
+provides-extras = ["dos", "docs", "dynamics", "transport", "transport-cuda13", "quantum", "workflow", "quantum-cuda13"]

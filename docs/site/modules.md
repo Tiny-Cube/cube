@@ -19,8 +19,7 @@ $$k_{ij}=\frac{2\pi}{\hbar}|J_{ij}|^2\frac{1}{\sqrt{4\pi\lambda_{ij}k_BT}}
 uv run --extra transport wren examples/charge-carrier/input
 ```
 
-该示例是合成周期链，不能称作真实材料的迁移率。多载流子、有场漂移、材料 GPU KMC 和
-动态 Hamiltonian 仍待扩展。
+该示例使用合成周期链。在同一材料控制入口选择 `backend = gpu`，可以在 NVIDIA GPU 上并行推进独立单载流子轨迹。多载流子相互作用、有场漂移和动态 Hamiltonian 仍待扩展。[GPU KMC 用法](gpu-kmc.md)
 
 ## 通用两态重组能
 

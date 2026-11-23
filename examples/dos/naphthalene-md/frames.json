@@ -1,0 +1,54 @@
+{
+  "schema": "cube-frames-1",
+  "frame_count": 8,
+  "frames": [
+    {
+      "frame": 4,
+      "time_ps": 0.02,
+      "manifest": "frame0004.json",
+      "sha256": "f35993087d0b8fab4bbf0695fdf8ac815eff830d1932bd87d83ecff0ab1e6ed6"
+    },
+    {
+      "frame": 9,
+      "time_ps": 0.045,
+      "manifest": "frame0009.json",
+      "sha256": "04ebfb9f2d28a439dc23caa53eedddef9d4ec7a09e02e171c916e1379bed8a7d"
+    },
+    {
+      "frame": 14,
+      "time_ps": 0.07,
+      "manifest": "frame0014.json",
+      "sha256": "dddc507159eac09de2363fe40a6ae58a6c9d5a335447a07a22f7cd973d5e8296"
+    },
+    {
+      "frame": 19,
+      "time_ps": 0.095,
+      "manifest": "frame0019.json",
+      "sha256": "631129354c49f5d83fb08e340cbf19c177e642ceb9e500cbb32263a92398ff9e"
+    },
+    {
+      "frame": 24,
+      "time_ps": 0.12,
+      "manifest": "frame0024.json",
+      "sha256": "841700540ed140bdd0a7bceb151eb4d2f5c36e34103d6f0d5ab8316a88ae11b5"
+    },
+    {
+      "frame": 29,
+      "time_ps": 0.145,
+      "manifest": "frame0029.json",
+      "sha256": "925fd27e6c33d1187accff6c6bd179aeea43917f780e083a0df3b26ef35349e7"
+    },
+    {
+      "frame": 34,
+      "time_ps": 0.17,
+      "manifest": "frame0034.json",
+      "sha256": "3234e96ed26c4404e31362bd2d2b9c957306854d38c8a15caea7e35e94daa45f"
+    },
+    {
+      "frame": 39,
+      "time_ps": 0.195,
+      "manifest": "frame0039.json",
+      "sha256": "44c5469db3e9bc35ed9352f1e9ba2ca73e0842375c55b3836d53f3a62f2d9a49"
+    }
+  ]
+}

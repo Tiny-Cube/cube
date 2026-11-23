@@ -12,6 +12,7 @@ Wren 从分子动力学结构出发，组织电子结构计算、重组能、载
 
 installation
 workflow
+gpu-kmc
 dos-guide
 reorganization
 fragment-hopping
