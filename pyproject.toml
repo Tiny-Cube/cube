@@ -3,9 +3,9 @@ requires = ["uv_build>=0.9,<0.13"]
 build-backend = "uv_build"
 
 [project]
-name = "universal-kmc"
-version = "0.1.0"
-description = "Portable continuous-time kinetic Monte Carlo in Python, C++, Rust and Fortran"
+name = "wren"
+version = "0.2.0"
+description = "Molecular electronic structure, density of states, KMC and nonadiabatic dynamics"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
@@ -13,17 +13,26 @@ license-files = ["LICENSE"]
 dependencies = []
 
 [project.optional-dependencies]
+dos = ["numpy>=2.0,<2.6", "pyscf>=2.8,<3"]
+docs = ["sphinx>=8,<10", "myst-parser>=4,<6", "furo>=2024.8", "jieba>=0.42,<1"]
+dynamics = ["numpy>=2.0,<2.6"]
 transport = ["numpy>=2.0,<2.6"]
 quantum = ["numpy>=2.0,<2.6", "pyscf>=2.8,<3"]
 workflow = ["numpy>=2.0,<2.6", "MDAnalysis>=2.11,<3", "pyscf>=2.8,<3", "geometric>=1.1,<2"]
 quantum-cuda13 = ["numpy>=2.0,<2.6", "pyscf>=2.8,<3", "gpu4pyscf-cuda13x==1.9.1", "cupy-cuda13x==13.6.0", "cuda-toolkit[cublas,cudart,cufft,curand,cusolver,cusparse,nvrtc]==13.5.0"]
 
 [project.scripts]
-ukmc = "universal_kmc.cli:main"
-cube-transfer = "universal_kmc.quantum.cli:main"
-cube = "universal_kmc.workflow.cli:main"
+wren = "wren.workflow.cli:main"
+wren-dos = "wren.dos.cli:main"
+wren-transfer = "wren.quantum.cli:main"
+wren-kmc = "wren.cli:main"
+wren-surface-hopping = "wren.surface_hopping.cli:main"
+ukmc = "wren.cli:main"
+cube-transfer = "wren.quantum.cli:main"
+cube = "wren.workflow.cli:main"
+cube-surface-hopping = "wren.surface_hopping.cli:main"
 
 [tool.uv.build-backend]
-module-name = "universal_kmc"
-source-include = ["cube", "input", "benchmarks/**", "docs/**", "examples/**", "cpp/**", "fortran/**", "rust/Cargo.toml", "rust/Cargo.lock", "rust/src/**", "rust/tests/**", "rust/examples/**", "tests/**", "scripts/**", "CMakeLists.txt", "Makefile", "uv.lock"]
+module-name = "wren"
+source-include = ["wren", "cube", "input", "benchmarks/**", "docs/**", "examples/**", "cpp/**", "fortran/**", "rust/Cargo.toml", "rust/Cargo.lock", "rust/src/**", "rust/tests/**", "rust/examples/**", "tests/**", "scripts/**", "CMakeLists.txt", "Makefile", "uv.lock"]
 source-exclude = ["build/**", "dist/**", "rust/target/**", "**/__pycache__/**", "**/*.pyc"]

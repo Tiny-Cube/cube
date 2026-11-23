@@ -8,9 +8,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from universal_kmc.workflow.cli import main
-from universal_kmc.workflow.control import load_input
-from universal_kmc.workflow.runner import run_workflow
+from wren.workflow.cli import main
+from wren.workflow.control import load_input
+from wren.workflow.runner import run_workflow
 
 ENTRIES = '$charge-carrier\ndo={charge}\n$end\n$exciton\ndo={exciton}\n$end\n$surface-hopping\ndo=0\n$end\n'
 UNUSED = '''$get_dimers_monomers
@@ -56,7 +56,7 @@ class SubmoduleSwitchTests(unittest.TestCase):
     def test_main_and_standalone_request_share_one_execution(self):
         control=self.write('$one-mol\ndo=1\nxyz=h2.xyz\n$end\n',charge=1)
         self.assertEqual(control.plan()['module_owners']['one-mol'],['charge-carrier','standalone'])
-        with patch('universal_kmc.workflow.scf.run_single_point',return_value={'status':'completed'}) as single, redirect_stdout(io.StringIO()):
+        with patch('wren.workflow.scf.run_single_point',return_value={'status':'completed'}) as single, redirect_stdout(io.StringIO()):
             self.assertEqual(run_workflow(control),2) # mobility remains unimplemented
         self.assertEqual(single.call_count,1)
         report=json.loads((self.root/'cube-results/workflow.json').read_text())

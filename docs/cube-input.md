@@ -87,7 +87,7 @@ $end
 |---|---|---|
 | `$charge-carrier` | 提取、单体、dimer/转移积分、重组能、kmc | 本分支已支持静态零场单载流子 KMC 和迁移率诊断 |
 | `$exciton` | 结构提取 | 激发态参数、激子耦合与扩散求解尚未接通 |
-| `$surface-hopping` | 结构提取 | 本公共分支尚未接通；专用分支有模型 FSSH |
+| `$surface-hopping` | 结构提取、`surface-hopping-dynamics` | 本分支支持模型 FSSH；真实材料量化／输运尚未接通 |
 
 主模块内部可按模块名写 0/1 选择，例如 charge-carrier 内 `one-mol=0`、`kmc=1`。子模块 do=1 是另外的独立请求，不被主模块内的 0 取消。
 
@@ -125,6 +125,8 @@ $end
 - 载流子只准备参数时为 `prepared` / `kmc_not_requested`；请求 KMC 后按统计诊断报告 completed 或 partial，详见 [载流子流程](charge-carrier.md)。
 - 主模块的必需依赖被禁用且没有已有数据时，应补充输入或开启依赖；不静默跳过后宣称完整求解成功。
 - 激子／surface-hopping 的完整求解能力以相应分支为准；独立基础模块的执行不依赖这些完整求解器是否已实现。
+
+本分支的 `$surface-hopping-dynamics` 同样接受 `do`、`input = dynamics.toml`、可选 `output = directory`。主模块关闭而此模块 `do=1` 时只运行模型 FSSH；完整 surface-hopping 主模块请求缺少或禁用 dynamics 时会在科学计算前报错。详见 [模型使用说明](surface-hopping.md)。
 
 新增主模块在 `workflow/calculations.py` 注册自动组织的模块和 solver；基础子模块仍可被任何主模块复用或单独执行。分支与接口说明见 [开发说明](development-branches.md)。
 

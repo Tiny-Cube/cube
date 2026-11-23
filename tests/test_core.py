@@ -1,9 +1,9 @@
 import math
 import unittest
-from universal_kmc import Engine, Event, EventModel, Graph, Edge, PortableRNG, Reaction, ReactionNetwork
-from universal_kmc.core import MAX_COUNT
-from universal_kmc.io import loads
-from universal_kmc.rates import KB, arrhenius, marcus, miller_abrahams
+from wren import Engine, Event, EventModel, Graph, Edge, PortableRNG, Reaction, ReactionNetwork
+from wren.core import MAX_COUNT
+from wren.io import loads
+from wren.rates import KB, arrhenius, marcus, miller_abrahams
 
 
 class Fixed:

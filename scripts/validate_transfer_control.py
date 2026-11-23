@@ -12,9 +12,9 @@ import numpy as np
 from pyscf import gto
 from pyscf.scf import chkfile
 
-from universal_kmc.quantum.checkpoints import calculate_from_checkpoints
-from universal_kmc.quantum.control import load_control
-from universal_kmc.quantum.transfer import SCFConfig, calculate_transfer, _versions
+from wren.quantum.checkpoints import calculate_from_checkpoints
+from wren.quantum.control import load_control
+from wren.quantum.transfer import SCFConfig, calculate_transfer, _versions
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT/'examples/quantum'
@@ -115,7 +115,7 @@ def main():
     np.testing.assert_allclose(couplings(result), reference_values, atol=2e-5, rtol=2e-4)
     report['scf_kernel_blocked_during_postprocessing'] = True
     if args.gpu:
-        from universal_kmc.quantum import checkpoints
+        from wren.quantum import checkpoints
         import cupy as cp
         import gpu4pyscf.scf.hf as gpu_hf
         original_evaluate = checkpoints._evaluate_transfer

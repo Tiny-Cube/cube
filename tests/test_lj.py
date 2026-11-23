@@ -16,14 +16,14 @@ except ImportError:
 @unittest.skipIf(np is None or pyscf is None, 'quantum dependencies required')
 class LennardJonesTests(unittest.TestCase):
     def model(self):
-        from universal_kmc.workflow.lj import LennardJones
+        from wren.workflow.lj import LennardJones
         return LennardJones((0, 1), (1, 0), ((.002, .001), (.001, .003)),
                             ((2e-6, 1e-6), (1e-6, 4e-6)), {})
 
     def test_lj_units_finite_difference_and_translation(self):
         from scipy.constants import Avogadro, physical_constants
         from pyscf.data.nist import BOHR
-        from universal_kmc.workflow.lj import LennardJones
+        from wren.workflow.lj import LennardJones
         qm = np.array([[0., 0, 0], [.8, .2, 0]])
         mm = np.array([[3.5, .1, .3], [-3., .5, .1]])
         model = self.model()
@@ -52,7 +52,7 @@ class LennardJonesTests(unittest.TestCase):
             model.evaluate(qm, qm)
 
     def test_resolved_tpr_pair_table_and_atom_mapping_validation(self):
-        from universal_kmc.workflow.lj import parse_gromacs_dumps
+        from wren.workflow.lj import parse_gromacs_dumps
         parameter = '''atnr=2
 functype[0]=LJ_SR, c6=1e-3, c12=1e-6
 functype[1]=LJ_SR, c6=2e-3, c12=2e-6
@@ -77,11 +77,11 @@ atom[ 1]={type= 1, typeB= 1, ptype= Atom, q=-0.1, qB=-0.1, atomnumber=1}
 
     def test_optimizer_total_gradient_and_single_point_energy_include_lj(self):
         from pyscf.data.nist import BOHR
-        from universal_kmc.workflow.control import load_input, scf_config
-        from universal_kmc.workflow.embedding import read_charges
-        from universal_kmc.workflow.lj import LennardJones, geometry_key, sites_key, read_lj_file
-        from universal_kmc.workflow.reorganization import _optimize
-        from universal_kmc.workflow.scf import run_single_point
+        from wren.workflow.control import load_input, scf_config
+        from wren.workflow.embedding import read_charges
+        from wren.workflow.lj import LennardJones, geometry_key, sites_key, read_lj_file
+        from wren.workflow.reorganization import _optimize
+        from wren.workflow.scf import run_single_point
         atoms = [('H', (-.4, 0., 0.)), ('F', (.5, 0., 0.))]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

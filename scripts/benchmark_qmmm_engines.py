@@ -18,12 +18,12 @@ import time
 
 import numpy as np
 
-from universal_kmc.quantum.config import SCFConfig
-from universal_kmc.quantum.geometry import read_xyz
-from universal_kmc.workflow.dimers import file_hash, xyz_text
-from universal_kmc.workflow.embedding import read_charges, snapshot
-from universal_kmc.workflow.lj import read_lj_file
-from universal_kmc.workflow.reorganization import four_point_terms
+from wren.quantum.config import SCFConfig
+from wren.quantum.geometry import read_xyz
+from wren.workflow.dimers import file_hash, xyz_text
+from wren.workflow.embedding import read_charges, snapshot
+from wren.workflow.lj import read_lj_file
+from wren.workflow.reorganization import four_point_terms
 
 
 def write_json(path, value):
@@ -84,7 +84,7 @@ class Calculator:
         self.calls = []
         self.scanner = None
         if args.engine != 'g16':
-            from universal_kmc.workflow.scf import make_mean_field
+            from wren.workflow.scf import make_mean_field
             config = SCFConfig(backend=args.engine, basis=args.basis, xc=args.method,
                                auxbasis='def2-universal-jkfit',threads=args.threads,
                                conv_tol=args.conv_tol,max_cycle=100,max_memory_mb=args.memory_mb)
@@ -102,8 +102,8 @@ class Calculator:
         if self.args.engine == 'g16':
             result = self._gaussian(atoms,gradient)
         else:
-            from universal_kmc.quantum.coupling import host
-            from universal_kmc.workflow.scf import scf_record
+            from wren.quantum.coupling import host
+            from wren.workflow.scf import scf_record
             mol=gto.M(atom=atoms,basis=self.args.basis,charge=self.charge,spin=int(self.charge!=0),
                       unit='Angstrom',cart=False,verbose=0)
             if gradient:

@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from universal_kmc.workflow.reorganization_csv import COLUMNS, write_reorganization_csv
+from wren.workflow.reorganization_csv import COLUMNS, write_reorganization_csv
 
 
 def completed_result(shift=0., carriers=('hole', 'electron')):
@@ -85,9 +85,9 @@ except ImportError:
 @unittest.skipIf(numpy is None, 'workflow numpy dependency required')
 class ReorganizationCsvWorkflowTests(unittest.TestCase):
     def test_multiframe_selected_molecules_and_cached_results_export(self):
-        from universal_kmc.workflow.control import load_input
-        from universal_kmc.workflow.dimers import file_hash
-        from universal_kmc.workflow.runner import run_workflow
+        from wren.workflow.control import load_input
+        from wren.workflow.dimers import file_hash
+        from wren.workflow.runner import run_workflow
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             entries = []
@@ -114,7 +114,7 @@ class ReorganizationCsvWorkflowTests(unittest.TestCase):
                 result['reused'] = resume
                 return result
 
-            with patch('universal_kmc.workflow.reorganization.calculate_reorganization',
+            with patch('wren.workflow.reorganization.calculate_reorganization',
                        side_effect=calculate) as mocked, redirect_stdout(io.StringIO()):
                 self.assertEqual(run_workflow(load_input(control)), 0)
                 self.assertEqual(mocked.call_count, 4)

@@ -10,9 +10,9 @@ import numpy as np
 from pyscf.data.nist import HARTREE2EV
 from pyscf.scf import chkfile
 
-from universal_kmc.workflow.control import load_input
-from universal_kmc.workflow.dimers import file_hash
-from universal_kmc.workflow.embedding import read_charges
+from wren.workflow.control import load_input
+from wren.workflow.dimers import file_hash
+from wren.workflow.embedding import read_charges
 from validate_cube_workflow import check_gradients, run
 
 
@@ -32,8 +32,8 @@ def main():
     pc.write_text(charges)
     lj_controls = ''
     if args.lj:
-        from universal_kmc.quantum.geometry import read_xyz
-        from universal_kmc.workflow.lj import LennardJones, geometry_key, sites_key
+        from wren.quantum.geometry import read_xyz
+        from wren.workflow.lj import LennardJones, geometry_key, sites_key
         environment = read_charges(pc)
         epsilon, sigma = .1, .24  # Synthetic numerical test parameters: kJ/mol, nm.
         model = LennardJones((0, 0), (0, 0, 0, 0), ((4*epsilon*sigma**6,),), ((4*epsilon*sigma**12,),),
@@ -67,8 +67,8 @@ $end
         assert record['status'] == 'completed' and record['environment'] == 'qmmm'
         env = read_charges(pc)
         if args.lj:
-            from universal_kmc.quantum.geometry import read_xyz
-            from universal_kmc.workflow.lj import read_lj_file
+            from wren.quantum.geometry import read_xyz
+            from wren.workflow.lj import read_lj_file
             env = replace(env, vdw=read_lj_file(output/'lj.json', read_xyz(output/'F2.xyz'), env))
         snapshot = json.loads((root/'mm-environment.json').read_text())
         assert snapshot['fingerprint'] == env.fingerprint

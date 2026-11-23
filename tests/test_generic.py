@@ -3,7 +3,7 @@ import math
 from pathlib import Path
 import sys
 import unittest
-from universal_kmc import Engine
+from wren import Engine
 
 spec = importlib.util.spec_from_file_location('generic_models', Path(__file__).resolve().parents[1]/'examples/generic.py')
 generic = importlib.util.module_from_spec(spec)

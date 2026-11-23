@@ -1,7 +1,7 @@
 """Queueing and Ising spin dynamics: neither needs the graph/reaction adapters."""
 from dataclasses import dataclass, field
 import math
-from universal_kmc import Engine, Event, EventModel
+from wren import Engine, Event, EventModel
 
 
 @dataclass

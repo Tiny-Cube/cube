@@ -1,8 +1,10 @@
-# cube — 有机分子载流子输运计算软件
+![Wren](docs/site/_static/wren.svg)
 
-cube 面向有机分子晶体、非晶和聚合物的载流子输运研究。当前可用功能包括四语言通用 KMC、速率函数、真实体系验证，以及可选的 CPU/GPU 转移积分、vacuum 与冻结 MM 静电嵌入四点法重组能；完整材料输运工作流仍在建设。Python 分发名仍为 `universal-kmc`，KMC 命令为 `ukmc`，独立量化命令为 `cube-transfer`。
+# wren — 有机分子载流子输运计算软件
 
-[软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)
+wren 面向有机分子晶体、非晶和聚合物的载流子输运研究。当前可用功能包括四语言通用 KMC、速率函数、真实体系验证，以及可选的 CPU/GPU 转移积分、vacuum 与冻结 MM 静电嵌入四点法重组能；完整材料输运工作流仍在建设。Python 包与主命令为 `wren`；独立命令为 `wren-kmc`、`wren-transfer` 和 `wren-surface-hopping`。旧命令作为兼容别名保留，历史 cube 科学数据 schema 不做无依据的转换。
+
+[网页手册源码](docs/site/index.md) · [DOS 理论](docs/site/dos-theory.md) · [DOS 使用](docs/site/dos-guide.md) · [软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)
 
 ## cube input 统一入口
 
@@ -16,7 +18,7 @@ uv sync --locked --extra workflow
 
 [控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。`--resume` 复用选定且已实现阶段的一致成功结果；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。
 
-`input` 最前面的 `$charge-carrier/$exciton/$surface-hopping` 是主模块，负责组织完整计算。下层子模块也有 `do`：`1` 独立请求执行，即使所有主模块关闭也有效；`0` 禁用该子模块；省略时由主模块自动调度。同一模块的多个请求只执行一次。本载流子分支已接通静态零场单粒子 Marcus KMC、扩散/迁移率张量和统计诊断；激子与 surface-hopping 在各自分支继续开发。详见[入口路由](docs/cube-input.md#顶层计算入口与模块路由)与[分支开发说明](docs/development-branches.md)。
+`input` 最前面的 `$charge-carrier/$exciton/$surface-hopping` 是主模块，负责组织完整计算。下层子模块也有 `do`：`1` 独立请求执行，即使所有主模块关闭也有效；`0` 禁用该子模块；省略时由主模块自动调度。同一模块的多个请求只执行一次。本载流子分支已接通静态零场单粒子 Marcus KMC、扩散/迁移率张量和统计诊断；已合并模型 surface hopping（Tully/LVC FSSH）；真实材料激子流程和量化驱动的表面跳跃仍在开发。详见[入口路由](docs/cube-input.md#顶层计算入口与模块路由)与[分支开发说明](docs/development-branches.md)。
 
 独立单体示例（所有主模块均为 0，只有 one-mol 为 1）：`uv run --extra quantum cube examples/modules/input`。无需为调用基础功能开启载流子、激子或表面跳跃计算。
 

@@ -8,9 +8,9 @@ import sys
 import time
 
 import numpy as np
-from universal_kmc.quantum.geometry import read_xyz
-from universal_kmc.workflow.dimers import fingerprint
-from universal_kmc.workflow.control import load_input, scf_config
+from wren.quantum.geometry import read_xyz
+from wren.workflow.dimers import fingerprint
+from wren.workflow.control import load_input, scf_config
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -18,8 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 def check_gradients(settings, directory, *, embedding=None):
     """Check neutral/cation/anion forces against actual central energy differences."""
     from pyscf.data.nist import BOHR
-    from universal_kmc.quantum.coupling import host
-    from universal_kmc.workflow.scf import make_mean_field, scf_record
+    from wren.quantum.coupling import host
+    from wren.workflow.scf import make_mean_field, scf_record
     directory.mkdir(parents=True,exist_ok=True)
     config=scf_config(settings)
     results={}
@@ -49,7 +49,7 @@ def check_gradients(settings, directory, *, embedding=None):
 
 
 def run(control, output, *, resume=False, expected=0):
-    args = [sys.executable,'-m','universal_kmc.workflow',str(control)]
+    args = [sys.executable,'-m','wren.workflow',str(control)]
     if resume:
         args.append('--resume')
     start = time.perf_counter()

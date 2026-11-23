@@ -7,12 +7,12 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from universal_kmc import Engine
-from universal_kmc.rates import marcus, arrhenius, miller_abrahams
+from wren import Engine
+from wren.rates import marcus, arrhenius, miller_abrahams
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = {
-    'python': [sys.executable, '-m', 'universal_kmc'],
+    'python': [sys.executable, '-m', 'wren'],
     'cpp': [str(ROOT/'build/ukmc-cpp')],
     'rust': [str(ROOT/'rust/target/release/ukmc-rust')],
     'fortran': [str(ROOT/'build/ukmc-fortran')],

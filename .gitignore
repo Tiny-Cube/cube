@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 build/
+examples/dos/cube-results/
 dist/
 rust/target/
 *.mod
@@ -10,5 +11,6 @@ examples/quantum/results/
 examples/quantum/qmmm/results/
 /mol/
 /cube-results/
+examples/surface-hopping/cube-results/
 examples/modules/cube-results/
 examples/charge-carrier/cube-results/

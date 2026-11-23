@@ -1,0 +1,9 @@
+[dos]
+mode = "monomer-orbitals"
+xyz = "h2.xyz"
+qc-engine = "pyscf"
+method = "hf"
+basis-set = "sto-3g"
+threads = 1
+sigma = 0.10
+output = "../../build/dos/h2-toml"

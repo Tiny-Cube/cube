@@ -1,0 +1,12 @@
+[dos]
+mode = "periodic"
+input = "h2-cell.json"
+method = "hf"
+basis-set = "gth-szv"
+pseudo = "gth-pade"
+threads = 1
+kmesh = [2,1,1]
+precision = 1e-6
+conv-tol = 1e-8
+sigma = 0.1
+output = "../../build/dos/h2-periodic"

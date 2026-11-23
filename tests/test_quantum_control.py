@@ -9,8 +9,8 @@ import sys
 import tempfile
 import unittest
 
-from universal_kmc.quantum.cli import main
-from universal_kmc.quantum.control import load_control, validate_output
+from wren.quantum.cli import main
+from wren.quantum.control import load_control, validate_output
 
 
 CONTROL = '''schema_version = 1
@@ -50,7 +50,7 @@ class TransferControlTests(unittest.TestCase):
         self.assertEqual(job.orbital_indices, {'hole': ([6, 7], [6, 7])})
         self.assertFalse(job.assume_converged)
         code = '''import sys
-from universal_kmc.quantum.cli import main
+from wren.quantum.cli import main
 assert main([sys.argv[1], '--check']) == 0
 assert 'numpy' not in sys.modules and 'pyscf' not in sys.modules and 'cupy' not in sys.modules
 '''

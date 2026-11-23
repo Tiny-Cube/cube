@@ -6,11 +6,11 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from universal_kmc.workflow.control import load_input
+from wren.workflow.control import load_input
 
 try:
     import numpy as np
-    from universal_kmc.workflow.embedding import FrozenMM, cluster_from_frame, read_charges
+    from wren.workflow.embedding import FrozenMM, cluster_from_frame, read_charges
 except ImportError:
     np = None
 
@@ -97,7 +97,7 @@ class FrozenMMGeometryTests(unittest.TestCase):
 
     @unittest.skipIf(importlib.util.find_spec('MDAnalysis') is None, 'MDAnalysis dependency required')
     def test_gromacs_source_hash_change_is_rejected_before_loading(self):
-        from universal_kmc.workflow.embedding import load_gromacs_environment
+        from wren.workflow.embedding import load_gromacs_environment
         with tempfile.TemporaryDirectory() as directory:
             p = Path(directory)/'a.tpr'
             p.write_bytes(b'changed')
@@ -126,8 +126,8 @@ $end
     def test_energy_embedding_gradients_frozen_sites_and_translation_invariance(self):
         from pyscf.data.nist import BOHR
         from pyscf.qmmm.itrf import QMMMGrad
-        from universal_kmc.workflow.control import scf_config
-        from universal_kmc.workflow.scf import make_mean_field, scf_record
+        from wren.workflow.control import scf_config
+        from wren.workflow.scf import make_mean_field, scf_record
         with tempfile.TemporaryDirectory() as directory:
             settings = self.settings(directory)
             config = scf_config(settings)
@@ -161,12 +161,12 @@ $end
                         translated.assert_attached(translated_mf)
 
     def test_optimizer_initialization_failure_is_recorded(self):
-        from universal_kmc.workflow.control import scf_config
-        from universal_kmc.workflow.reorganization import _optimize
+        from wren.workflow.control import scf_config
+        from wren.workflow.reorganization import _optimize
         with tempfile.TemporaryDirectory() as directory:
             settings = self.settings(directory)
             root = Path(directory)
-            with patch('universal_kmc.workflow.reorganization.make_mean_field', side_effect=RuntimeError('initialization failed')):
+            with patch('wren.workflow.reorganization.make_mean_field', side_effect=RuntimeError('initialization failed')):
                 with self.assertRaisesRegex(RuntimeError, 'initialization failed'):
                     _optimize([('H', (-.4, 0., 0.)), ('F', (.5, 0., 0.))], scf_config(settings), 0, root, 10,
                               embedding=read_charges(settings['mm-charges']))
@@ -174,9 +174,9 @@ $end
 
     def test_embedded_checkpoint_isolated_from_vacuum_and_mm_edits_invalidate_resume(self):
         from pyscf.scf import chkfile
-        from universal_kmc.workflow.scf import run_single_point, translated_checkpoint
-        from universal_kmc.quantum.checkpoints import _load_checkpoint
-        from universal_kmc.workflow.reorganization import calculate_reorganization
+        from wren.workflow.scf import run_single_point, translated_checkpoint
+        from wren.quantum.checkpoints import _load_checkpoint
+        from wren.workflow.reorganization import calculate_reorganization
         with tempfile.TemporaryDirectory() as directory:
             settings = self.settings(directory)
             root = Path(directory)
@@ -196,7 +196,7 @@ $end
             changed = FrozenMM(env.coordinates_angstrom, [.3, -.1], {})
             with self.assertRaisesRegex(ValueError, 'identical settings'):
                 run_single_point(atoms, settings, root/'point', embedding=changed, resume=True)
-            with patch('universal_kmc.workflow.reorganization._optimize', side_effect=RuntimeError('forced failed optimization')):
+            with patch('wren.workflow.reorganization._optimize', side_effect=RuntimeError('forced failed optimization')):
                 with self.assertRaises(RuntimeError):
                     calculate_reorganization(atoms, settings, root/'reorg', embedding=env)
             snapshot = json.loads((root/'reorg/mm-environment.json').read_text())

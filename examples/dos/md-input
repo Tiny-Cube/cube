@@ -1,0 +1,13 @@
+$dos
+do = 1
+mode = monomer-orbitals
+# Run get_dimers_monomers first; replace this with the generated manifest/frames index.
+input = ../../mol/frame2000/manifest.json
+molecules = 1
+qc-engine = pyscf
+method = b3lyp
+basis-set = 6-31G(d,p)
+threads = 4
+sigma = 0.05
+output = ../../build/dos/md-monomers
+$end

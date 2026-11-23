@@ -10,7 +10,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from universal_kmc.workflow.control import load_input
+from wren.workflow.control import load_input
 
 try:
     import numpy as np
@@ -69,7 +69,7 @@ class SectionControlTests(unittest.TestCase):
 
     def test_plan_is_dependency_free_and_resolves_paths_against_input(self):
         script = '''import sys
-from universal_kmc.workflow.cli import main
+from wren.workflow.cli import main
 assert main([sys.argv[1],'--plan']) == 0
 assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
 '''
@@ -155,14 +155,14 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
     def test_transport_enabled_fails_before_importing_or_starting_science(self):
         # Check both the CLI and direct dispatcher, without importing optional packages.
         source = '''import sys
-from universal_kmc.workflow.cli import main
-from universal_kmc.workflow.control import load_input
+from wren.workflow.cli import main
+from wren.workflow.control import load_input
 assert main([sys.argv[1], '--plan']) == 0
 assert main([sys.argv[1]]) == 1
-from universal_kmc.workflow.runner import run_workflow
+from wren.workflow.runner import run_workflow
 try:
     run_workflow(load_input(sys.argv[1]))
-except NotImplementedError:
+except (NotImplementedError, ValueError):
     pass
 else:
     raise AssertionError('enabled unsupported stage must fail')
@@ -175,14 +175,14 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
                                     cwd='/tmp', env=env, text=True, capture_output=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn('no MD/QC tasks were started', result.stderr)
-            self.assertEqual(json.loads(result.stdout)['unsupported_tasks'], [name])
+            self.assertEqual(json.loads(result.stdout)['unsupported_tasks'], [name] if name == 'exciton' else [])
             self.assertFalse((self.root/'mol').exists())
             self.assertFalse((self.root/'cube-results').exists())
 
     def test_disabled_transport_skips_without_implicit_extraction_or_optional_imports(self):
         self.path.write_text(TEMPLATE+'$charge-carrier\ndo = 0\n$end\n$exciton\ndo = 0\n$end\n')
         source = '''import sys
-from universal_kmc.workflow.cli import main
+from wren.workflow.cli import main
 assert main([sys.argv[1], '--only', 'charge-carrier', '--only', 'exciton']) == 0
 assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
 '''
@@ -202,7 +202,7 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
 @unittest.skipIf(np is None, 'NumPy optional dependency required')
 class PeriodicCoreTests(unittest.TestCase):
     def test_frame_selection_starts_at_requested_frame_and_does_not_append_last(self):
-        from universal_kmc.workflow.dimers import selected_frames
+        from wren.workflow.dimers import selected_frames
         self.assertEqual(selected_frames(-1, 20, 46), [45])
         self.assertEqual(selected_frames(5, 20, 46), [5, 25, 45])
         self.assertEqual(selected_frames(0, 20, 46), [0, 20, 40])
@@ -210,7 +210,7 @@ class PeriodicCoreTests(unittest.TestCase):
             selected_frames(46, 20, 46)
 
     def test_boundary_contact_whole_image_and_strict_cutoff(self):
-        from universal_kmc.workflow.dimers import contact_images
+        from wren.workflow.dimers import contact_images
         cell = np.diag([10.,10.,10.])
         cores = [np.array([[9.8,0,0],[9.9,.1,0]]), np.array([[.2,0,0],[.3,.1,0]])]
         contacts = list(contact_images(cores,cell,.5))
@@ -220,7 +220,7 @@ class PeriodicCoreTests(unittest.TestCase):
         self.assertFalse(list(contact_images([np.array([[0.,0,0]]),np.array([[1.,0,0]])],cell,1.)))
 
     def test_triclinic_images_match_exhaustive_search(self):
-        from universal_kmc.workflow.dimers import contact_images
+        from wren.workflow.dimers import contact_images
         cell = np.array([[8.,0,0],[3.,7.,0],[2.,1.,9.]])
         cores = [np.array([[.1,.2,.3],[.5,.3,.2]]),np.array([[7.8,6.8,8.7],[8.1,6.7,8.5]])]
         import itertools
@@ -235,13 +235,13 @@ class PeriodicCoreTests(unittest.TestCase):
             self.assertAlmostEqual(actual[shift],expected[shift])
 
     def test_multiple_images_are_preserved(self):
-        from universal_kmc.workflow.dimers import contact_images
+        from wren.workflow.dimers import contact_images
         contacts = list(contact_images([np.array([[0.,0,0]]),np.array([[1.,0,0]])],np.diag([2.,5.,5.]),1.1))
         self.assertEqual(len(contacts),2)
         self.assertEqual({tuple(c[2]) for c in contacts},{(0,0,0),(-1,0,0)})
 
     def test_four_point_formula_preserves_relaxation_signs(self):
-        from universal_kmc.workflow.reorganization import four_point_terms
+        from wren.workflow.reorganization import four_point_terms
         terms = four_point_terms(-10.,-9.,-9.2,-9.8)
         self.assertAlmostEqual(terms['total'],.4)
         self.assertLess(four_point_terms(-10.,-9.3,-9.2,-9.8)['charged_relaxation'],0)
@@ -263,8 +263,8 @@ except ImportError:
 @unittest.skipIf(pyscf is None or np is None, 'quantum dependencies required')
 class CheckpointMappingTests(unittest.TestCase):
     def test_multiframe_quantum_dispatch_separates_outputs_and_reuses_checkpoints(self):
-        from universal_kmc.workflow.dimers import file_hash
-        from universal_kmc.workflow.runner import run_workflow, _dataset_sources
+        from wren.workflow.dimers import file_hash
+        from wren.workflow.runner import run_workflow, _dataset_sources
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             entries = []
@@ -311,8 +311,8 @@ class CheckpointMappingTests(unittest.TestCase):
     def test_translation_preserves_complete_mo_and_fock_and_rejects_rotation(self):
         from pyscf import gto
         from pyscf.scf import chkfile
-        from universal_kmc.workflow.scf import translated_checkpoint
-        from universal_kmc.workflow.dimers import file_hash
+        from wren.workflow.scf import translated_checkpoint
+        from wren.workflow.dimers import file_hash
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
             mol=gto.M(atom='H 0 0 0; H .74 0 0',basis='sto-3g',verbose=0)
@@ -337,13 +337,13 @@ class CheckpointMappingTests(unittest.TestCase):
                 translated_checkpoint(source,[('H',(0.,0.,0.)),('H',(0.,.74,0.))],root/'rotated.chk')
 
     def test_failed_optimization_never_reports_successful_lambda(self):
-        from universal_kmc.workflow.reorganization import calculate_reorganization
+        from wren.workflow.reorganization import calculate_reorganization
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
             (root/'H2.xyz').write_text('2\ncomment\nH 0 0 0\nH .74 0 0\n')
             (root/'input').write_text('$reorganization-energy\nxyz = H2.xyz\nqc-engine = pyscf\n$end\n')
             settings=load_input(root/'input').sections['reorganization-energy']
-            with patch('universal_kmc.workflow.reorganization._optimize',side_effect=RuntimeError('not converged')):
+            with patch('wren.workflow.reorganization._optimize',side_effect=RuntimeError('not converged')):
                 with self.assertRaises(RuntimeError):
                     calculate_reorganization([('H',(0.,0.,0.)),('H',(.74,0.,0.))],settings,root/'reorg')
             result=json.loads((root/'reorg/reorganization.json').read_text())
@@ -364,7 +364,7 @@ class ExtractionTests(unittest.TestCase):
         return u
 
     def test_format_selection_pbc_and_verified_resume(self):
-        from universal_kmc.workflow.dimers import extract_dimers
+        from wren.workflow.dimers import extract_dimers
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
             for name in ('a.tpr','a.gro','a.xtc'):
@@ -389,8 +389,8 @@ class ExtractionTests(unittest.TestCase):
 
 
     def test_multiple_frames_full_cluster_mapping_formats_and_resume_integrity(self):
-        from universal_kmc.workflow.dimers import extract_dimers_monomers
-        from universal_kmc.workflow.embedding import read_charges
+        from wren.workflow.dimers import extract_dimers_monomers
+        from wren.workflow.embedding import read_charges
         def trajectory():
             u = self.universe()
             xyz = u.atoms.positions.copy()

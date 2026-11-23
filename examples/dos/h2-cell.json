@@ -1,0 +1,49 @@
+{
+  "schema": "cube-dimers-1",
+  "coordinate_unit": "Angstrom",
+  "frame": 0,
+  "lattice_angstrom": [
+    [
+      6.0,
+      0,
+      0
+    ],
+    [
+      0,
+      6.0,
+      0
+    ],
+    [
+      0,
+      0,
+      6.0
+    ]
+  ],
+  "monomers": [
+    {
+      "id": "1",
+      "elements": [
+        "H",
+        "H"
+      ],
+      "coordinates_angstrom": [
+        [
+          -0.37,
+          0,
+          0
+        ],
+        [
+          0.37,
+          0,
+          0
+        ]
+      ],
+      "transport_position_angstrom": [
+        3.0,
+        3.0,
+        3.0
+      ]
+    }
+  ],
+  "dimers": []
+}

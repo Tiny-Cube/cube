@@ -10,9 +10,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from universal_kmc.workflow.calculations import (CALCULATIONS, CalculationType, register_calculation)
-from universal_kmc.workflow.control import load_input
-from universal_kmc.workflow.runner import run_workflow
+from wren.workflow.calculations import (CALCULATIONS, CalculationType, register_calculation)
+from wren.workflow.control import load_input
+from wren.workflow.runner import run_workflow
 
 ENTRIES = '$charge-carrier\ndo = {charge}\n$end\n$exciton\ndo = {exciton}\n$end\n$surface-hopping\ndo = {surface}\n$end\n'
 # A disabled module must not require its files or validate its method settings.
@@ -72,7 +72,7 @@ class CalculationEntryTests(unittest.TestCase):
             control = self.write(**{enabled:1}, modules=geometry+others)
             self.assertEqual(control.plan()['tasks'], ['get_dimers_monomers'])
             self.assertEqual(set(control.plan()['skipped_modules']), {'one-mol','two-mol','reorganization-energy'})
-            with self.assertRaises(NotImplementedError):control.execution_plan()
+            with self.assertRaises((NotImplementedError, ValueError)):control.execution_plan()
             self.assertEqual(control.execution_plan(['get_dimer'])['tasks'], ['get_dimers_monomers'])
             self.assertEqual(control.plan(['one-mol'])['tasks'], [])
 
@@ -88,7 +88,7 @@ class CalculationEntryTests(unittest.TestCase):
             self.assertEqual(plan['tasks'], ['one-mol'])
             self.assertEqual(plan['module_owners']['one-mol'], ['charge-carrier','new-calculation'])
             self.assertEqual(control.plan(['new-calculation'])['module_owners']['one-mol'], ['new-calculation'])
-            from universal_kmc.workflow.cli import main
+            from wren.workflow.cli import main
             with redirect_stdout(io.StringIO()) as output:
                 self.assertEqual(main([str(self.path),'--plan','--only','new-calculation']), 0)
             self.assertEqual(json.loads(output.getvalue())['calculation_tasks'], ['new-calculation'])

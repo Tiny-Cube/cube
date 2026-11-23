@@ -34,7 +34,7 @@ def build():
         run(['gfortran','-std=f2008','-O3',f'-I{BUILD}/mod',source,*objects,'-o',BUILD/name])
     run(['cargo','build','--release','--offline','--manifest-path','rust/Cargo.toml'])
     run(['rustc','--edition=2021','-C','opt-level=3','benchmarks/kernel.rs',
-         '--extern',f'universal_kmc={ROOT}/rust/target/release/libuniversal_kmc.rlib',
+         '--extern',f'wren={ROOT}/rust/target/release/libwren.rlib',
          '-L',f'dependency={ROOT}/rust/target/release/deps','-o',BUILD/'kernel-rust'])
 
 def main():
@@ -52,7 +52,7 @@ def main():
     env=os.environ.copy(); env['PYTHONPATH']=str(ROOT/'src')
     kernels={'python':[args.python,'benchmarks/kernel.py'],
              **{lang:[str(BUILD/f'kernel-{lang}')] for lang in LANGS[1:]}}
-    clis={'python':[args.python,'-m','universal_kmc'],
+    clis={'python':[args.python,'-m','wren'],
           'cpp':[str(BUILD/'cli-cpp')], 'rust':[str(ROOT/'rust/target/release/ukmc-rust')],
           'fortran':[str(BUILD/'cli-fortran')]}
     workloads=[('two_state','examples/two_state.kmc',200000),

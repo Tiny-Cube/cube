@@ -12,9 +12,9 @@ import argparse
 from pathlib import Path
 import sys
 
-from universal_kmc.quantum.config import SCFConfig
-from universal_kmc.quantum.control import validate_output
-from universal_kmc.quantum.geometry import read_xyz
+from wren.quantum.config import SCFConfig
+from wren.quantum.control import validate_output
+from wren.quantum.geometry import read_xyz
 
 
 def main(argv=None):
@@ -42,8 +42,8 @@ def main(argv=None):
         destinations = [[validate_output((args.output_dir.expanduser()/f'{path.stem}{suffix}').resolve(), sources)
                          for suffix in ('.chk', '.log', '.status.json')] for path in sources]
         from pyscf import gto, lib
-        from universal_kmc.quantum.checkpoints import save_transfer_checkpoint
-        from universal_kmc.quantum.cli import _write_result
+        from wren.quantum.checkpoints import save_transfer_checkpoint
+        from wren.quantum.cli import _write_result
         from dataclasses import asdict
         lib.num_threads(config.threads)
         for source, geometry, (checkpoint, log, status) in zip(sources, atoms, destinations):

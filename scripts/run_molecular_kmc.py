@@ -21,8 +21,8 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
 import numpy as np
-from universal_kmc import Edge, Engine, Graph, marcus
-from universal_kmc.rates import KB, HBAR
+from wren import Edge, Engine, Graph, marcus
+from wren.rates import KB, HBAR
 
 MASSES = {'H': 1.008, 'C': 12.011, 'N': 14.007, 'O': 15.999, 'S': 32.06}
 
@@ -209,7 +209,7 @@ def save_model(path,n,edges):
 def cross_language(output,carrier,n,edges):
     model_path=output/f'{carrier}.kmc'
     save_model(model_path,n,edges)
-    commands={'python':[sys.executable,'-m','universal_kmc'],
+    commands={'python':[sys.executable,'-m','wren'],
               'cpp':[str(ROOT/'build/ukmc-cpp')], 'rust':[str(ROOT/'rust/target/release/ukmc-rust')],
               'fortran':[str(ROOT/'build/ukmc-fortran')]}
     env=dict(os.environ,PYTHONPATH=str(ROOT/'src'))
@@ -350,7 +350,7 @@ def ensemble(output,carrier,n,edges,temperature,trajectories,duration):
                 exact_diffusion_tensor_nm2_s=tensor.tolist(),exact_model_mobility_cm2_Vs=exact_mu,
                 estimated_model_mobility_cm2_Vs=mu_mean,mobility_95ci_cm2_Vs=[mu_mean-1.96*mu_sem,mu_mean+1.96*mu_sem],
                 corrector_residual_nm=residual,sparse_adapter_2000_events_verified=True,
-                sampler='Python standard random.Random; shared stream; universal_kmc.Engine',passed=True)
+                sampler='Python standard random.Random; shared stream; wren.Engine',passed=True)
     return result,grid,mean,sem,exact_msd
 
 

@@ -4,7 +4,7 @@
 uv run --extra quantum python scripts/calculate_transfer.py transfer.toml
 Equivalent installed command: cube-transfer transfer.toml
 """
-from universal_kmc.quantum.cli import main
+from wren.quantum.cli import main
 
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ import subprocess
 import sys
 import unittest
 
-from universal_kmc.reorganization import (
+from wren.reorganization import (
     ElectronicState, FourPointEnergies, analyze_four_point_pair, four_point_relaxations,
 )
 
@@ -84,7 +84,7 @@ class StatePairReorganizationTests(unittest.TestCase):
 
     def test_algebra_import_has_no_quantum_or_array_dependencies(self):
         script = '''import sys
-from universal_kmc.reorganization import ElectronicState, FourPointEnergies, analyze_four_point_pair
+from wren.reorganization import ElectronicState, FourPointEnergies, analyze_four_point_pair
 assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
 r=analyze_four_point_pair(ElectronicState('A',0,1),ElectronicState('B',0,1),FourPointEnergies(0,2,1,.5,'eV'))
 assert r['relaxation']['sum']==1.5

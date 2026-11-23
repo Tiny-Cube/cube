@@ -21,7 +21,7 @@ import unittest
 
 import numpy as np
 
-from universal_kmc.quantum.transfer import SCFConfig, calculate_transfer, read_xyz, METHODS
+from wren.quantum.transfer import SCFConfig, calculate_transfer, read_xyz, METHODS
 
 
 def main():
@@ -59,15 +59,15 @@ def main():
                'cases': {}, 'all_passed': False,
                'timing_scope': 'synchronized calculation wall time; small QC validation, not a speedup benchmark'}
     hashes = {}
-    for path in [root/'pyproject.toml', root/'uv.lock', Path(__file__), *sorted((root/'src/universal_kmc/quantum').glob('*.py')), root/'tests/test_quantum_coupling.py']:
+    for path in [root/'pyproject.toml', root/'uv.lock', Path(__file__), *sorted((root/'src/wren/quantum').glob('*.py')), root/'tests/test_quantum_coupling.py']:
         hashes[str(path.relative_to(root))] = hashlib.sha256(path.read_bytes()).hexdigest()
     summary['file_sha256'] = hashes
-    import universal_kmc.quantum as quantum_package
+    import wren.quantum as quantum_package
     installed = Path(quantum_package.__file__).resolve().parent
-    for source in sorted((root/'src/universal_kmc/quantum').glob('*.py')):
+    for source in sorted((root/'src/wren/quantum').glob('*.py')):
         assert (installed/source.name).read_bytes() == source.read_bytes(), ('installed/source mismatch', source.name)
     summary['installed_implementation_matches_source'] = True
-    summary['installed_from_source_tree'] = installed == (root/'src/universal_kmc/quantum').resolve()
+    summary['installed_from_source_tree'] = installed == (root/'src/wren/quantum').resolve()
     direct_url = importlib.metadata.distribution('universal-kmc').read_text('direct_url.json')
     if direct_url:
         metadata = json.loads(direct_url)
@@ -165,7 +165,7 @@ def main():
             else:
                 raise AssertionError('unconverged SCF was incorrectly accepted')
         summary['unconverged_scf_rejected'] = failures
-        command = [sys.executable, '-m', 'universal_kmc.quantum.cli', '--fragment-a', str(root/'examples/quantum/ethylene_a.xyz'),
+        command = [sys.executable, '-m', 'wren.quantum.cli', '--fragment-a', str(root/'examples/quantum/ethylene_a.xyz'),
                    '--fragment-b', str(root/'examples/quantum/ethylene_b.xyz'), '--backend', 'gpu', '--basis', 'sto-3g', '--xc', 'hf']
         for method, expected in (('dipro', 0), ('esid', 2)):
             path = args.output/f'cli-{method}.json'

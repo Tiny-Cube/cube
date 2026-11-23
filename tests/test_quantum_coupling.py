@@ -13,7 +13,7 @@ except ImportError:
 @unittest.skipIf(np is None, 'install the quantum extra for NumPy algebra tests')
 class CouplingAlgebraTests(unittest.TestCase):
     def setUp(self):
-        from universal_kmc.quantum import coupling
+        from wren.quantum import coupling
         self.c = coupling
 
     def test_two_state_overlap_formula_and_energy_origin(self):
@@ -82,7 +82,7 @@ class CouplingAlgebraTests(unittest.TestCase):
                 self.c.energy_splitting([-.1, .1], sites, **kwargs)
 
     def test_input_and_config_validation(self):
-        from universal_kmc.quantum.transfer import SCFConfig, read_xyz
+        from wren.quantum.transfer import SCFConfig, read_xyz
         for kwargs in ({'conv_tol': float('nan')}, {'max_cycle': True}, {'backend': 'silent-fallback'}, {'max_pair_leakage': 1}):
             with self.assertRaises(ValueError):
                 SCFConfig(**kwargs).validate()

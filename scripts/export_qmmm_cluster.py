@@ -5,10 +5,10 @@ from dataclasses import replace
 import json
 from pathlib import Path
 
-from universal_kmc.quantum.geometry import read_xyz
-from universal_kmc.workflow.dimers import file_hash
-from universal_kmc.workflow.embedding import load_gromacs_environment, cluster_from_frame, read_charges, snapshot
-from universal_kmc.workflow.lj import read_gromacs_lj, bind_gromacs_lj, geometry_key, sites_key
+from wren.quantum.geometry import read_xyz
+from wren.workflow.dimers import file_hash
+from wren.workflow.embedding import load_gromacs_environment, cluster_from_frame, read_charges, snapshot
+from wren.workflow.lj import read_gromacs_lj, bind_gromacs_lj, geometry_key, sites_key
 
 
 def main():

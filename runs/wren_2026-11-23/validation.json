@@ -1,0 +1,70 @@
+{
+  "schema": "wren-development-validation-1",
+  "date": "2026-11-23",
+  "scope": "rename, branch integration, DOS core and pipeline, Sphinx documentation",
+  "tests": {
+    "command": "python -m unittest discover -s tests -v",
+    "total": 136,
+    "passed": 135,
+    "skipped": 1,
+    "skip_reason": "GPU tests require explicit device opt-in"
+  },
+  "wheel": {
+    "package": "wren",
+    "version": "0.2.0",
+    "isolated_import": "/tmp/wren-wheel-check/lib/python3.13/site-packages/wren/__init__.py",
+    "dependency_free_help_and_dos_check": true
+  },
+  "docs": {
+    "builder": "sphinx-build -E -W --keep-going -b html",
+    "status": "passed",
+    "browser_checked": [
+      "navigation",
+      "rendered equations",
+      "logo",
+      "Chinese search"
+    ],
+    "public_deployment_verified": false
+  },
+  "dos_cases": {
+    "h2": {
+      "status": "completed",
+      "scope": "isolated_molecular_orbital_ensemble_no_inter_molecular_coupling",
+      "expected_integral": 4.0,
+      "finite_grid_integral": 3.9999999999999973,
+      "integral_relative_error": 6.661338147750939e-16,
+      "elapsed_seconds": 1.1545365889978711,
+      "fingerprint": "c77c58c8e60f9939db4d1814a6630839cfa06d19cfa15be5fe9157c5c0386f65"
+    },
+    "h2-toml": {
+      "status": "completed",
+      "scope": "isolated_molecular_orbital_ensemble_no_inter_molecular_coupling",
+      "expected_integral": 4.0,
+      "finite_grid_integral": 3.9999999999999973,
+      "integral_relative_error": 6.661338147750939e-16,
+      "elapsed_seconds": 1.1346668740006862,
+      "fingerprint": "99bc8550644aee3a7d6c7952f889e325d176747d8143899bd7427abf9dd683b0"
+    },
+    "h2-periodic": {
+      "status": "completed",
+      "scope": "periodic_restricted_HF_or_Kohn_Sham_spectrum_not_quasiparticle",
+      "expected_integral": 4.0,
+      "finite_grid_integral": 3.999999999999998,
+      "integral_relative_error": 5.551115123125783e-16,
+      "elapsed_seconds": 1.8964429870029562,
+      "fingerprint": "9d51315b05523db4c28116864499c5ab42d45c187c36706b73d864c61c26a90d"
+    }
+  },
+  "real_md": {
+    "status": "running",
+    "session_id": 78204,
+    "output": "build/dos/md-two-frames-retry/result.json",
+    "previous_attempt_exit_code": 143
+  },
+  "limitations": [
+    "new GPU DOS not verified yet",
+    "monomer vacuum spectra are not complete material DOS",
+    "periodic multi-frame alignment, PDOS and KPM pending",
+    "atomistic quantum-driven surface hopping pending"
+  ]
+}

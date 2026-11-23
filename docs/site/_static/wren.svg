@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+<title id="title">Wren 鹪鹩</title>
+<path fill="#116574" d="M20 42 9 12l33 27c14-5 30-2 39 9 3-11 11-18 20-18 11 0 18 9 17 19l10 6-13 5c-8 23-26 39-50 40-24 1-43-15-45-38l-8 4 8-13Z"/>
+<path fill="#fff" d="M42 55c17 1 28 10 35 22-17 1-29-7-35-22Z"/>
+<circle cx="103" cy="43" r="3" fill="#fff"/>
+</svg>
