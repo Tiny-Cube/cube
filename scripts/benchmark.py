@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Reproducible serial benchmark of the existing four-language implementations."""
 import argparse
+from datetime import date
 import hashlib
 import json
 import math
@@ -22,20 +23,10 @@ def run(command, **kwargs):
     return subprocess.run(list(map(str, command)), cwd=ROOT, check=True, **kwargs)
 
 def build():
-    (BUILD/'mod').mkdir(parents=True, exist_ok=True)
-    for source, name in [('benchmarks/kernel.cpp','kernel-cpp'), ('cpp/src/main.cpp','cli-cpp')]:
-        run(['c++','-std=c++17','-O3','-Icpp/include',source,'-o',BUILD/name])
-    objects=[]
-    for name in ['ukmc','ukmc_io']:
-        obj=BUILD/f'{name}.o'; objects.append(obj)
-        run(['gfortran','-std=f2008','-O3',f'-J{BUILD}/mod',f'-I{BUILD}/mod',
-             '-c',f'fortran/{name}.f90','-o',obj])
-    for source,name in [('benchmarks/kernel.f90','kernel-fortran'),('fortran/main.f90','cli-fortran')]:
-        run(['gfortran','-std=f2008','-O3',f'-I{BUILD}/mod',source,*objects,'-o',BUILD/name])
-    run(['cargo','build','--release','--offline','--manifest-path','rust/Cargo.toml'])
-    run(['rustc','--edition=2021','-C','opt-level=3','benchmarks/kernel.rs',
-         '--extern',f'wren={ROOT}/rust/target/release/libwren.rlib',
-         '-L',f'dependency={ROOT}/rust/target/release/deps','-o',BUILD/'kernel-rust'])
+    run(['cmake', '-S', ROOT, '-B', BUILD, '-DCMAKE_BUILD_TYPE=Release',
+         '-DWREN_BUILD_PYTHON=OFF', '-DBUILD_TESTING=OFF'])
+    run(['cmake', '--build', BUILD, '--config', 'Release', '--parallel', '--target', 'wren_benchmarks'])
+
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
@@ -47,14 +38,17 @@ def main():
     output=args.output.resolve(); output.mkdir(parents=True,exist_ok=True)
     if (output/'summary.json').exists(): parser.error('use a new output directory')
     build()
+    bin_dir = BUILD/'bin'
+    if (bin_dir/'Release').is_dir():
+        bin_dir = bin_dir/'Release'
     affinity=sorted(os.sched_getaffinity(0)) if hasattr(os,'sched_getaffinity') else []
     if affinity: os.sched_setaffinity(0,{affinity[0]})
     env=os.environ.copy(); env['PYTHONPATH']=str(ROOT/'src')
     kernels={'python':[args.python,'benchmarks/kernel.py'],
-             **{lang:[str(BUILD/f'kernel-{lang}')] for lang in LANGS[1:]}}
+             **{lang:[str(bin_dir/f'kernel-{lang}')] for lang in LANGS[1:]}}
     clis={'python':[args.python,'-m','wren'],
-          'cpp':[str(BUILD/'cli-cpp')], 'rust':[str(ROOT/'rust/target/release/ukmc-rust')],
-          'fortran':[str(BUILD/'cli-fortran')]}
+          'cpp':[str(bin_dir/'ukmc-cpp')], 'rust':[str(bin_dir/'ukmc-rust')],
+          'fortran':[str(bin_dir/'ukmc-fortran')]}
     workloads=[('two_state','examples/two_state.kmc',200000),
                ('birth_death','examples/birth_death.kmc',200000),
                ('hole','runs/e_006_ether_12-17_0/hole.kmc',20000),
@@ -62,11 +56,11 @@ def main():
     def version(cmd): return run(cmd,capture_output=True,text=True).stdout.splitlines()[0]
     cpu=next((line.split(':',1)[1].strip() for line in Path('/proc/cpuinfo').read_text().splitlines()
               if line.startswith('model name')),platform.processor())
-    result={'date':'2026-11-02','cpu':cpu,'platform':platform.platform(),
+    result={'date':date.today().isoformat(),'cpu':cpu,'platform':platform.platform(),
             'pinned_cpu':affinity[0] if affinity else None,'repeats':args.repeats,'seed':42,
             'versions':{k:version(v) for k,v in {'python':[args.python,'--version'],'cpp':['c++','--version'],
                          'fortran':['gfortran','--version'],'rust':['rustc','--version']}.items()},
-            'build':'C++/Fortran -O3; Rust cargo release/rustc opt-level=3; no fast-math; Fortran without -fcheck=all',
+            'build':'CMake Release / Cargo release; see CMakeCache.txt for configured compilers and flags',
             'source_commit':run(['git','rev-parse','HEAD'],capture_output=True,text=True).stdout.strip(),
             'source_sha256':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest()
                 for folder in ['src','cpp','rust/src','fortran','benchmarks'] for p in (ROOT/folder).rglob('*')

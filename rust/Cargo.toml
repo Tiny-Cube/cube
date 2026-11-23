@@ -11,3 +11,7 @@ name = "universal_kmc"
 [[bin]]
 name = "ukmc-rust"
 path = "src/main.rs"
+
+[[example]]
+name = "kernel-rust"
+path = "../benchmarks/kernel.rs"

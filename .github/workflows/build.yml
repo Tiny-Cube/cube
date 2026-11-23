@@ -1,0 +1,22 @@
+name: Wren CMake build
+on:
+  push:
+    branches: [main, feat/wren]
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d
+        with:
+          python-version: '3.13'
+      - run: uv sync --locked --extra workflow --extra transport --extra dynamics --extra dos
+      - run: cmake -S . -B build/cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE="$PWD/.venv/bin/python"
+      - run: cmake --build build/cmake --parallel 2 --target all wren_benchmarks wren_package
+      - run: ctest --test-dir build/cmake --output-on-failure
+      - run: |
+          cmake --install build/cmake --prefix "$RUNNER_TEMP/wren"
+          "$RUNNER_TEMP/wren/bin/wren" --help

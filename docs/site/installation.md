@@ -27,18 +27,31 @@ uv sync --locked --extra workflow --extra quantum-cuda13
 
 请求 GPU 后不静默回退 CPU。当前周期 DOS 的 GPU SCF 尚未验证，输入要求显式使用 CPU；
 单体 DOS 可指定 `qc-engine = gpu-pyscf`，DOS 数值展宽/有效 Hamiltonian 对角化可以独立选择
-`dos-backend = gpu`，但其实际设备一致性验收仍须记录。
+`dos-backend = gpu`，已有 RTX 5090 的数值核验。
 
-## 从源码构建与测试
+## 用 CMake 构建和安装 Wren
+
+准备 CMake 3.25 或更新版本、C++17 编译器、Fortran 编译器、Cargo/Rust、Python 3.11+ 和 uv。默认构建编译 C++、Fortran 和 Rust，调用 uv 生成 Python wheel。已有 Ninja 时可在首条 CMake 命令添加 `-G Ninja`。在 Linux 仓库根目录运行：
 
 ```bash
-uv build
-uv run python scripts/build.py
-uv run python -m unittest discover -s tests -v
+uv sync --locked --extra workflow --extra dos --extra dynamics --extra transport
+cmake -S . -B build/cmake -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE="$PWD/.venv/bin/python"
+cmake --build build/cmake --parallel
+ctest --test-dir build/cmake --output-on-failure
+cmake --install build/cmake --prefix "$HOME/.local"
 ```
 
-四语言一致性测试需要 C++ 编译器、Rust/cargo 和 gfortran。Python 科学功能不要求构建这些程序。
-历史输出中的 `cube-*` schema 和 KMC1 格式保留，不能简单按产品名称改写已有数据。
+安装前缀的 `bin/` 包含主命令 `wren`、Python 入口、`ukmc-cpp`、`ukmc-rust` 和 `ukmc-fortran`。Python 启动器使用 PATH 中的 `python3`；计算 DOS 或 QM/MM 时先激活装有相应科学依赖的环境。也可以直接在选定环境安装 `build/cmake/dist/` 下的 wheel。C++ 头文件与当前 Fortran 编译器生成的模块文件位于前缀的 `include/wren`。CMake 消费工程可通过 `find_package(Wren CONFIG REQUIRED)` 引用 `Wren::ukmc_cpp` 和 `Wren::ukmc_fortran`。
+
+| 需要的产物 | 命令或配置 |
+|---|---|
+| wheel 和源码包 | `cmake --build build/cmake --target wren_package` |
+| 只重新构建 Python wheel | `cmake --build build/cmake --target wren_python` |
+| 四语言计时所需的原生程序 | `cmake --build build/cmake --target wren_benchmarks` |
+| 只构建 C++/Fortran | 配置时加 `-DWREN_BUILD_PYTHON=OFF -DWREN_BUILD_RUST=OFF -DBUILD_TESTING=OFF` |
+| 只使用 Python | `uv sync --locked`，按计算类型选择 extras |
+
+单配置生成器的原生程序在 `build/cmake/bin/`。可用 WREN_BUILD_CPP、WREN_BUILD_FORTRAN、WREN_BUILD_RUST 和 WREN_BUILD_PYTHON 四个 CMake 选项选择语言。不同编译器或 Debug/Release 安装请各用一个前缀，以保持 Fortran 模块与库匹配。多配置生成器构建时使用 `--config Release`、测试时使用 `-C Release`、安装时使用 `--config Release`。CTest 会选择本次构建的程序做 Python、C++、Rust、Fortran 的逐事件比较。原 `scripts/build.py` 和 `scripts/check.py` 调用同一套 CMake 构建。GPU 量化依赖仍由 uv 的 `quantum-cuda13` extra 提供。
 
 ## 构建网页文档
 

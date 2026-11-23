@@ -6,12 +6,11 @@ Run from the repository root after `uv sync --locked`:
 uv run python scripts/benchmark.py --output runs/performance_new
 ```
 
-Requires C++17, gfortran, Cargo and rustc. The script builds separate benchmark
-executables in `build/benchmark`, leaving the normal checked build unchanged.
-C++ and Fortran use `-O3`; Rust uses Cargo's default release profile and
-`rustc -C opt-level=3`. No fast-math or architecture-specific flags are added.
-Fortran compiler runtime bounds checks are disabled in this performance build;
-the library's explicit validity checks remain enabled in every language.
+CMake 3.25+ configures a dedicated Release tree in `build/benchmark`. The
+`wren_benchmarks` target builds the current C++, Fortran and Cargo kernel and
+CLI programs. See its CMakeCache.txt for compiler paths and flags. The Rust
+examples use the Cargo release profile. Fortran checks internal to the model
+remain enabled in Release builds.
 Python runs directly with the uv-created `.venv/bin/python` (no uv startup cost).
 Use `--python /path/to/python` to compare another interpreter.
 

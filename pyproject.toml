@@ -34,5 +34,5 @@ cube-surface-hopping = "wren.surface_hopping.cli:main"
 
 [tool.uv.build-backend]
 module-name = "wren"
-source-include = ["wren", "cube", "input", "benchmarks/**", "docs/**", "examples/**", "cpp/**", "fortran/**", "rust/Cargo.toml", "rust/Cargo.lock", "rust/src/**", "rust/tests/**", "rust/examples/**", "tests/**", "scripts/**", "CMakeLists.txt", "Makefile", "uv.lock"]
-source-exclude = ["build/**", "dist/**", "rust/target/**", "**/__pycache__/**", "**/*.pyc"]
+source-include = ["wren", "cube", "input", "benchmarks/**", "docs/**", "examples/**", "cpp/**", "fortran/**", "rust/Cargo.toml", "rust/Cargo.lock", "rust/src/**", "rust/tests/**", "rust/examples/**", "tests/**", "scripts/**", "CMakeLists.txt", "cmake/**", "runs/cube_input_2026-11-07/cpu-F2-reorganization.json", "Makefile", "uv.lock"]
+source-exclude = ["build/**", "dist/**", "rust/target/**", "**/cube-results/**", "**/__pycache__/**", "**/*.pyc"]

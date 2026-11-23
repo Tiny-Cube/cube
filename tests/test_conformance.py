@@ -1,7 +1,8 @@
-"""Native binaries must be built first: uv run python scripts/build.py."""
+"""Compare the programs produced by the current CMake build."""
 import csv
 import io
 import math
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -11,11 +12,12 @@ from wren import Engine
 from wren.rates import marcus, arrhenius, miller_abrahams
 
 ROOT = Path(__file__).resolve().parents[1]
+BIN = Path(os.environ.get('WREN_BIN_DIR', ROOT/'build/cmake/bin'))
 COMMANDS = {
     'python': [sys.executable, '-m', 'wren'],
-    'cpp': [str(ROOT/'build/ukmc-cpp')],
-    'rust': [str(ROOT/'rust/target/release/ukmc-rust')],
-    'fortran': [str(ROOT/'build/ukmc-fortran')],
+    'cpp': [str(BIN/'ukmc-cpp')],
+    'rust': [str(BIN/'ukmc-rust')],
+    'fortran': [str(BIN/'ukmc-fortran')],
 }
 
 
@@ -28,7 +30,7 @@ class ConformanceTests(unittest.TestCase):
     def setUpClass(cls):
         missing = [command[0] for name, command in COMMANDS.items() if name != 'python' and not Path(command[0]).is_file()]
         if missing:
-            raise RuntimeError('Build native binaries first with scripts/build.py: ' + ', '.join(missing))
+            raise RuntimeError('Build the CMake targets first (or set WREN_BIN_DIR): ' + ', '.join(missing))
 
     def compare(self, model, steps, seed, until=None):
         outputs = {}
@@ -99,15 +101,15 @@ class ConformanceTests(unittest.TestCase):
         engine=Engine(model,42)
         list(engine.run(10000,100))
         expected=[len(model.data.jobs),model.data.completed,engine.steps]
-        for binary in ['build/generic-cpp','build/generic-fortran','rust/target/release/examples/generic']:
-            result=run([str(ROOT/binary)])
+        for binary in ['generic-cpp','generic-fortran','generic-rust']:
+            result=run([str(BIN/binary)])
             self.assertEqual(result.returncode,0,result.stderr)
             self.assertEqual([int(n) for n in result.stdout.split()],expected,binary)
 
     def test_native_rate_laws_match_python(self):
         expected=[marcus(.01,.2,.05),arrhenius(1e12,.1),miller_abrahams(1e12,1,2,.1)]
-        for binary in ['build/test-cpp','build/test-fortran']:
-            result=run([str(ROOT/binary)])
+        for binary in ['test-cpp','test-fortran']:
+            result=run([str(BIN/binary)])
             self.assertEqual(result.returncode,0,result.stderr)
             actual=[float(x) for x in result.stdout.split()]
             for x,y in zip(actual,expected,strict=True):

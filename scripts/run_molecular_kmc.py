@@ -209,9 +209,10 @@ def save_model(path,n,edges):
 def cross_language(output,carrier,n,edges):
     model_path=output/f'{carrier}.kmc'
     save_model(model_path,n,edges)
+    bin_dir = Path(os.environ.get('WREN_BIN_DIR', ROOT/'build/cmake/bin'))
     commands={'python':[sys.executable,'-m','wren'],
-              'cpp':[str(ROOT/'build/ukmc-cpp')], 'rust':[str(ROOT/'rust/target/release/ukmc-rust')],
-              'fortran':[str(ROOT/'build/ukmc-fortran')]}
+              'cpp':[str(bin_dir/'ukmc-cpp')], 'rust':[str(bin_dir/'ukmc-rust')],
+              'fortran':[str(bin_dir/'ukmc-fortran')]}
     env=dict(os.environ,PYTHONPATH=str(ROOT/'src'))
     results=[]
     for kind,args in [('steps',['10000','42']),('time',['100000','20261102','1e-9'])]:
