@@ -1,0 +1,108 @@
+{
+  "schema": "wren-periodic-md-validation-1",
+  "software_commit": "2d561b7849321ba9038a25b6fe94603384b1ca11",
+  "input_sha256": {
+    "input": "da41e7a7346969b679f86e283e182affc1b08c37ce9e9d5ce9042066a662a420"
+  },
+  "versions": {
+    "numpy": "2.5.4",
+    "pyscf": "2.15.0",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "cupy-cuda13x": "13.6.0"
+  },
+  "device": "NVIDIA GeForce RTX 5090",
+  "cell_volume_bohr3": 2037.922180869469,
+  "reference": "per_cell_mean_hartree_plus_local_gth",
+  "sigma_ev": 0.1,
+  "frames": [
+    {
+      "frame": 4,
+      "time_ps": 0.02,
+      "reference_ev": -0.011936018303094462,
+      "sampled_gap_ev": 3.377788727288329,
+      "aligned_vbm_ev": 0.28917746378424,
+      "aligned_cbm_ev": 3.666966191072569,
+      "occupied_electrons": 96.0,
+      "scf_seconds": 12.413414913695306
+    },
+    {
+      "frame": 9,
+      "time_ps": 0.045,
+      "reference_ev": -0.011936018303094462,
+      "sampled_gap_ev": 3.5008223140587207,
+      "aligned_vbm_ev": 0.29520962000645234,
+      "aligned_cbm_ev": 3.796031934065173,
+      "occupied_electrons": 96.0,
+      "scf_seconds": 10.481854450888932
+    },
+    {
+      "frame": 14,
+      "time_ps": 0.07,
+      "reference_ev": -0.011936018303094462,
+      "sampled_gap_ev": 3.378732465941436,
+      "aligned_vbm_ev": 0.2399248126160349,
+      "aligned_cbm_ev": 3.618657278557471,
+      "occupied_electrons": 96.0,
+      "scf_seconds": 10.000788138713688
+    },
+    {
+      "frame": 19,
+      "time_ps": 0.095,
+      "reference_ev": -0.011936018303094462,
+      "sampled_gap_ev": 3.3676063954142847,
+      "aligned_vbm_ev": 0.335428872220394,
+      "aligned_cbm_ev": 3.7030352676346787,
+      "occupied_electrons": 96.0,
+      "scf_seconds": 10.474724799860269
+    },
+    {
+      "frame": 24,
+      "time_ps": 0.12,
+      "reference_ev": -0.011936018303094462,
+      "sampled_gap_ev": 3.5183079053283475,
+      "aligned_vbm_ev": 0.22830134723055662,
+      "aligned_cbm_ev": 3.7466092525589043,
+      "occupied_electrons": 96.0,
+      "scf_seconds": 10.586152431089431
+    },
+    {
+      "frame": 29,
+      "time_ps": 0.145,
+      "reference_ev": -0.011936018303094462,
+      "sampled_gap_ev": 3.620419324705608,
+      "aligned_vbm_ev": 0.1439160810336237,
+      "aligned_cbm_ev": 3.7643354057392315,
+      "occupied_electrons": 96.0,
+      "scf_seconds": 10.566186647396535
+    },
+    {
+      "frame": 34,
+      "time_ps": 0.17,
+      "reference_ev": -0.011936018303094462,
+      "sampled_gap_ev": 3.5282656974169706,
+      "aligned_vbm_ev": 0.26514229978476445,
+      "aligned_cbm_ev": 3.793407997201735,
+      "occupied_electrons": 96.0,
+      "scf_seconds": 10.571022036019713
+    },
+    {
+      "frame": 39,
+      "time_ps": 0.195,
+      "reference_ev": -0.011936018303094462,
+      "sampled_gap_ev": 3.5767650226487286,
+      "aligned_vbm_ev": 0.13896796164962133,
+      "aligned_cbm_ev": 3.71573298429835,
+      "occupied_electrons": 96.0,
+      "scf_seconds": 10.025023703929037
+    }
+  ],
+  "integrated_spin_states_per_cell": 192.00000000000003,
+  "max_total_dos_difference_from_raw_bands": 3.552713678800501e-15,
+  "max_element_sum_residual": 7.105427357601002e-15,
+  "elapsed_seconds": 86.50846030190587,
+  "peak_pointwise_se": {
+    "1": 2.577408748509911,
+    "2": 3.0260425644716165,
+    "4": 4.617303543269864
+  }
+}

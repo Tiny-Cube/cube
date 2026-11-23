@@ -1,0 +1,16 @@
+{
+  "schema": "wren-sa-casscf-1",
+  "xyz": "lih.xyz",
+  "masses_u": [7.01600344, 1.00782503],
+  "basis": "sto-3g",
+  "charge": 0,
+  "active_electrons": 2,
+  "active_orbitals": 2,
+  "states": 2,
+  "initial_active_mo_1based": [2, 3],
+  "threads": 1,
+  "orbital_gradient_tolerance": 0.0000002,
+  "use_etfs": true,
+  "min_gap_hartree": 0.000001,
+  "min_state_overlap": 0.7
+}

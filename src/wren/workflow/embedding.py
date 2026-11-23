@@ -105,6 +105,8 @@ def load_gromacs_environment(manifest):
     provenance = manifest.get('provenance', {})
     paths = provenance.get('settings', {})
     expected = provenance.get('sha256', {})
+    if 'lammps-data' in paths:
+        raise ValueError('this operation requires a GROMACS TPR; LAMMPS force-field coefficients are not imported')
     for key in ('tpr', 'gro', 'xtc'):
         if key not in paths or key not in expected:
             raise ValueError('MM source needs a cube GROMACS manifest with original TPR/GRO/XTC hashes')
@@ -133,6 +135,26 @@ def load_gromacs_environment(manifest):
     finally:
         u.trajectory.close()
         gro.trajectory.close()
+
+
+def load_manifest_environment(manifest):
+    provenance = manifest.get('provenance', {})
+    paths = provenance.get('settings', {})
+    if 'lammps-data' not in paths:
+        return load_gromacs_environment(manifest)
+    from .dimers import molecular_trajectory, _environment_frame
+    for key in ('lammps-data', 'lammps-dump', 'element-map'):
+        if key not in paths or file_hash(paths[key]) != provenance.get('sha256', {}).get(key):
+            raise ValueError(f'original {key} changed since extraction; cannot construct MM environment')
+    with molecular_trajectory(paths) as (count, read_frame, labels, _):
+        frame = manifest['frame']
+        if type(frame) is not int or not 0 <= frame < count:
+            raise ValueError('invalid original LAMMPS frame index')
+        molecules, lattice, _, details = read_frame(frame)
+        if (not np.allclose(lattice, manifest['lattice_angstrom'], rtol=0, atol=1e-6)
+                or details['lammps_timestep'] != manifest.get('lammps_timestep')):
+            raise ValueError('LAMMPS manifest differs from original dump frame')
+        return _environment_frame(frame, lattice, molecules, provenance, labels)
 
 
 def select_mm_sites(frame, record, cutoff):
@@ -184,7 +206,7 @@ def select_mm_sites(frame, record, cutoff):
             elements.extend(fragment['elements'])
             mapping.append({'global_atom_indices_zero_based': fragment['indices'], 'image': image,
                             'site_start': len(charges)-len(q), 'site_count': len(q),
-                            'molecule_id': str(molecule_index)})
+                            'molecule_id': fragment.get('molecule_id', str(molecule_index))})
     provenance = {**frame['provenance'], 'qm_global_atom_indices_zero_based': ids,
          'cutoff_angstrom': cutoff, 'selection': 'whole molecular images with strict min QM-MM distance < cutoff',
          'qm_frame_translation_angstrom': offset[0].tolist(), 'molecular_images': mapping,

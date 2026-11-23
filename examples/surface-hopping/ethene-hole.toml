@@ -1,0 +1,18 @@
+[model]
+type = "pyscf-sa-casscf"
+file = "ethene-hole.json"
+
+[initial]
+hole-fragment = "A"
+momenta = [0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0]
+
+[dynamics]
+dt-au = 2.0
+electronic-substeps = 8
+max-steps = 6
+trajectories = 1
+seed = 2026
+output-stride = 1
+
+[output]
+directory = "../../build/surface-hopping/ethene-hole"

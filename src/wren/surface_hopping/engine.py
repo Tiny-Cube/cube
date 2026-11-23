@@ -1,6 +1,6 @@
 """Independent-trajectory FSSH with explicit forces and NAC momentum adjustment.
 
-Atomic units throughout; real fixed orthonormal diabatic basis only. Nuclear
+Atomic units throughout; real molecular adiabatic or fixed diabatic inputs. Nuclear
 velocity Verlet + unitary exponential-midpoint electronic substeps. Integrated
 population flux determines at most one hop at the end of a nuclear step. This
 is a finite-step approximation: both nuclear/electronic convergence are needed.
@@ -12,12 +12,18 @@ import numpy as np
 @dataclass
 class AdiabaticFrame:
     energies: np.ndarray
-    vectors: np.ndarray
+    vectors: np.ndarray | None
     gradients: np.ndarray
     nac: np.ndarray
+    wavefunctions: object = None
+    diagnostics: dict | None = None
 
 
 def adiabatic_frame(provider, q, previous=None, gap_tolerance=1e-10):
+    if hasattr(provider, 'evaluate_adiabatic'):
+        return provider.evaluate_adiabatic(q, previous)
+    if isinstance(previous, AdiabaticFrame):
+        previous = previous.vectors
     h, dh = provider.evaluate(q)
     if np.iscomplexobj(h) or np.iscomplexobj(dh):
         raise ValueError('complex Hamiltonians/SOC are not supported by this real-basis engine')
@@ -178,7 +184,7 @@ class FSSH:
         p_half = state.p-.5*self.dt*state.frame.gradients[old_active]
         velocity = p_half/self.masses
         q = state.q+self.dt*velocity
-        frame = adiabatic_frame(self.provider, q, state.frame.vectors)
+        frame = adiabatic_frame(self.provider, q, state.frame)
         c, probability = electronic_step(state.c, state.frame, frame, velocity, old_active, self.dt, self.substeps)
         p = p_half-.5*self.dt*frame.gradients[old_active]
         target = int(np.searchsorted(np.cumsum(probability), rng.random(), side='right'))

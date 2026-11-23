@@ -49,5 +49,4 @@ uv run --extra dynamics wren examples/surface-hopping/input
 uv run --extra dynamics wren-surface-hopping examples/surface-hopping/tully1.toml --check
 ```
 
-距离相关的有符号耦合及其梯度也可驱动有限簇中的片段位点动力学。见[片段位点模型](fragment-hopping.md)。片段移动基、耦合导数、态追踪和 GPU ensemble
-还需逐项实现。不得把模型算例成功等同于实际材料的非绝热输运已被验证。
+对于 MD 抽取的有限分子簇，有两种描述可选。已有局域位点能和拟合耦合时，`fragment-sites` 推进片段中心和电子振幅。直接给分子几何时，`pyscf-sa-casscf` 在每个核步重新求相同自旋多重度下的态能、解析力和非绝热耦合，用相邻几何波函数重叠跟踪相位。单重态和双重态均有 CPU 算例。乙烯二聚体阳离子例子可指定空穴初始局域在分子 A，并用相干跃迁密度输出两个分子的净电荷。周期体相与长时间迁移率需独立研究。[控制文件、轨迹和量化验证](fragment-hopping.md)

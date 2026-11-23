@@ -72,3 +72,7 @@ WREN_TEST_GPU_KMC=1 uv run --no-sync python -m unittest discover -s tests -p 'te
 对实际材料应另外检查轨迹数、模拟时长、拟合窗口及快照采样。计时比较时固定输入、轨迹数、
 时长、事件上限和追踪数量，记录源码版本、硬件及首次内核编译开销。短轨迹的小批量计算中，
 CUDA 初始化和主机设备数据传输可能占主要时间。[CuPy RawKernel 文档](https://docs.cupy.dev/en/stable/reference/generated/cupy.RawKernel.html)
+
+### 100 分子有机材料的同机结果
+
+在 `e_006_ether_12-17_0` 的一个快照上，使用归档的 550 对耦合、零场、300 K、均匀位点能。空穴和电子各推进 2,048 条 5 ns 的轨迹。30,479,173 次跳跃用 Python CPU 完成需 160.63 秒，用 RTX 5090 完成需 1.42 秒，单次墙钟比为 113.3。每条轨迹的事件数、全部 51 个时刻的位移及从中求出的迁移率张量在两端完全一致。该计时使用已编译的 CUDA 内核。256 条 2 ns 的小样本只达到 14.7 倍，两端估计都要求增加采样。[计时、统计诊断和复现命令](https://github.com/Tiny-Cube/cube/tree/feat/wren/runs/wren_material_gpu_kmc_2026-11-23)

@@ -1,0 +1,32 @@
+ITEM: UNITS
+real
+ITEM: TIME
+0
+ITEM: TIMESTEP
+0
+ITEM: NUMBER OF ATOMS
+4
+ITEM: BOX BOUNDS xy xz yz pp pp pp
+-4 9 2
+1 11 -1
+-2 6 1
+ITEM: ATOMS id mol type xs ys zs
+25 19 1 0.97 0.95 0.5
+14 7 2 0.06 0.10 0.5
+28 19 2 0.06 0.95 0.5
+11 7 1 0.97 0.10 0.5
+ITEM: TIME
+100
+ITEM: TIMESTEP
+200
+ITEM: NUMBER OF ATOMS
+4
+ITEM: BOX BOUNDS xy xz yz pp pp pp
+-4 9 2
+1 11 -1
+-2 6 1
+ITEM: ATOMS id mol type xs ys zs
+28 19 2 0.06 0.94 0.5
+25 19 1 0.97 0.94 0.5
+11 7 1 0.97 0.10 0.5
+14 7 2 0.06 0.10 0.5

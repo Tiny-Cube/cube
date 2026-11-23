@@ -23,6 +23,10 @@
 | PySCF | Sun et al., *Recent developments in the PySCF program package*, JCP **153**, 024109 (2020), [DOI](https://doi.org/10.1063/5.0006074) |
 | GPU4PySCF | *Introducing GPU Acceleration into the Python-Based Simulations of Chemistry Framework*, [DOI](https://doi.org/10.1021/acs.jpca.4c05876) |
 | 周期高斯密度拟合 | Sun et al., *Gaussian and plane-wave mixed density fitting for periodic systems*, JCP **147**, 164119 (2017), [DOI](https://doi.org/10.1063/1.4998644) |
+| 周期快照能量对齐 | Van de Walle 与 Martin，[平均势与能带对齐](https://doi.org/10.1103/PhysRevB.35.8154)；Hartwigsen 等，[局域与非局域赝势](https://doi.org/10.1103/PhysRevB.58.3641) |
+| 时间采样与统计误差 | Flyvbjerg 与 Petersen，[Error estimates on averages of correlated data](https://doi.org/10.1063/1.457480) |
+| 光学与电子–空穴谱 | Rohlfing 与 Louie，[Electron-hole excitations and optical spectra from first principles](https://doi.org/10.1103/PhysRevB.62.4927) |
+| 有机晶体的电子–声子效应 | Brown-Altvater 等，[晶体萘的带隙重整化与电子–声子自能](https://doi.org/10.1103/PhysRevB.101.165102) |
 | 萘晶胞的实验坐标 | Fabbiani et al., *Exploration of the high-pressure behaviour of polycyclic aromatic hydrocarbons*, Acta Cryst. B **62** (2006), [结构、压力与坐标表](https://doi.org/10.1107/S0108768106026814) |
 
 官方接口：[PySCF PBC](https://pyscf.org/user/pbc/scf.html)、

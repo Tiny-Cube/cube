@@ -1,4 +1,4 @@
-![Wren](docs/site/_static/wren.svg)
+![Wren](src/wren/assets/wren.svg)
 
 # Wren — 有机材料的电子结构与输运动力学
 
@@ -14,31 +14,31 @@ ctest --test-dir build/cmake --output-on-failure
 uv run --no-sync wren examples/dos/input
 ```
 
-Wren 提供四语言通用 KMC、MD 帧提取、CPU/GPU 转移积分、冻结 MM 重组能及模型表面跳跃。
+Wren 提供四语言通用 KMC、MD 帧提取、CPU/GPU 转移积分、冻结 MM 重组能、独立载流子 GPU KMC 及量化驱动的分子表面跳跃。
 态密度模块支持 PySCF 单体和周期晶胞的元素投影、垂直电离与电子添加能级分布，以及正交和非正交紧束缚模型。
 独立命令为 `wren-kmc`、`wren-transfer`、`wren-dos` 和 `wren-surface-hopping`。兼容入口可以读取原有 cube 控制文件和科学数据。
 
-[网页手册源码](docs/site/index.md) · [DOS 理论](docs/site/dos-theory.md) · [DOS 使用](docs/site/dos-guide.md) · [软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)
+[网页手册](https://wren-manual-tiny-cube.leguan12138.chatgpt.site) · [手册源码](docs/site/index.md) · [DOS 理论](docs/site/dos-theory.md) · [DOS 使用](docs/site/dos-guide.md) · [软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)
 
 ## wren input 统一入口
 
-提供可执行脚本 `cube`，默认读取 `$get_dimers_monomers/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 轨迹按起始帧/帧间隔提取单体、core 距离 dimer 和完整冻结 MM 簇、按 `format` 选择 XYZ/GJF、CPU/GPU 单体与 dimer 量化、DIPRO，以及 vacuum / 冻结 MM 静电嵌入四点法。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
+提供可执行脚本 `wren`，默认读取 `$get_dimers_monomers/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 轨迹按起始帧/帧间隔提取单体、core 距离 dimer 和完整冻结 MM 簇、按 `format` 选择 XYZ/GJF、CPU/GPU 单体与 dimer 量化、DIPRO，以及 vacuum / 冻结 MM 静电嵌入四点法。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
 
 ```bash
 uv sync --locked --extra workflow
-./cube input --plan
-./cube input --only get_dimers_monomers
+./wren input --plan
+./wren input --only get_dimers_monomers
 ```
 
 [控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。`--resume` 复用选定且已实现阶段的一致成功结果；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。
 
-`input` 最前面的 `$charge-carrier/$exciton/$surface-hopping` 是主模块，负责组织完整计算。下层子模块也有 `do`：`1` 独立请求执行，即使所有主模块关闭也有效；`0` 禁用该子模块；省略时由主模块自动调度。同一模块的多个请求只执行一次。本载流子分支已接通静态零场单粒子 Marcus KMC、扩散/迁移率张量和统计诊断；已合并模型 surface hopping（Tully/LVC FSSH）；真实材料激子流程和量化驱动的表面跳跃仍在开发。详见[入口路由](docs/cube-input.md#顶层计算入口与模块路由)与[分支开发说明](docs/development-branches.md)。
+`input` 最前面的 `$charge-carrier/$exciton/$surface-hopping` 是主模块，负责组织完整计算。下层子模块也有 `do`：`1` 独立请求执行，即使所有主模块关闭也有效；`0` 禁用该子模块；省略时由主模块自动调度。同一模块的多个请求只执行一次。本载流子分支已接通静态零场单粒子 Marcus KMC、扩散/迁移率张量和统计诊断；表面跳跃可用 Tully/LVC 模型，也可由 PySCF SA-CASSCF 提供逐步计算的分子能量、梯度和导数耦合。详见[入口路由](docs/cube-input.md#顶层计算入口与模块路由)与[分支开发说明](docs/development-branches.md)。
 
-独立单体示例（所有主模块均为 0，只有 one-mol 为 1）：`uv run --extra quantum cube examples/modules/input`。无需为调用基础功能开启载流子、激子或表面跳跃计算。
+独立单体示例（所有主模块均为 0，只有 one-mol 为 1）：`uv run --extra quantum wren examples/modules/input`。无需为调用基础功能开启载流子、激子或表面跳跃计算。
 
 主模块内可逐项选择 `get_dimers_monomers/one-mol/two-mol/reorganization-energy/kmc=0/1`。子模块本身 do 被注释时由主模块调度；若另设 do=1，仍是独立请求。完整字段和已有量化数据的接法见 [载流子流程](docs/charge-carrier.md)。
 
-无需量化即可运行验证例子：`uv run --extra transport cube examples/charge-carrier/input`。它使用合成周期链，不是实际材料迁移率。材料 GPU KMC 尚未接通；原有四语言通用内核保留。
+无需量化即可运行验证例子：`uv run --extra transport wren examples/charge-carrier/input`。该示例使用合成周期链。[GPU KMC](docs/site/gpu-kmc.md) 支持同一入口、静态材料网络与独立随机轨迹。
 
 新增 `frame_step` 多帧提取和 `monomers-qmmm-cutoff` 单体环境簇，支持后续量化逐帧调度；真实轨迹 1980/2000 帧及断点续算结果见[多帧提取验证](runs/frame_extraction_2026-11-08/README.md)。
 
@@ -73,14 +73,14 @@ uv run --locked --extra quantum python scripts/calculate_transfer.py examples/qu
 
 ```bash
 uv sync --locked --extra quantum-cuda13
-uv run --locked --extra quantum-cuda13 cube-transfer \
+uv run --locked --extra quantum-cuda13 wren-transfer \
   --fragment-a examples/quantum/ethylene_a.xyz \
   --fragment-b examples/quantum/ethylene_b.xyz \
   --backend gpu --basis def2-svp --xc b3lyp \
   --method dipro --method frozen_density --output build/transfer.json
 ```
 
-CPU 使用 `--extra quantum` 和 `--backend cpu`。GPU 量化适配器不等于已经实现 GPU KMC；QM/MM 重组能使用 `cube input`，详见[冻结 MM 控制说明](docs/cube-input.md#冻结-mm-的-qmmm-四点法)。独立转移积分仍使用真空模型。
+CPU 使用 `--extra quantum` 和 `--backend cpu`。材料 KMC 可单独安装 `--extra transport-cuda13`。QM/MM 重组能使用 `wren input`，详见[冻结 MM 控制说明](docs/cube-input.md#冻结-mm-的-qmmm-四点法)。独立转移积分仍使用真空模型。
 
 ## 当前基础：通用 KMC
 

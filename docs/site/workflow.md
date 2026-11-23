@@ -24,7 +24,48 @@ $end
 QM/MM 环境判据为完整中央分子与完整邻居分子的最短全原子距离，选中后保留整个邻居及周期镜像。
 
 输出包括每帧的 `manifest.json`、单体、簇及 dimer；多帧还生成 `frames.json` 索引。
-当前 GROMACS 提取要求同种中性完整分子、原子顺序一致；LAMMPS 自动导入尚未接通。
+提取要求同种中性完整分子和一致的分子内原子顺序。
+
+## 从 LAMMPS data 和 dump 提取
+
+```text
+$get_dimers_monomers
+do = 1
+lammps-data = hf.data
+lammps-dump = hf.dump
+lammps-units = real
+element-map = elements.txt
+fragment-file = core.txt
+frame = 0
+frame_step = 1
+dimers_cutoff = 2
+monomers-qmmm-cutoff = 2
+format = xyz,gjf
+output = ../../build/lammps/mol
+$end
+```
+
+`lammps-data` 提供 `atom_style full` 的 Atoms（atom-ID、molecule-ID、type、q、x、y、z）、Masses 与 Bonds。每个分子需要一个正的 molecule-ID，多原子分子需连成一个共价片段。使用固定拓扑及固定电荷。每行元素映射给出数字类型和化学元素，例如 `1 H`、`2 F`。同一元素可有多个力场类型。分子内以 atom-ID 递增排序，`core.txt` 写这个顺序下从 1 开始的局部序号。输出文件名保留原始 molecule-ID。manifest 的 `lammps_atom_ids` 记录原始 atom-ID，`global_atom_indices_zero_based` 是将全体系按 atom-ID 排序后的索引。[LAMMPS data 格式](https://docs.lammps.org/read_data.html)
+
+输入轨迹为单个未压缩原生文本 `dump custom`，每帧含全体系的 `id type`，以及 `x y z`、`xs ys zs`、`xu yu zu` 或 `xsu ysu zsu` 中的一组坐标。如提供多组，按上列顺序取第一组。帧内原子行可乱序。支持三个方向均为周期的正交盒与 restricted triclinic 斜盒。解析器从斜盒的 bounding bounds 和 xy/xz/yz 还原晶格，按键连接恢复跨边界分子。每个分子以最小 atom-ID 的原子定位在参考晶胞，镜像平移沿该帧的晶格矢量。要求每条键在最短周期镜像上可唯一确定。manifest 单独保存盒原点，单体中心相对于该原点。[LAMMPS dump 坐标](https://docs.lammps.org/dump.html) · [三斜盒约定](https://docs.lammps.org/Howto_triclinic.html)
+
+`lammps-units` 显式指定 `real` 或 `metal`。两者距离均为 Å，时间分别为 fs、ps。使用可变时间步时，可用以下 LAMMPS 命令保存实际经过时间。
+
+```text
+dump traj all custom 200 hf.dump id mol type xs ys zs
+dump_modify traj time yes units yes
+```
+
+已有轨迹省略 `ITEM: TIME` 时须在控制文件提供 `lammps-timestep = 0.5` 等实际固定步长。此时采用“步号 × 步长”，适用于同一时间原点与恒定步长。输出分别保存零起始帧索引 `frame`、原始步号 `lammps_timestep` 和 `time_ps`。[时间和单位字段](https://docs.lammps.org/dump_modify.html) · [LAMMPS 单位](https://docs.lammps.org/units.html)
+
+在仓库根目录执行以下命令即可从随附的小盒得到两帧提取文件和真空单体轨道 DOS。
+
+```bash
+uv run --locked --extra workflow wren examples/lammps/input
+uv run --locked --extra workflow wren-dos examples/lammps/dos.toml
+```
+
+首帧的 `dimers/7_19_img_0_-1_0.xyz` 由分子 7 和沿 −b 平移的分子 19 组成，两个 core 原子的距离为 1.382932 Å。两帧的物理时间为 0 和 0.1 ps。该示例的 HF/STO-3G 轨道 DOS 积分为每个 HF 分子 12 个自旋态。对首帧的独立 GROMACS TPR/GRO/XTC 输入，测试逐项比较了镜像、二聚体几何和冻结邻居电荷位置，坐标容差为 0.00002 Å。输出 `monomers/7_mm.pc` 保留冻结邻居的电荷。QM/MM 的 `mm-source=manifest, mm-vdw=none` 可按同一原始文件哈希恢复 LAMMPS 静电环境。LAMMPS pair style、混合规则和 Pair/PairIJ Coeffs 目前没有转换，`mm-vdw=tpr` 需要真实 GROMACS TPR。带色散排斥的 LAMMPS 模型可用显式分离的坐标、拓扑和完整 LJ 参数输入。[冻结 QM/MM 输入](reorganization.md)
 
 ## 模块独立与主流程
 

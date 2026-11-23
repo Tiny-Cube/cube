@@ -4,6 +4,7 @@ The user's extract_dimers.py defines strict minimum selected-core atom
 distance. This implementation retains that criterion, independently writes
 the extraction/manifest layer, and needs no Gaussian/Slurm/MOMAP templates.
 """
+from contextlib import contextmanager
 import hashlib
 import itertools
 import json
@@ -155,8 +156,7 @@ def _write_cluster(stage, record, frame, cutoff, formats, settings):
             'mm_molecular_images': len(sites['provenance']['molecular_images']), 'fingerprint': key, 'files': files}
 
 
-def _extract_frame(universe, settings, provenance, one_settings, two_settings, resume):
-    frame = universe.trajectory.frame
+def _extract_frame(frame, frame_count, read_frame, labels, atom_ids, settings, provenance, one_settings, two_settings, resume):
     base = Path(settings['output'])
     out = base/f'frame{frame:04d}'
     key = fingerprint({'provenance': provenance, 'frame': frame, 'extraction_version': 3})
@@ -171,8 +171,8 @@ def _extract_frame(universe, settings, provenance, one_settings, two_settings, r
             if not (out/relative).is_file() or file_hash(out/relative) != expected:
                 raise ValueError(f'cannot resume: missing/changed extracted file {relative}')
         return manifest_path
-    universe.atoms.unwrap(compound='fragments', reference=None)
-    molecules = universe.atoms.fragments
+    molecules, lattice, time_ps, details = read_frame(frame)
+    mol_ids = labels if labels is not None else list(range(1, len(molecules)+1))
     local = read_core(settings['fragment-file'])
     if not molecules or max(local) >= min(map(len, molecules)):
         raise ValueError('fragment-file atom number exceeds a complete molecule')
@@ -180,39 +180,37 @@ def _extract_frame(universe, settings, provenance, one_settings, two_settings, r
         raise ValueError('one fragment-file currently requires identical molecules and consistent local atom ordering')
     if any(abs(float(m.charges.sum())) >= .01 for m in molecules):
         raise ValueError('this neutral closed-shell extraction requires neutral molecules')
-    lattice = np.asarray(universe.trajectory.ts.triclinic_dimensions, dtype=float)
     positions = [m.positions.astype(float).copy() for m in molecules]
     cores = [p[local] for p in positions]
     cutoff = settings.get('dimers_cutoff', settings.get('cutoff', 6.))
     contacts = list(contact_images(cores, lattice, cutoff))
     manifest = {'schema': 'cube-dimers-1', 'fingerprint': key, 'provenance': provenance,
-                'frame': frame, 'frame_count': len(universe.trajectory), 'time_ps': float(universe.trajectory.time),
+                'frame': frame, 'frame_count': frame_count, 'time_ps': float(time_ps), **details,
                 'coordinate_unit': 'Angstrom', 'distance_criterion': 'strict_minimum_selected_core_atom_distance',
                 'cutoff_angstrom': cutoff, 'core_atom_numbers_one_based': [i+1 for i in local],
                 'lattice_angstrom': lattice.tolist(), 'molecule_count': len(molecules),
                 'dimer_count': len(contacts), 'monomers': [], 'dimers': [], 'output_sha256': {}}
-    environment_frame = {'lattice': lattice.tolist(), 'fragments': [
-        {'indices': m.indices.tolist(), 'elements': m.elements.tolist(), 'coordinates': p.tolist(),
-         'charges': m.charges.astype(float).tolist()} for m,p in zip(molecules, positions)],
-        'provenance': {'source': 'GROMACS_TPR_charges_XTC_coordinates', 'frame': frame,
-                       'sha256': {k: provenance['sha256'][k] for k in ('tpr','gro','xtc')}}}
+    environment_frame = _environment_frame(frame, lattice, molecules, provenance, labels)
     base.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.cube-extract-', dir=base) as temporary:
         stage = Path(temporary)/'frame'
         stage.mkdir()
-        for i, (mol, xyz) in enumerate(zip(molecules, positions), 1):
-            xyz = xyz-xyz.mean(axis=0)
+        for i, mol, position in zip(mol_ids, molecules, positions):
+            xyz = position-position.mean(axis=0)
             elements = mol.elements.tolist()
             files = _write_formats(stage, f'monomers/{i}', elements, xyz, settings['format'], one_settings)
             record = {'id': str(i), 'elements': elements, 'coordinates_angstrom': xyz.tolist(),
-                      'transport_position_angstrom': positions[i-1].mean(axis=0).tolist(),
+                      'transport_position_angstrom': position.mean(axis=0).tolist(),
                       'global_atom_indices_zero_based': mol.indices.tolist(), 'files': files}
+            if atom_ids is not None:
+                record['lammps_atom_ids'] = [atom_ids[j] for j in mol.indices]
+                record['lammps_molecule_id'] = i
             if 'monomers-qmmm-cutoff' in settings:
                 record['cluster'] = _write_cluster(stage, record, environment_frame,
                     settings['monomers-qmmm-cutoff'], settings['format'], one_settings)
             manifest['monomers'].append(record)
         for i, j, image, distance in contacts:
-            identity = f'{i+1}_{j+1}'
+            identity = f'{mol_ids[i]}_{mol_ids[j]}'
             if np.any(image):
                 identity += '_img_'+'_'.join(str(int(n)) for n in image)
             a, b = positions[i].copy(), positions[j]+image@lattice
@@ -223,9 +221,9 @@ def _extract_frame(universe, settings, provenance, one_settings, two_settings, r
             files = _write_formats(stage, f'dimers/{identity}', elements, xyz, settings['format'], two_settings)
             masses_a, masses_b = molecules[i].masses[local], molecules[j].masses[local]
             if not np.all(masses_a > 0) or not np.all(masses_b > 0):
-                raise ValueError('positive TPR core masses are required for core COM reporting')
+                raise ValueError('positive topology core masses are required for core COM reporting')
             com = np.linalg.norm(np.average(a[local], axis=0, weights=masses_a)-np.average(b[local], axis=0, weights=masses_b))
-            manifest['dimers'].append({'id': identity, 'mol_i': str(i+1), 'mol_j': str(j+1),
+            manifest['dimers'].append({'id': identity, 'mol_i': str(mol_ids[i]), 'mol_j': str(mol_ids[j]),
                 'image': image.tolist(), 'core_min_angstrom': distance, 'core_com_angstrom': float(com),
                 'elements': elements, 'coordinates_angstrom': xyz.tolist(), 'atom_count_a': len(a), 'files': files})
         import csv
@@ -244,21 +242,62 @@ def _extract_frame(universe, settings, provenance, one_settings, two_settings, r
     return out/'manifest.json'
 
 
-def extract_dimers_monomers(settings, *, one_settings=None, two_settings=None, resume=False):
-    """Extract a sampled frame series, with complete monomers, MM shells and dimers."""
+def _environment_frame(frame, lattice, molecules, provenance, labels=None):
+    fragments = [{'indices': m.indices.tolist(), 'elements': m.elements.tolist(),
+                  'coordinates': m.positions.astype(float).tolist(), 'charges': m.charges.astype(float).tolist()}
+                 for m in molecules]
+    if labels is not None:
+        for record, label in zip(fragments, labels):
+            record['molecule_id'] = str(label)
+    source = 'LAMMPS_data_charges_dump_coordinates' if labels is not None else 'GROMACS_TPR_charges_XTC_coordinates'
+    return {'lattice': lattice.tolist(), 'fragments': fragments,
+            'provenance': {'source': source, 'frame': frame,
+                           'sha256': {k:v for k,v in provenance['sha256'].items() if k != 'fragment-file'}}}
+
+
+@contextmanager
+def molecular_trajectory(settings):
+    if 'lammps-data' in settings:
+        from .lammps import LammpsTrajectory
+        reader = LammpsTrajectory(settings)
+        try:
+            yield len(reader.offsets), reader.read, reader.mol_ids, reader.ids
+        finally:
+            reader.stream.close()
+        return
+
     import MDAnalysis as mda
     from MDAnalysis.exceptions import NoDataError
+    universe = mda.Universe(settings['tpr'], settings['xtc'])
+    try:
+        gro = mda.Universe(settings['gro'])
+        try:
+            if (len(gro.atoms) != len(universe.atoms) or not np.array_equal(gro.atoms.names, universe.atoms.names)
+                    or not np.array_equal(gro.atoms.resindices, universe.atoms.resindices)):
+                raise ValueError('GRO/TPR atom count, names or residue ordering do not match')
+        finally:
+            gro.trajectory.close()
+        def read_frame(frame):
+            ts = universe.trajectory[frame]
+            universe.atoms.unwrap(compound='fragments', reference=None)
+            return universe.atoms.fragments, np.asarray(ts.triclinic_dimensions, dtype=float), ts.time, {}
+        yield len(universe.trajectory), read_frame, None, None
+    except NoDataError as exc:
+        raise ValueError(f'TPR must provide bonds, elements, masses and charges: {exc}') from exc
+    finally:
+        universe.trajectory.close()
+
+
+def extract_dimers_monomers(settings, *, one_settings=None, two_settings=None, resume=False):
+    """Extract a sampled frame series, with complete monomers, MM shells and dimers."""
     header_keys = ('method', 'basis-set', 'threads', 'max-memory-mb')
     one_settings = {k: v for k, v in (one_settings or {}).items() if k in header_keys}
     two_settings = {k: v for k, v in (two_settings or {}).items() if k in header_keys}
+    source_files = ('lammps-data', 'lammps-dump', 'element-map') if 'lammps-data' in settings else ('tpr','gro','xtc')
     provenance = {'settings': settings, 'one_gjf': one_settings, 'two_gjf': two_settings,
-                  'sha256': {k: file_hash(settings[k]) for k in ('tpr', 'gro', 'xtc', 'fragment-file')}}
-    universe = mda.Universe(settings['tpr'], settings['xtc'])
-    gro = mda.Universe(settings['gro'])
-    try:
-        if len(gro.atoms) != len(universe.atoms) or not np.array_equal(gro.atoms.names, universe.atoms.names) or not np.array_equal(gro.atoms.resindices, universe.atoms.resindices):
-            raise ValueError('GRO/TPR atom count, names or residue ordering do not match')
-        frames = selected_frames(settings['frame'], settings.get('frame_step', 1), len(universe.trajectory))
+                  'sha256': {k: file_hash(settings[k]) for k in (*source_files, 'fragment-file')}}
+    with molecular_trajectory(settings) as (count, read_frame, labels, atom_ids):
+        frames = selected_frames(settings['frame'], settings.get('frame_step', 1), count)
         index_path = Path(settings['output'])/'frames.json'
         index_key = fingerprint({'provenance': provenance, 'frames': frames, 'extraction_version': 3})
         if len(frames) > 1 and index_path.exists():
@@ -268,8 +307,8 @@ def extract_dimers_monomers(settings, *, one_settings=None, two_settings=None, r
         entries = []
         for frame in frames:
             print(f'wren: extracting frame {frame}', flush=True)
-            universe.trajectory[frame]
-            manifest_path = _extract_frame(universe, settings, provenance, one_settings, two_settings, resume)
+            manifest_path = _extract_frame(frame, count, read_frame, labels, atom_ids, settings, provenance,
+                                           one_settings, two_settings, resume)
             manifest = json.loads(manifest_path.read_text())
             entries.append({'frame': frame, 'time_ps': manifest['time_ps'],
                             'manifest': str(manifest_path.relative_to(index_path.parent)),
@@ -278,7 +317,7 @@ def extract_dimers_monomers(settings, *, one_settings=None, two_settings=None, r
         if len(entries) == 1:
             return manifest_path
         index = {'schema': 'cube-frames-1', 'coordinate_unit': 'Angstrom', 'fingerprint': index_key,
-                 'provenance': provenance, 'frame_count': len(frames), 'trajectory_frame_count': len(universe.trajectory),
+                 'provenance': provenance, 'frame_count': len(frames), 'trajectory_frame_count': count,
                  'frames': entries}
         with tempfile.NamedTemporaryFile(mode='w', prefix='.frames-', dir=index_path.parent, delete=False) as stream:
             temporary_index = Path(stream.name)
@@ -286,11 +325,6 @@ def extract_dimers_monomers(settings, *, one_settings=None, two_settings=None, r
             stream.write('\n')
         os.replace(temporary_index, index_path)
         return index_path
-    except NoDataError as exc:
-        raise ValueError(f'TPR must provide bonds, elements, masses and charges: {exc}') from exc
-    finally:
-        universe.trajectory.close()
-        gro.trajectory.close()
 
 
 # Compatibility for callers of the original extraction helper.

@@ -53,8 +53,7 @@ def _charge_result(control,preparation_report,*,resume):
 
 
 def _surface_result(control, preparation_report, *, resume):
-    result = preparation_report['tasks'][SURFACE_DYNAMICS]
-    return {**result, 'scope': 'model_hamiltonian'}
+    return preparation_report['tasks'][SURFACE_DYNAMICS]
 
 
 register_calculation('charge-carrier', CalculationType(tuple(m for m in MODULE_ORDER if m not in (SURFACE_DYNAMICS, DOS)),solver=_charge_result))

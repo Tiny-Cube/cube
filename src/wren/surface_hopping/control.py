@@ -53,12 +53,14 @@ class DynamicsConfig:
     stride: int
     boundaries: tuple[float, float] | None
     fragment_site: str | None = None
+    charge_localization: tuple[str, str] | None = None
 
 
 def load_control(filename, output=None):
     path = Path(filename).expanduser().resolve()
     raw = tomllib.loads(path.read_text())
-    fields = {'model': {'type', 'file'}, 'initial': {'coordinates', 'momenta', 'masses', 'active-state', 'fragment-site'},
+    fields = {'model': {'type', 'file'}, 'initial': {'coordinates', 'momenta', 'masses', 'active-state', 'fragment-site',
+                                                     'hole-fragment', 'electron-fragment'},
               'dynamics': {'dt-au', 'electronic-substeps', 'trajectories', 'max-steps', 'seed', 'decoherence', 'edc-constant-hartree', 'output-stride'},
               'scattering': {'left', 'right'}, 'output': {'directory'}}
     if set(raw)-fields.keys():
@@ -70,17 +72,35 @@ def load_control(filename, output=None):
     try:
         model, initial, dynamics = (raw[k] for k in ('model', 'initial', 'dynamics'))
         kind = model['type']
-        if kind not in ('tully-1', 'tully-2', 'tully-3', 'lvc', 'fragment-sites'):
-            raise ValueError('model.type must be tully-1, tully-2, tully-3, lvc or fragment-sites; atomistic QC is not connected')
+        if kind not in ('tully-1', 'tully-2', 'tully-3', 'lvc', 'fragment-sites', 'pyscf-sa-casscf'):
+            raise ValueError('unknown surface-hopping model type')
         model_path = None
-        if kind in ('lvc', 'fragment-sites'):
+        if kind in ('lvc', 'fragment-sites', 'pyscf-sa-casscf'):
             model_path = (path.parent/model['file']).resolve()
             if not model_path.is_file():
                 raise ValueError(f'{kind} model file missing')
         elif 'file' in model:
-            raise ValueError('model.file is only valid for lvc and fragment-sites')
+            raise ValueError('the selected model does not use model.file')
         site = initial.get('fragment-site')
-        if kind == 'fragment-sites':
+        localization = None
+        choices = {'hole-fragment', 'electron-fragment'} & initial.keys()
+        if choices and (kind != 'pyscf-sa-casscf' or len(choices) != 1 or 'active-state' in initial):
+            raise ValueError('choose one charge-localization request for SA-CASSCF, excluding active-state')
+        if kind == 'pyscf-sa-casscf':
+            from .casscf_input import read_casscf_model
+            qc, q, m, qc_sources = read_casscf_model(model_path)
+            if site is not None or 'coordinates' in initial or 'masses' in initial:
+                raise ValueError('SA-CASSCF uses the XYZ and atomic masses in model.file; set initial.active-state')
+            if choices:
+                key = choices.pop()
+                name = initial[key]
+                if not isinstance(name, str) or name not in qc.get('fragments', {}):
+                    raise ValueError('localized initial state requires a defined QM fragment name')
+                carrier = key.split('-')[0]
+                if (carrier == 'hole' and qc['charge'] <= 0) or (carrier == 'electron' and qc['charge'] >= 0):
+                    raise ValueError('hole/electron initialization requires a positive/negative total charge')
+                localization = (carrier, name)
+        elif kind == 'fragment-sites':
             from .fragment_sites import read_fragment_model
             fragments, model_hash = read_fragment_model(model_path)
             if 'masses' in initial:
@@ -102,6 +122,8 @@ def load_control(filename, output=None):
             raise ValueError('Tully active-state must be 0 or 1')
         if kind == 'fragment-sites' and active >= len(fragments.names):
             raise ValueError('fragment active-state out of range')
+        if kind == 'pyscf-sa-casscf' and active >= qc['states']:
+            raise ValueError('active-state out of range for SA-CASSCF roots')
         dt = _real(dynamics.get('dt-au', .5), 'dt-au', positive=True)
         substeps = _integer(dynamics.get('electronic-substeps', 4), 'electronic-substeps')
         trajectories = _integer(dynamics.get('trajectories', 32), 'trajectories')
@@ -118,21 +140,35 @@ def load_control(filename, output=None):
             if len(q) != 1 or not boundaries[0] < q[0] < boundaries[1]:
                 raise ValueError('scattering needs one coordinate with left < initial q < right')
         config = DynamicsConfig(kind, str(model_path) if model_path else None, q, p, m, active, dt,
-                                substeps, trajectories, steps, seed, decoherence, constant, stride, boundaries, site)
+                                substeps, trajectories, steps, seed, decoherence, constant, stride, boundaries, site, localization)
         directory = Path(output).expanduser().resolve() if output is not None else (path.parent/raw.get('output', {}).get('directory', 'results')).resolve()
     except KeyError as exc:
         raise ValueError(f'missing required surface-hopping control field {exc}') from exc
     sources = {str(path): sha256(path)}
-    if model_path:
+    if kind == 'pyscf-sa-casscf':
+        sources.update(qc_sources)
+    elif model_path:
         sources[str(model_path)] = model_hash if kind == 'fragment-sites' else sha256(model_path)
     if any(directory == Path(source) for source in sources):
         raise ValueError('output directory must not overwrite control or model file')
     normalized = asdict(config)
     if site is None:
         normalized.pop('fragment_site')
+    if localization is None:
+        normalized.pop('charge_localization')
     provenance = {'algorithm': ALGORITHM_VERSION, 'sources': sources, 'config': normalized, 'units': 'atomic'}
     if kind == 'fragment-sites':
         provenance['implementation_sha256'] = {name: sha256(Path(__file__).with_name(name)) for name in
                                                ('control.py', 'engine.py', 'models.py', 'fragment_sites.py', 'runner.py')}
+    elif kind == 'pyscf-sa-casscf':
+        from importlib.metadata import PackageNotFoundError, version
+        provenance['implementation_sha256'] = {name: sha256(Path(__file__).with_name(name)) for name in
+            ('control.py', 'engine.py', 'casscf_input.py', 'pyscf_casscf.py', 'fragment_charges.py', 'runner.py')}
+        provenance['versions'] = {}
+        for package in ('numpy', 'scipy', 'pyscf'):
+            try:
+                provenance['versions'][package] = version(package)
+            except PackageNotFoundError:
+                provenance['versions'][package] = None
     key = hashlib.sha256(json.dumps(provenance, sort_keys=True).encode()).hexdigest()
     return config, directory, provenance, key

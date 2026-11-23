@@ -1,0 +1,18 @@
+[model]
+type = "pyscf-sa-casscf"
+file = "lih-casscf.json"
+
+[initial]
+active-state = 1
+momenta = [0.0, 0.0, -20.0, 0.0, 0.0, 20.0]
+
+[dynamics]
+dt-au = 0.5
+electronic-substeps = 4
+trajectories = 1
+max-steps = 16
+seed = 2026
+output-stride = 2
+
+[output]
+directory = "../../build/surface-hopping/lih-casscf"

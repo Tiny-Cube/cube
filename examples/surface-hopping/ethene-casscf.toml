@@ -1,0 +1,18 @@
+[model]
+type = "pyscf-sa-casscf"
+file = "ethene-casscf.json"
+
+[initial]
+active-state = 1
+momenta = [0,0,0, 0,0,0, 0,0,-8, 0,0,8, 0,0,8, 0,0,-8]
+
+[dynamics]
+dt-au = 0.5
+electronic-substeps = 4
+trajectories = 1
+max-steps = 4
+seed = 2026
+output-stride = 1
+
+[output]
+directory = "../../build/surface-hopping/ethene-casscf"

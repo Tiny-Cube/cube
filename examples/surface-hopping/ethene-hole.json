@@ -1,0 +1,12 @@
+{
+  "schema": "wren-sa-casscf-1",
+  "xyz": "ethene-dimer.xyz",
+  "masses_u": [12,12,1.00782503,1.00782503,1.00782503,1.00782503,12,12,1.00782503,1.00782503,1.00782503,1.00782503],
+  "basis": "sto-3g",
+  "charge": 1, "multiplicity": 2,
+  "active_electrons": 3, "active_orbitals": 2, "states": 2,
+  "initial_active_mo_1based": [15,16],
+  "fragments": {"A": [1,2,3,4,5,6], "B": [7,8,9,10,11,12]},
+  "orbital_gradient_tolerance": 0.000001,
+  "threads": 1, "use_etfs": true
+}

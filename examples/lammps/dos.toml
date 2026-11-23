@@ -1,0 +1,9 @@
+[dos]
+mode = "monomer-orbitals"
+input = "../../build/lammps/mol/frames.json"
+output = "../../build/lammps/dos"
+qc-engine = "pyscf"
+method = "hf"
+basis-set = "sto-3g"
+threads = 1
+sigma = 0.10

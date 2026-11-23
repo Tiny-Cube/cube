@@ -12,6 +12,9 @@ def launch(extracted):
     dist = distribution('wren')
     if Path(dist.locate_file('')).resolve() != extracted.resolve():
         raise RuntimeError('imported Wren package metadata outside the staged wheel')
+    for asset in ('wren/assets/wren.svg', 'wren/transport/walk.cu'):
+        if not (extracted / asset).is_file():
+            raise RuntimeError(f'missing runtime asset in Wren wheel: {asset}')
     sys.argv = ['wren', '--help']
     entry = dist.entry_points.select(group='console_scripts', name='wren')
     return next(iter(entry)).load()()

@@ -1,0 +1,322 @@
+{
+  "system": "(C2H4)2 radical cation in vacuum, spin doublet, ROHF \u2192 two-state equal-weight SA-CASSCF(3,2)/STO-3G",
+  "versions": {
+    "pyscf": "2.15.0",
+    "scipy": "1.18.1",
+    "numpy": "2.5.4"
+  },
+  "input_sha256": {
+    "ethene-hole.json": "732885b6e9a925b326fa079bdec9eec8dfc38c918fcafba0637bc6e91ec4eb85",
+    "ethene-dimer.xyz": "b2682da3240665e6ce6584c3f079ce3e0ea29b8e545b9da8067e98d4515a0e9c"
+  },
+  "quantum_check": {
+    "closed_core_orbitals": 14,
+    "active_electrons_alpha_beta": [
+      2,
+      1
+    ],
+    "spin_squared": [
+      0.75,
+      0.75
+    ],
+    "starting_rohf_pi_weights": [
+      0.999285182251905,
+      0.9997662708021009
+    ],
+    "optimized_active_pi_subspace_squared_overlaps": [
+      0.9997542816882353,
+      0.9998296551324688
+    ],
+    "coordinate": {
+      "atom_1based": 8,
+      "axis": "x"
+    },
+    "step_bohr": 0.002,
+    "etfs": false,
+    "gradients_analytic_hartree_per_bohr": [
+      -0.042079951191226775,
+      -0.0413914024409367
+    ],
+    "gradients_fd_hartree_per_bohr": [
+      -0.0420803921556967,
+      -0.04139404106240363
+    ],
+    "nac_01_analytic_per_bohr": 4.1532441062991765,
+    "nac_01_fd_full_determinants_per_bohr": 4.152240417640965,
+    "test_complex_amplitudes_real": [
+      0.5,
+      0.5
+    ],
+    "test_complex_amplitudes_imag": [
+      0.0,
+      0.7071067811865476
+    ],
+    "direct_AO_fragment_charges_e": {
+      "A": 0.7499540977566844,
+      "B": 0.25004590224328394
+    },
+    "transition_charge_expectations_e": {
+      "A": 0.7499540977566871,
+      "B": 0.2500459022432848
+    }
+  },
+  "coarse": {
+    "dt_au": 2.0,
+    "time_au": 12.0,
+    "seed": 2026,
+    "hops": {
+      "accepted": 0,
+      "frustrated": 0
+    },
+    "initial_localization": {
+      "carrier": "hole",
+      "fragment": "A",
+      "extremal_charge_e": 0.9999081955205678,
+      "amplitudes_adiabatic": [
+        0.7071067811913703,
+        0.7071067811817247
+      ]
+    },
+    "initial_active_state": 0,
+    "initial_energies_hartree": [
+      -153.85120084708254,
+      -153.83196622031076
+    ],
+    "initial_natural_occupations": [
+      [
+        2.0,
+        1.0
+      ],
+      [
+        2.0,
+        1.0
+      ]
+    ],
+    "initial_charge_operators_e": {
+      "A": [
+        [
+          0.5000000000064448,
+          0.49990819552094207
+        ],
+        [
+          0.49990819552094207,
+          0.4999999999928064
+        ]
+      ],
+      "B": [
+        [
+          0.4999999999935316,
+          -0.4999081955209502
+        ],
+        [
+          -0.4999081955209502,
+          0.5000000000071694
+        ]
+      ]
+    },
+    "initial_active_probabilities": [
+      0.5000000000068204,
+      0.49999999999317946
+    ],
+    "max_charge_sum_error_e": 4.4075854077618715e-14,
+    "max_electron_sum_error": 4.263256414560601e-14,
+    "max_energy_drift_hartree": 7.045542815831141e-09,
+    "max_norm_error": 6.661338147750939e-16,
+    "max_spin_squared_error": 0.0,
+    "min_gap_hartree": 0.019234626771776675,
+    "trajectory_sha256": "9e55692658b4b08a9fb504fce7f2517a70b22b7e65be6c9b720eec166107a7b5",
+    "min_adjacent_overlap": 0.9999998959364367,
+    "history": [
+      {
+        "t_au": 0.0,
+        "charge_A_e": 0.9999081955205674,
+        "charge_B_e": 9.180447940028609e-05,
+        "active_state": 0
+      },
+      {
+        "t_au": 2.0,
+        "charge_A_e": 0.9995383361983229,
+        "charge_B_e": 0.0004616638016329855,
+        "active_state": 0
+      },
+      {
+        "t_au": 4.0,
+        "charge_A_e": 0.9984292926587104,
+        "charge_B_e": 0.0015707073412523998,
+        "active_state": 0
+      },
+      {
+        "t_au": 6.0,
+        "charge_A_e": 0.9965826670476106,
+        "charge_B_e": 0.003417332952348386,
+        "active_state": 0
+      },
+      {
+        "t_au": 8.0,
+        "charge_A_e": 0.9940011273600027,
+        "charge_B_e": 0.00599887263997865,
+        "active_state": 0
+      },
+      {
+        "t_au": 10.0,
+        "charge_A_e": 0.9906884036930999,
+        "charge_B_e": 0.009311596306900859,
+        "active_state": 0
+      },
+      {
+        "t_au": 12.0,
+        "charge_A_e": 0.986649283505476,
+        "charge_B_e": 0.013350716494499523,
+        "active_state": 0
+      }
+    ]
+  },
+  "fine": {
+    "dt_au": 1.0,
+    "time_au": 12.0,
+    "seed": 2026,
+    "hops": {
+      "accepted": 0,
+      "frustrated": 0
+    },
+    "initial_localization": {
+      "carrier": "hole",
+      "fragment": "A",
+      "extremal_charge_e": 0.9999081955205678,
+      "amplitudes_adiabatic": [
+        0.7071067811913703,
+        0.7071067811817247
+      ]
+    },
+    "initial_active_state": 0,
+    "initial_energies_hartree": [
+      -153.85120084708254,
+      -153.83196622031076
+    ],
+    "initial_natural_occupations": [
+      [
+        2.0,
+        1.0
+      ],
+      [
+        2.0,
+        1.0
+      ]
+    ],
+    "initial_charge_operators_e": {
+      "A": [
+        [
+          0.5000000000064448,
+          0.49990819552094207
+        ],
+        [
+          0.49990819552094207,
+          0.4999999999928064
+        ]
+      ],
+      "B": [
+        [
+          0.4999999999935316,
+          -0.4999081955209502
+        ],
+        [
+          -0.4999081955209502,
+          0.5000000000071694
+        ]
+      ]
+    },
+    "initial_active_probabilities": [
+      0.5000000000068204,
+      0.49999999999317946
+    ],
+    "max_charge_sum_error_e": 8.859579736508749e-14,
+    "max_electron_sum_error": 8.881784197001252e-14,
+    "max_energy_drift_hartree": 1.6986803075269563e-09,
+    "max_norm_error": 1.3322676295501878e-15,
+    "max_spin_squared_error": 0.0,
+    "min_gap_hartree": 0.019234626771776675,
+    "trajectory_sha256": "41b1c793fb41db9da25daa2657dbf571c013d2500547eed02a06a8da9b2a955f",
+    "min_adjacent_overlap": 0.9999999715714606,
+    "history": [
+      {
+        "t_au": 0.0,
+        "charge_A_e": 0.9999081955205674,
+        "charge_B_e": 9.180447940028609e-05,
+        "active_state": 0
+      },
+      {
+        "t_au": 1.0,
+        "charge_A_e": 0.9998157223966715,
+        "charge_B_e": 0.00018427760333953973,
+        "active_state": 0
+      },
+      {
+        "t_au": 2.0,
+        "charge_A_e": 0.9995383366043726,
+        "charge_B_e": 0.0004616633955946205,
+        "active_state": 0
+      },
+      {
+        "t_au": 3.0,
+        "charge_A_e": 0.9990761382456881,
+        "charge_B_e": 0.0009238617542232974,
+        "active_state": 0
+      },
+      {
+        "t_au": 4.0,
+        "charge_A_e": 0.9984292942767217,
+        "charge_B_e": 0.0015707057232178553,
+        "active_state": 0
+      },
+      {
+        "t_au": 5.0,
+        "charge_A_e": 0.997598038290261,
+        "charge_B_e": 0.002401961709748446,
+        "active_state": 0
+      },
+      {
+        "t_au": 6.0,
+        "charge_A_e": 0.996582670692605,
+        "charge_B_e": 0.0034173293073814625,
+        "active_state": 0
+      },
+      {
+        "t_au": 7.0,
+        "charge_A_e": 0.9953835581207537,
+        "charge_B_e": 0.004616441879203133,
+        "active_state": 0
+      },
+      {
+        "t_au": 8.0,
+        "charge_A_e": 0.9940011337993102,
+        "charge_B_e": 0.005998866200654555,
+        "active_state": 0
+      },
+      {
+        "t_au": 9.0,
+        "charge_A_e": 0.9924358971691594,
+        "charge_B_e": 0.007564102830836294,
+        "active_state": 0
+      },
+      {
+        "t_au": 10.0,
+        "charge_A_e": 0.9906884137548816,
+        "charge_B_e": 0.0093115862450866,
+        "active_state": 0
+      },
+      {
+        "t_au": 11.0,
+        "charge_A_e": 0.9887593149858125,
+        "charge_B_e": 0.011240685014170167,
+        "active_state": 0
+      },
+      {
+        "t_au": 12.0,
+        "charge_A_e": 0.9866492979806353,
+        "charge_B_e": 0.013350702019318324,
+        "active_state": 0
+      }
+    ]
+  },
+  "abs_final_charge_A_difference_e": 1.4475159293425577e-08
+}

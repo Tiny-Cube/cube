@@ -11,7 +11,10 @@ endif()
 set(wren_dist "${CMAKE_CURRENT_BINARY_DIR}/dist")
 set(wren_wheel "${wren_dist}/wren-${PROJECT_VERSION}-py3-none-any.whl")
 set(wren_stage "${CMAKE_CURRENT_BINARY_DIR}/python-package")
-file(GLOB_RECURSE wren_python_sources CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/wren/*.py")
+file(GLOB_RECURSE wren_python_sources CONFIGURE_DEPENDS
+  "${PROJECT_SOURCE_DIR}/src/wren/*.py"
+  "${PROJECT_SOURCE_DIR}/src/wren/*.cu"
+  "${PROJECT_SOURCE_DIR}/src/wren/assets/*.svg")
 add_custom_command(OUTPUT "${wren_wheel}" "${wren_stage}/wren/__init__.py"
   COMMAND "${UV_EXECUTABLE}" build --wheel --out-dir "${wren_dist}" "${PROJECT_SOURCE_DIR}"
   COMMAND ${CMAKE_COMMAND} -E rm -rf "${wren_stage}"

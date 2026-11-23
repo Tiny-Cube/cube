@@ -1,0 +1,8 @@
+$surface-hopping
+do = 1
+$end
+$surface-hopping-dynamics
+do = 1
+input = ethene-hole.toml
+output = ../../build/surface-hopping/ethene-hole
+$end

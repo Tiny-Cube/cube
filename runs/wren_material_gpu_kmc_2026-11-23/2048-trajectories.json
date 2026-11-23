@@ -1,0 +1,194 @@
+{
+  "system": "e_006_ether_12-17_0",
+  "sites": 100,
+  "pairs": 550,
+  "network_sha256": "52be1156751dcfe754a07c17c9a882239f301334282df45bf08350ea1c988358",
+  "duration_seconds": 5e-09,
+  "trajectories_per_carrier": 2048,
+  "samples": 51,
+  "seed": 20261109,
+  "runs": {
+    "python": {
+      "elapsed_seconds": 160.63389308936894,
+      "status": "completed",
+      "carriers": {
+        "hole": {
+          "total_events": 13365940,
+          "sampler": "wren.Engine + outgoing edges + independent SHA256-seeded random.Random streams",
+          "mobility_tensor_cm2_Vs": [
+            [
+              0.019769597566914352,
+              0.004478136117764351,
+              0.0007283055005845127
+            ],
+            [
+              0.004478136117764351,
+              0.021193820833672928,
+              -0.0005345335541112217
+            ],
+            [
+              0.0007283055005845127,
+              -0.0005345335541112217,
+              0.020659594699563355
+            ]
+          ],
+          "exact_mobility_tensor_cm2_Vs": [
+            [
+              0.019346880278652764,
+              0.005341551903080926,
+              0.0013475321241945358
+            ],
+            [
+              0.005341551903080926,
+              0.022423122044285218,
+              -2.655497426532386e-05
+            ],
+            [
+              0.0013475321241945358,
+              -2.655497426532386e-05,
+              0.020805516219151707
+            ]
+          ],
+          "sampling_diagnostics": "within_requested_diagnostics"
+        },
+        "electron": {
+          "total_events": 17113233,
+          "sampler": "wren.Engine + outgoing edges + independent SHA256-seeded random.Random streams",
+          "mobility_tensor_cm2_Vs": [
+            [
+              0.02975582568093596,
+              0.00464476737964051,
+              0.0010096202732686025
+            ],
+            [
+              0.00464476737964051,
+              0.03138417425781435,
+              0.002603955821241141
+            ],
+            [
+              0.0010096202732686025,
+              0.002603955821241141,
+              0.033644033177389815
+            ]
+          ],
+          "exact_mobility_tensor_cm2_Vs": [
+            [
+              0.03118371228469977,
+              0.0025993021756355304,
+              0.00041893891810120107
+            ],
+            [
+              0.0025993021756355304,
+              0.0317303032080765,
+              0.0030480201264536586
+            ],
+            [
+              0.00041893891810120107,
+              0.0030480201264536586,
+              0.03465241983117755
+            ]
+          ],
+          "sampling_diagnostics": "within_requested_diagnostics"
+        }
+      }
+    },
+    "gpu": {
+      "elapsed_seconds": 1.4177812300622463,
+      "status": "completed",
+      "carriers": {
+        "hole": {
+          "total_events": 13365940,
+          "sampler": "CUDA direct SSA + CSR outgoing channels + independent SHA256-seeded Python MT19937 streams",
+          "mobility_tensor_cm2_Vs": [
+            [
+              0.019769597566914352,
+              0.004478136117764351,
+              0.0007283055005845127
+            ],
+            [
+              0.004478136117764351,
+              0.021193820833672928,
+              -0.0005345335541112217
+            ],
+            [
+              0.0007283055005845127,
+              -0.0005345335541112217,
+              0.020659594699563355
+            ]
+          ],
+          "exact_mobility_tensor_cm2_Vs": [
+            [
+              0.019346880278652764,
+              0.005341551903080926,
+              0.0013475321241945358
+            ],
+            [
+              0.005341551903080926,
+              0.022423122044285218,
+              -2.655497426532386e-05
+            ],
+            [
+              0.0013475321241945358,
+              -2.655497426532386e-05,
+              0.020805516219151707
+            ]
+          ],
+          "sampling_diagnostics": "within_requested_diagnostics"
+        },
+        "electron": {
+          "total_events": 17113233,
+          "sampler": "CUDA direct SSA + CSR outgoing channels + independent SHA256-seeded Python MT19937 streams",
+          "mobility_tensor_cm2_Vs": [
+            [
+              0.02975582568093596,
+              0.00464476737964051,
+              0.0010096202732686025
+            ],
+            [
+              0.00464476737964051,
+              0.03138417425781435,
+              0.002603955821241141
+            ],
+            [
+              0.0010096202732686025,
+              0.002603955821241141,
+              0.033644033177389815
+            ]
+          ],
+          "exact_mobility_tensor_cm2_Vs": [
+            [
+              0.03118371228469977,
+              0.0025993021756355304,
+              0.00041893891810120107
+            ],
+            [
+              0.0025993021756355304,
+              0.0317303032080765,
+              0.0030480201264536586
+            ],
+            [
+              0.00041893891810120107,
+              0.0030480201264536586,
+              0.03465241983117755
+            ]
+          ],
+          "sampling_diagnostics": "within_requested_diagnostics"
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "hole": {
+      "exact_sampled_displacements": true,
+      "exact_per_trajectory_counts": true,
+      "trace_records_checked": 20258,
+      "max_abs_event_time_difference_s": 0.0
+    },
+    "electron": {
+      "exact_sampled_displacements": true,
+      "exact_per_trajectory_counts": true,
+      "trace_records_checked": 26153,
+      "max_abs_event_time_difference_s": 0.0
+    }
+  }
+}

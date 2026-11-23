@@ -1,0 +1,41 @@
+{
+  "gpu_runtime": {
+    "device": "NVIDIA GeForce RTX 5090",
+    "device_id": 0,
+    "compute_capability": "120",
+    "cupy": "13.6.0",
+    "cuda_runtime": 13000,
+    "cuda_driver": 13040
+  },
+  "source_commit": "2d561b7849321ba9038a25b6fe94603384b1ca11",
+  "samples": {
+    "256": {
+      "hole": {
+        "relative_95ci_norm": 0.4225741915014647,
+        "late_window_relative_change": 0.2494004590892876,
+        "relative_target": 0.25,
+        "reason": "increase_duration_or_trajectories"
+      },
+      "electron": {
+        "relative_95ci_norm": 0.45613131719365124,
+        "late_window_relative_change": 0.33227539696327035,
+        "relative_target": 0.25,
+        "reason": "increase_duration_or_trajectories"
+      }
+    },
+    "2048": {
+      "hole": {
+        "relative_95ci_norm": 0.15934606880564886,
+        "late_window_relative_change": 0.07033011768602689,
+        "relative_target": 0.25,
+        "reason": "within_requested_diagnostics"
+      },
+      "electron": {
+        "relative_95ci_norm": 0.16001173760794513,
+        "late_window_relative_change": 0.09594321476069964,
+        "relative_target": 0.25,
+        "reason": "within_requested_diagnostics"
+      }
+    }
+  }
+}

@@ -19,7 +19,8 @@ ALLOWED = {
     KMC: KMC_FIELDS,
     SURFACE_DYNAMICS: {'do', 'input', 'output'},
     EXTRACTION: {'do', 'tpr', 'gro', 'xtc', 'frame', 'frame_step', 'dimers_cutoff', 'fragment-file',
-                 'monomers-qmmm-cutoff', 'output', 'format'},
+                 'monomers-qmmm-cutoff', 'output', 'format', 'lammps-data', 'lammps-dump',
+                 'lammps-units', 'lammps-timestep', 'element-map'},
     'one-mol': COMMON | {'molecules', 'xyz'},
     'two-mol': COMMON | {'dimers', 'transfer-integrals-method', 'carriers', 'assume-equivalent'},
     'reorganization-energy': COMMON | {'molecules', 'xyz', 're-method', 'environment', 'carriers', 'opt-maxsteps',
@@ -295,8 +296,18 @@ def load_input(filename='input'):
         normalized[SURFACE_DYNAMICS] = {'input': str(source), 'output': str(directory)}
     if EXTRACTION in active_modules:
         s = sections[EXTRACTION]
+        lammps = {'lammps-data', 'lammps-dump', 'lammps-units', 'lammps-timestep', 'element-map'} & s.keys()
+        if lammps and {'tpr', 'gro', 'xtc'} & s.keys():
+            raise ValueError('choose either LAMMPS data/dump or GROMACS tpr/gro/xtc for extraction')
+        source_files = ('lammps-data', 'lammps-dump', 'element-map') if lammps else ('tpr', 'gro', 'xtc')
         n = {key: str(resolve_path(s.get(key, ''), path.parent, key, required_file=True))
-             for key in ('tpr', 'gro', 'xtc', 'fragment-file')}
+             for key in (*source_files, 'fragment-file')}
+        if lammps:
+            n['lammps-units'] = s.get('lammps-units', '').lower()
+            if n['lammps-units'] not in ('real', 'metal'):
+                raise ValueError('specify lammps-units = real or metal')
+            if 'lammps-timestep' in s:
+                n['lammps-timestep'] = _positive(s['lammps-timestep'], 'lammps-timestep')
         n['frame'] = _integer(s.get('frame') or '-1', 'frame', -1)
         n['frame_step'] = _integer(s.get('frame_step') or '1', 'frame_step')
         n['dimers_cutoff'] = _positive(s.get('dimers_cutoff', '6'), 'dimers_cutoff')
@@ -305,7 +316,7 @@ def load_input(filename='input'):
         n['format'] = [v.lower() for v in _csv(s.get('format', 'xyz'))]
         if len(set(n['format'])) != len(n['format']) or not set(n['format']) <= {'xyz', 'gjf'}:
             raise ValueError('format must select xyz and/or gjf')
-        if any(Path(n['output']) == Path(n[k]) for k in ('tpr', 'gro', 'xtc', 'fragment-file')):
+        if any(Path(n['output']) == Path(n[k]) for k in (*source_files, 'fragment-file')):
             raise ValueError('output directory must not overwrite an input file')
         normalized[EXTRACTION] = n
     inherited = sections.get('one-mol', {}).get('qc-engine', 'pyscf') if 'one-mol' in active_modules else 'pyscf'
@@ -415,7 +426,7 @@ def load_input(filename='input'):
                         raise ValueError('explicit mm-charges requires exactly one xyz in the same coordinate frame')
                 else:
                     if 'mm-charges' in s or 'xyz' in n:
-                        raise ValueError('mm-source=manifest requires a GROMACS extraction manifest, without xyz/mm-charges')
+                        raise ValueError('mm-source=manifest requires an extraction manifest, without xyz/mm-charges')
                     if 'mm-cutoff' in s:
                         n['mm-cutoff'] = _positive(s['mm-cutoff'], 'mm-cutoff')
                     elif 'input' not in n and EXTRACTION in normalized:
@@ -427,6 +438,8 @@ def load_input(filename='input'):
                 if n['mm-vdw'] == 'tpr':
                     if source != 'manifest' or 'mm-vdw-file' in s:
                         raise ValueError('mm-vdw=tpr requires mm-source=manifest without mm-vdw-file')
+                    if 'input' not in n and 'lammps-data' in normalized.get(EXTRACTION, {}):
+                        raise ValueError('mm-vdw=tpr requires a GROMACS TPR; LAMMPS force-field coefficients are not imported')
                     executable = s.get('gmx-executable', 'gmx')
                     n['gmx-executable'] = (str(resolve_path(executable, path.parent, 'gmx-executable', required_file=True))
                                            if '/' in executable else executable)

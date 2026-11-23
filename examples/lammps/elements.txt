@@ -1,0 +1,3 @@
+# LAMMPS type  element
+1 H
+2 F

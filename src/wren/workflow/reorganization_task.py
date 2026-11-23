@@ -52,13 +52,15 @@ def run_quantum_reorganization(settings, data, records, atoms_of, *, resume=Fals
     directory = Path(settings.get('output', data['root']/'reorganization'))
     frame = fixed_environment = pair_parameters = None
     if settings['environment'] == 'qmmm':
-        from .embedding import read_charges, load_gromacs_environment
+        from .embedding import read_charges, load_manifest_environment
         if settings['mm-source'] == 'separated':
             fixed_environment = data['frozen_environment']
         elif settings['mm-source'] == 'file':
             fixed_environment = read_charges(settings['mm-charges'])
         else:
-            frame = load_gromacs_environment(data)
+            if settings.get('mm-vdw') == 'tpr' and 'lammps-data' in data.get('provenance', {}).get('settings', {}):
+                raise ValueError('mm-vdw=tpr requires a GROMACS TPR; LAMMPS force-field coefficients are not imported')
+            frame = load_manifest_environment(data)
         if settings.get('mm-vdw') == 'tpr':
             from .lj import read_gromacs_lj
             pair_parameters = read_gromacs_lj(data['provenance']['settings']['tpr'], settings['gmx-executable'])

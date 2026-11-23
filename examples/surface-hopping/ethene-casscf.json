@@ -1,0 +1,14 @@
+{
+  "schema": "wren-sa-casscf-1",
+  "xyz": "ethene.xyz",
+  "masses_u": [12.0, 12.0, 1.00782503, 1.00782503, 1.00782503, 1.00782503],
+  "basis": "sto-3g",
+  "charge": 0,
+  "active_electrons": 2,
+  "active_orbitals": 2,
+  "states": 2,
+  "initial_active_mo_1based": [8, 9],
+  "orbital_gradient_tolerance": 0.000001,
+  "threads": 1,
+  "use_etfs": true
+}

@@ -1,0 +1,14 @@
+$get_dimers_monomers
+do = 1
+lammps-data = hf.data
+lammps-dump = hf.dump
+lammps-units = real
+element-map = elements.txt
+fragment-file = core.txt
+frame = 0
+frame_step = 1
+dimers_cutoff = 2
+monomers-qmmm-cutoff = 2
+format = xyz,gjf
+output = ../../build/lammps/mol
+$end

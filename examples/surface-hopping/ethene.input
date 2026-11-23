@@ -1,0 +1,8 @@
+$surface-hopping
+do = 1
+$end
+$surface-hopping-dynamics
+do = 1
+input = ethene-casscf.toml
+output = ../../build/surface-hopping/ethene-casscf
+$end

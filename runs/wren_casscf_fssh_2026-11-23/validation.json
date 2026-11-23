@@ -1,0 +1,264 @@
+{
+  "scope": "isolated LiH and C2H4, equal-weight singlet CAS(2,2)/STO-3G; short deterministic-start tests",
+  "versions": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "pyscf": "2.15.0"
+  },
+  "lih_finite_differences": {
+    "step_bohr": 0.002,
+    "etfs": false,
+    "derivatives": {
+      "Li_z": {
+        "gradient_analytic": [
+          -0.047084057184573015,
+          -0.008088279756987938
+        ],
+        "gradient_fd": [
+          -0.047087183625116324,
+          -0.008085073990526936
+        ],
+        "nac_01_analytic": 0.23452075986983842,
+        "nac_01_fd": 0.2344987612186043
+      },
+      "H_z": {
+        "gradient_analytic": [
+          0.047084057184573036,
+          0.008088279756988271
+        ],
+        "gradient_fd": [
+          0.04708718362333997,
+          0.00808507398875058
+        ],
+        "nac_01_analytic": -0.12248514739470082,
+        "nac_01_fd": -0.12246565211908159
+      }
+    }
+  },
+  "ethene_pi_character": {
+    "reference": "AO S-metric projection onto one local 2p normal per CH2, aligned normals; STO-3G",
+    "angle_between_ch2_plane_normals_deg": 24.883276272032873,
+    "initial_rhf_mo_1based": [
+      8,
+      9
+    ],
+    "initial_rhf_mo_energy_hartree": [
+      -0.30867753043472423,
+      0.3009851484338397
+    ],
+    "initial_rhf_local_pi_weights": [
+      0.9337636666464372,
+      0.9612937854851943
+    ],
+    "relative_sign_of_local_carbon_p_components": [
+      1.0,
+      -1.0
+    ],
+    "optimized_active_pi_subspace_squared_overlaps": [
+      0.5385742516066484,
+      0.9568450228187368
+    ],
+    "natural_occupations_by_state": [
+      [
+        1.9594689025255785,
+        0.04053109747442185
+      ],
+      [
+        1.00331030978449,
+        0.9966896902155102
+      ]
+    ]
+  },
+  "lih": {
+    "traces": [
+      {
+        "dt_au": 0.5,
+        "steps": 16,
+        "time_au": 8.0,
+        "energy_initial_hartree": [
+          -7.838505407915994,
+          -7.727124562305892
+        ],
+        "initial_nac_01_norm_per_bohr": 0.1954325075341509,
+        "spin_squared_initial": [
+          0.0,
+          0.0
+        ],
+        "initial_rhf_to_casscf_active_squared_overlaps": [
+          0.999993280360226,
+          0.993817748600331
+        ],
+        "end_coordinates_bohr": [
+          -1.5085989023663637e-20,
+          -1.6234014637743145e-20,
+          -0.012487269102511649,
+          1.0502155407454646e-19,
+          1.1301356798353848e-19,
+          3.5869304892927967
+        ],
+        "end_populations": [
+          0.00019194282694467315,
+          0.9998080571730533
+        ],
+        "hops": {
+          "accepted": 0,
+          "frustrated": 0
+        },
+        "max_norm_error": 2.55351295663786e-15,
+        "max_energy_drift_hartree": 2.0929965316440757e-08,
+        "minimum_state_gap_hartree": 0.10748651691502076,
+        "minimum_adjacent_state_overlap": 0.9999919874213178,
+        "max_probability_sum": 2.2773865546785734e-05
+      },
+      {
+        "dt_au": 0.25,
+        "steps": 32,
+        "time_au": 8.0,
+        "energy_initial_hartree": [
+          -7.838505407915994,
+          -7.727124562305892
+        ],
+        "initial_nac_01_norm_per_bohr": 0.1954325075341509,
+        "spin_squared_initial": [
+          0.0,
+          0.0
+        ],
+        "initial_rhf_to_casscf_active_squared_overlaps": [
+          0.999993280360226,
+          0.993817748600331
+        ],
+        "end_coordinates_bohr": [
+          -2.2777512515658955e-21,
+          4.608252828814275e-21,
+          -0.012487260671300411,
+          1.5856631995386858e-20,
+          -3.208048692673416e-20,
+          3.586930430598672
+        ],
+        "end_populations": [
+          0.0001919416335209546,
+          0.9998080583664777
+        ],
+        "hops": {
+          "accepted": 0,
+          "frustrated": 0
+        },
+        "max_norm_error": 2.4424906541753444e-15,
+        "max_energy_drift_hartree": 1.2460314557927177e-08,
+        "minimum_state_gap_hartree": 0.10748654003416824,
+        "minimum_adjacent_state_overlap": 0.9999979964848316,
+        "max_probability_sum": 1.1547857854217453e-05
+      }
+    ],
+    "max_final_coordinate_difference_bohr": 5.869412467163215e-08,
+    "max_final_population_difference": 1.1934243593358929e-09
+  },
+  "ethene": {
+    "traces": [
+      {
+        "dt_au": 0.5,
+        "steps": 4,
+        "time_au": 2.0,
+        "energy_initial_hartree": [
+          -77.06691270543347,
+          -76.67383186121305
+        ],
+        "initial_nac_01_norm_per_bohr": 0.24492875372380535,
+        "spin_squared_initial": [
+          0.0,
+          0.0
+        ],
+        "initial_rhf_to_casscf_active_squared_overlaps": [
+          0.9989799904134569,
+          0.7786087826766128
+        ],
+        "end_coordinates_bohr": [
+          -1.2566539744579375,
+          -5.8432849767743865e-06,
+          0.03779509263923526,
+          1.256654332934549,
+          0.01890326578682408,
+          2.0072049131916937e-06,
+          -2.326282241546687,
+          1.7385751604305966,
+          0.010177093010141015,
+          -2.326297303839468,
+          -1.7385486563467716,
+          0.008704607276238448,
+          2.3451942108471924,
+          1.549569530686197,
+          0.8023925968417328,
+          2.296042709471965,
+          -1.6251869998025363,
+          -0.7079214177530809
+        ],
+        "end_populations": [
+          6.6472723288915145e-09,
+          0.9999999933527295
+        ],
+        "hops": {
+          "accepted": 0,
+          "frustrated": 0
+        },
+        "max_norm_error": 1.7763568394002505e-15,
+        "max_energy_drift_hartree": 1.913273976583696e-06,
+        "minimum_state_gap_hartree": 0.3930648698162287,
+        "minimum_adjacent_state_overlap": 0.9999872961346605,
+        "max_probability_sum": 3.003759366703327e-09
+      },
+      {
+        "dt_au": 0.25,
+        "steps": 8,
+        "time_au": 2.0,
+        "energy_initial_hartree": [
+          -77.06691270543347,
+          -76.67383186121305
+        ],
+        "initial_nac_01_norm_per_bohr": 0.24492875372380535,
+        "spin_squared_initial": [
+          0.0,
+          0.0
+        ],
+        "initial_rhf_to_casscf_active_squared_overlaps": [
+          0.9989799904134569,
+          0.7786087826766128
+        ],
+        "end_coordinates_bohr": [
+          -1.2566539813498114,
+          -5.829078317573515e-06,
+          0.03779509323507924,
+          1.2566543422999144,
+          0.018903252235765174,
+          2.0027481829992117e-06,
+          -2.3262822356017274,
+          1.738575106254014,
+          0.010177050518747453,
+          -2.326297266941601,
+          -1.7385486736561033,
+          0.008704663629364257,
+          2.345194157232991,
+          1.549569498095501,
+          0.8023926395459755,
+          2.296042690791906,
+          -1.6251869035320468,
+          -0.7079214283481448
+        ],
+        "end_populations": [
+          6.650879789559918e-09,
+          0.9999999933491226
+        ],
+        "hops": {
+          "accepted": 0,
+          "frustrated": 0
+        },
+        "max_norm_error": 3.1086244689504383e-15,
+        "max_energy_drift_hartree": 1.977282352072507e-06,
+        "minimum_state_gap_hartree": 0.3930648169672679,
+        "minimum_adjacent_state_overlap": 0.9999967937898928,
+        "max_probability_sum": 1.6185933815676138e-09
+      }
+    ],
+    "max_final_coordinate_difference_bohr": 9.62704895801636e-08,
+    "max_final_population_difference": 3.607460668403302e-12
+  }
+}
