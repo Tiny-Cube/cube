@@ -1,0 +1,189 @@
+{
+  "schema": "wren-periodic-mesh-study-1",
+  "sigma_ev": 0.1,
+  "energy_reference": "same_cell_unshifted",
+  "meshes": [
+    {
+      "kmesh": [
+        1,
+        1,
+        1
+      ],
+      "fingerprint": "48b1ca9478fec206120c12bf9683994beda433f791405fe502f0ef4da97fde2a",
+      "total_energy_hartree": -120.5987580964786,
+      "vbm_ev": -1.151563950749768,
+      "vbm_k_index": 0,
+      "cbm_ev": 2.338699057233226,
+      "cbm_k_index": 0,
+      "sampled_gap_ev": 3.4902630079829935,
+      "minimum_sampled_direct_gap_ev": 3.4902630079829935,
+      "partial_occupation": false,
+      "finite_grid_integral": 192.0,
+      "delta_total_ev_per_cell": null,
+      "delta_sampled_gap_ev": null,
+      "dos_total_variation": null,
+      "elapsed_seconds": 13.85514600481838,
+      "modeled_electrons": 96,
+      "occupied_electrons": 96.0,
+      "vbm_fractional_k": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cbm_fractional_k": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "pdos_sum_max_residual": 4.973799150320701e-14
+    },
+    {
+      "kmesh": [
+        2,
+        1,
+        1
+      ],
+      "fingerprint": "8f52c4a89001abc7fd0de56799dd752509cc30bb69a03a153cfb0b6143de60ec",
+      "total_energy_hartree": -120.60011020685403,
+      "vbm_ev": -1.1623131831571443,
+      "vbm_k_index": 0,
+      "cbm_ev": 2.3273690280215082,
+      "cbm_k_index": 0,
+      "sampled_gap_ev": 3.4896822111786525,
+      "minimum_sampled_direct_gap_ev": 3.4896822111786525,
+      "partial_occupation": false,
+      "finite_grid_integral": 192.0,
+      "delta_total_ev_per_cell": -0.03679279736724126,
+      "delta_sampled_gap_ev": -0.0005807968043409772,
+      "dos_total_variation": 0.10244411670353888,
+      "elapsed_seconds": 11.849016366992146,
+      "modeled_electrons": 96,
+      "occupied_electrons": 96.0,
+      "vbm_fractional_k": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cbm_fractional_k": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "pdos_sum_max_residual": 2.842170943040401e-14
+    },
+    {
+      "kmesh": [
+        2,
+        2,
+        2
+      ],
+      "fingerprint": "a026112cf59731fab0ac82aacacbedc5bbdbeaec9f7e5e09e072511041564942",
+      "total_energy_hartree": -120.5927154640072,
+      "vbm_ev": -1.0193835399192348,
+      "vbm_k_index": 6,
+      "cbm_ev": 2.349185239468737,
+      "cbm_k_index": 0,
+      "sampled_gap_ev": 3.3685687793879717,
+      "minimum_sampled_direct_gap_ev": 3.4188745751417624,
+      "partial_occupation": false,
+      "finite_grid_integral": 192.0,
+      "delta_total_ev_per_cell": 0.20122120212365097,
+      "delta_sampled_gap_ev": -0.12111343179068079,
+      "dos_total_variation": 0.14106296745841726,
+      "elapsed_seconds": 21.547922007739544,
+      "modeled_electrons": 96,
+      "occupied_electrons": 96.0,
+      "vbm_fractional_k": [
+        0.5,
+        0.5,
+        0.0
+      ],
+      "cbm_fractional_k": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "pdos_sum_max_residual": 2.842170943040401e-14
+    },
+    {
+      "kmesh": [
+        3,
+        3,
+        3
+      ],
+      "fingerprint": "bc665635358bd01aa6c31e2d298d28c3217fecb26c4b7d52a8a082890416a7df",
+      "total_energy_hartree": -120.59281387515006,
+      "vbm_ev": -1.0375362249132567,
+      "vbm_k_index": 16,
+      "cbm_ev": 2.3489509336449346,
+      "cbm_k_index": 0,
+      "sampled_gap_ev": 3.3864871585581913,
+      "minimum_sampled_direct_gap_ev": 3.434622949646872,
+      "partial_occupation": false,
+      "finite_grid_integral": 192.0,
+      "delta_total_ev_per_cell": -0.0026779035969760265,
+      "delta_sampled_gap_ev": 0.017918379170219545,
+      "dos_total_variation": 0.03992584989988399,
+      "elapsed_seconds": 71.42731156712398,
+      "modeled_electrons": 96,
+      "occupied_electrons": 96.00000000000001,
+      "vbm_fractional_k": [
+        0.3333333333333333,
+        0.6666666666666666,
+        0.3333333333333333
+      ],
+      "cbm_fractional_k": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "pdos_sum_max_residual": 1.5987211554602254e-14
+    },
+    {
+      "kmesh": [
+        4,
+        4,
+        4
+      ],
+      "fingerprint": "86d1cd401b2562675eb4ef29129a67f2e505cccb29065ff010d0951ffab735e0",
+      "total_energy_hartree": -120.59281322520863,
+      "vbm_ev": -1.0196207434229623,
+      "vbm_k_index": 40,
+      "cbm_ev": 2.3489529601859247,
+      "cbm_k_index": 0,
+      "sampled_gap_ev": 3.368573703608887,
+      "minimum_sampled_direct_gap_ev": 3.418888598987799,
+      "partial_occupation": false,
+      "finite_grid_integral": 192.0,
+      "delta_total_ev_per_cell": 1.76858070577686e-05,
+      "delta_sampled_gap_ev": -0.017913454949304075,
+      "dos_total_variation": 0.014528862950049898,
+      "elapsed_seconds": 165.35851944517344,
+      "modeled_electrons": 96,
+      "occupied_electrons": 96.0,
+      "vbm_fractional_k": [
+        0.5,
+        0.5,
+        0.0
+      ],
+      "cbm_fractional_k": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "pdos_sum_max_residual": 1.0658141036401503e-14
+    }
+  ],
+  "structure_doi": "10.1107/S0108768106026814",
+  "implementation_commit": "5af4b3d5b938768792ae69a87ff1a3ad584cd74d",
+  "cpu_model": "Intel Xeon Platinum 8380",
+  "threads": 4,
+  "device": "NVIDIA GeForce RTX 5090",
+  "versions": {
+    "numpy": "2.5.4",
+    "pyscf": "2.15.0",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "cupy-cuda13x": "13.6.0"
+  },
+  "input_sha256": "e00dc229fdd4ae0e47ee3ebb0d31bcf19ecf20705a7034c5b6f83be4aa7dbe2b"
+}

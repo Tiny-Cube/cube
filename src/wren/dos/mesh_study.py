@@ -41,10 +41,11 @@ def run_study(settings, meshes, *, resume=False):
         raise ValueError('choose a study output separate from a single DOS run')
     if output.exists() and not resume:
         raise ValueError('existing mesh study; use --resume or choose another output')
-    rows, previous = [], None
+    rows, previous, reused = [], None, True
     for mesh in meshes:
         folder = root/('mesh-'+'x'.join(map(str, mesh)))
         result = run(dict(settings, kmesh=mesh, output=str(folder)), resume=resume)
+        reused = reused and result['reused']
         frame, = json.loads((folder/result['frames']).read_text())['frames']
         row = {'kmesh': mesh, 'result': str(folder.relative_to(root)/'result.json'),
                'fingerprint': result['fingerprint'], 'total_energy_hartree': frame['total_energy_hartree'],
@@ -60,4 +61,5 @@ def run_study(settings, meshes, *, resume=False):
         previous = frame
     _write_result(output, {'schema': 'wren-periodic-mesh-study-1', 'sigma_ev': settings['sigma'],
                            'energy_reference': 'same_cell_unshifted', 'meshes': rows})
-    return output
+    return {'status': 'completed', 'scope': 'single_periodic_cell_mesh_study', 'frame_count': 1,
+            'mesh_count': len(rows), 'output': str(output), 'reused': reused}

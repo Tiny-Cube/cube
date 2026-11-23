@@ -1,0 +1,100 @@
+{
+  "controls": {
+    "mode": "periodic",
+    "element-projections": true,
+    "sigma": 0.1,
+    "kmesh": [
+      2,
+      1,
+      1
+    ],
+    "spin-degeneracy": 1,
+    "method": "pbe",
+    "basis-set": "gth-szv",
+    "auxbasis": "auto",
+    "pseudo": "gth-pbe",
+    "grid-level": 2,
+    "max-cycle": 100,
+    "max-atoms": 500,
+    "conv-tol": 1e-08,
+    "precision": 1e-07
+  },
+  "input_sha256": {
+    "input": "e00dc229fdd4ae0e47ee3ebb0d31bcf19ecf20705a7034c5b6f83be4aa7dbe2b"
+  },
+  "runs": [
+    {
+      "fingerprint": "9bf86a16fe97fc2cd18f6e0c520d400ccf8e7e6e4f8c4874d673a2af4bb01517",
+      "versions": {
+        "numpy": "2.5.4",
+        "pyscf": "2.15.0",
+        "gpu4pyscf-cuda13x": "1.9.1",
+        "cupy-cuda13x": "13.6.0"
+      },
+      "scf": {
+        "backend": "cpu",
+        "device": null,
+        "class": "pyscf.pbc.dft.krks.KRKS",
+        "density_fit_class": "pyscf.pbc.df.df.GDF",
+        "xc_grid": "BeckeGrids",
+        "grid_level": 2,
+        "elapsed_seconds": 166.96397343697026,
+        "modeled_electrons_per_cell": 96,
+        "occupation_integral_per_cell": 96.0,
+        "atoms_per_cell": 36
+      },
+      "elapsed_seconds": 167.35776922898367,
+      "total_energy_hartree": -120.60010989355277,
+      "band_edges": {
+        "vbm_ev": -1.162324160582423,
+        "vbm_k_index": 0,
+        "cbm_ev": 2.3273622571974015,
+        "cbm_k_index": 0,
+        "sampled_gap_ev": 3.489686417779825,
+        "minimum_sampled_direct_gap_ev": 3.489686417779825,
+        "partial_occupation": false
+      },
+      "integrated_states_per_cell": 192.00000000000003
+    },
+    {
+      "fingerprint": "8f52c4a89001abc7fd0de56799dd752509cc30bb69a03a153cfb0b6143de60ec",
+      "versions": {
+        "numpy": "2.5.4",
+        "pyscf": "2.15.0",
+        "gpu4pyscf-cuda13x": "1.9.1",
+        "cupy-cuda13x": "13.6.0"
+      },
+      "scf": {
+        "backend": "gpu",
+        "device": "NVIDIA GeForce RTX 5090",
+        "class": "gpu4pyscf.pbc.dft.krks.KRKS",
+        "density_fit_class": "gpu4pyscf.pbc.df.df.GDF",
+        "xc_grid": "BeckeGrids",
+        "grid_level": 2,
+        "elapsed_seconds": 11.651621350087225,
+        "modeled_electrons_per_cell": 96,
+        "occupation_integral_per_cell": 96.0,
+        "atoms_per_cell": 36
+      },
+      "elapsed_seconds": 11.849016366992146,
+      "total_energy_hartree": -120.60011020685403,
+      "band_edges": {
+        "vbm_ev": -1.1623131831571443,
+        "vbm_k_index": 0,
+        "cbm_ev": 2.3273690280215082,
+        "cbm_k_index": 0,
+        "sampled_gap_ev": 3.4896822111786525,
+        "minimum_sampled_direct_gap_ev": 3.4896822111786525,
+        "partial_occupation": false
+      },
+      "integrated_states_per_cell": 192.0
+    }
+  ],
+  "abs_total_energy_difference_hartree": 3.1330125693784794e-07,
+  "max_abs_orbital_energy_difference_ev": 4.231074882454777e-05,
+  "max_abs_interpolated_curve_difference_per_ev_per_cell": {
+    "dos.csv/dos": 0.002897328595800275,
+    "pdos.csv/C": 0.0018733284295162633,
+    "pdos.csv/H": 0.0010240001662875642
+  }
+}

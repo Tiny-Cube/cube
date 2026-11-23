@@ -158,6 +158,11 @@ def _complete(directory, result, started):
 
 def run(settings, *, resume=False):
     from . import core
+    if 'kmesh-study' in settings:
+        from .mesh_study import run_study
+        single = settings.copy()
+        meshes = single.pop('kmesh-study')
+        return run_study(single, meshes, resume=resume)
     started = time.perf_counter()
     mode = settings['mode']
     use_kpm = settings.get('solver') == 'kpm'

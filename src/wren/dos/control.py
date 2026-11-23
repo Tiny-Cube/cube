@@ -5,10 +5,20 @@ from pathlib import Path
 from wren.quantum.config import SCFConfig
 
 FIELDS = {'do', 'mode', 'input', 'xyz', 'output', 'molecules', 'sigma', 'points', 'emin', 'emax',
-          'kmesh', 'spin-degeneracy', 'dos-backend', 'qc-engine', 'method', 'basis-set', 'auxbasis',
+          'kmesh', 'kmesh-study', 'spin-degeneracy', 'dos-backend', 'qc-engine', 'method', 'basis-set', 'auxbasis',
           'threads', 'grid-level', 'conv-tol', 'max-cycle', 'max-memory-mb', 'pseudo', 'precision', 'max-atoms',
           'site-projections', 'degeneracy-tol-ev', 'element-projections', 'solver',
           'kpm-moments', 'kpm-trace', 'kpm-vectors', 'kpm-seed', 'kpm-bounds-ev'}
+
+
+def _mesh(parts):
+    try:
+        mesh = [int(str(n).strip()) for n in parts]
+    except (TypeError, ValueError) as exc:
+        raise ValueError('DOS kmesh needs three integers') from exc
+    if len(mesh) != 3 or min(mesh) < 1:
+        raise ValueError('DOS kmesh needs three positive integers')
+    return mesh
 
 
 def normalize(raw, base):
@@ -117,12 +127,17 @@ def normalize(raw, base):
         raise ValueError('DOS emin must be below emax')
     mesh = raw.get('kmesh', [1, 1, 1])
     mesh = mesh if isinstance(mesh, list) else str(mesh).split(',')
-    try:
-        result['kmesh'] = [int(str(n).strip()) for n in mesh]
-    except ValueError as exc:
-        raise ValueError('DOS kmesh needs three integers') from exc
-    if len(mesh) != 3 or any(n < 1 for n in result['kmesh']):
-        raise ValueError('DOS kmesh needs three positive integers')
+    result['kmesh'] = _mesh(mesh)
+    if 'kmesh-study' in raw:
+        entries = raw['kmesh-study']
+        entries = entries if isinstance(entries, list) else str(entries).split(',')
+        if mode != 'periodic' or len(entries) < 2:
+            raise ValueError('kmesh-study needs periodic mode and at least two distinct meshes')
+        meshes = [_mesh(item if isinstance(item, list) else str(item).lower().split('x')) for item in entries]
+        for old, new in zip(meshes, meshes[1:]):
+            if old == new or any(a < b for a, b in zip(new, old)):
+                raise ValueError('each study mesh must refine at least one axis and never coarsen another')
+        result['kmesh-study'] = meshes
     result['spin-degeneracy'] = number('spin-degeneracy', 1, integer=True, minimum=1)
     if result['spin-degeneracy'] not in (1, 2):
         raise ValueError('spin-degeneracy must be 1 or 2')

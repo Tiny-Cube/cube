@@ -1,0 +1,99 @@
+{
+  "controls": {
+    "mode": "periodic",
+    "element-projections": true,
+    "sigma": 0.1,
+    "kmesh": [
+      3,
+      1,
+      1
+    ],
+    "spin-degeneracy": 1,
+    "method": "hf",
+    "basis-set": "gth-szv",
+    "auxbasis": "auto",
+    "pseudo": "gth-pade",
+    "grid-level": 3,
+    "max-cycle": 100,
+    "max-atoms": 500,
+    "conv-tol": 1e-08,
+    "precision": 1e-06
+  },
+  "input_sha256": {
+    "input": "9ed67e6f733840b2dfb5e2e6f40d5fadc6701b83f25c769d87c22c1dd48572c4"
+  },
+  "runs": [
+    {
+      "fingerprint": "1751b26cdfc48b5b50b337383b6fca5da94f49b9346d558bda68ebc6b9d5a984",
+      "versions": {
+        "numpy": "2.5.4",
+        "pyscf": "2.15.0",
+        "gpu4pyscf-cuda13x": "1.9.1",
+        "cupy-cuda13x": "13.6.0"
+      },
+      "scf": {
+        "backend": "gpu",
+        "device": "NVIDIA GeForce RTX 5090",
+        "class": "gpu4pyscf.pbc.scf.khf.KRHF",
+        "density_fit_class": "gpu4pyscf.pbc.df.df.GDF",
+        "xc_grid": null,
+        "grid_level": null,
+        "elapsed_seconds": 1.6949953911826015,
+        "modeled_electrons_per_cell": 2,
+        "occupation_integral_per_cell": 2.0,
+        "atoms_per_cell": 2
+      },
+      "elapsed_seconds": 2.3449368667788804,
+      "total_energy_hartree": -1.1036089265318063,
+      "band_edges": {
+        "vbm_ev": -16.47373336028474,
+        "vbm_k_index": 1,
+        "cbm_ev": 11.808736481355213,
+        "cbm_k_index": 1,
+        "sampled_gap_ev": 28.28246984163995,
+        "minimum_sampled_direct_gap_ev": 28.28246984163995,
+        "partial_occupation": false
+      },
+      "integrated_states_per_cell": 3.9999999999999982
+    },
+    {
+      "fingerprint": "e880c60a9841fa54daea0ecc047322a24d0a9b53f84b9da75b74401d8d5f429b",
+      "versions": {
+        "numpy": "2.5.4",
+        "pyscf": "2.15.0",
+        "gpu4pyscf-cuda13x": "1.9.1",
+        "cupy-cuda13x": "13.6.0"
+      },
+      "scf": {
+        "backend": "gpu",
+        "device": "NVIDIA GeForce RTX 5090",
+        "class": "gpu4pyscf.pbc.scf.khf.KRHF",
+        "density_fit_class": "gpu4pyscf.pbc.df.df.GDF",
+        "xc_grid": null,
+        "grid_level": null,
+        "elapsed_seconds": 0.7725805602967739,
+        "modeled_electrons_per_cell": 2,
+        "occupation_integral_per_cell": 2.0,
+        "atoms_per_cell": 2
+      },
+      "elapsed_seconds": 1.4028554051183164,
+      "total_energy_hartree": -1.1036089265318063,
+      "band_edges": {
+        "vbm_ev": -16.47373336028474,
+        "vbm_k_index": 1,
+        "cbm_ev": 11.808736481355213,
+        "cbm_k_index": 1,
+        "sampled_gap_ev": 28.28246984163995,
+        "minimum_sampled_direct_gap_ev": 28.28246984163995,
+        "partial_occupation": false
+      },
+      "integrated_states_per_cell": 3.9999999999999982
+    }
+  ],
+  "abs_total_energy_difference_hartree": 0.0,
+  "max_abs_orbital_energy_difference_ev": 0.0,
+  "max_abs_interpolated_curve_difference_per_ev_per_cell": {
+    "dos.csv/dos": 8.881784197001252e-16,
+    "pdos.csv/H": 6.217248937900877e-15
+  }
+}

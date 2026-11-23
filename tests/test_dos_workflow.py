@@ -14,6 +14,41 @@ from wren.dos.control import normalize
 
 
 class DosControlTests(unittest.TestCase):
+    def test_mesh_study_requires_progressive_periodic_meshes(self):
+        from contextlib import redirect_stderr
+        from wren.dos.cli import main
+        case = Path(__file__).resolve().parents[1]/'examples/dos/periodic.toml'
+        output = io.StringIO()
+        with redirect_stdout(output):
+            self.assertEqual(main([str(case), '--check', '--kmesh-study', '1x1x1', '2x3x1']), 0)
+        self.assertEqual(json.loads(output.getvalue())['kmesh-study'], [[1, 1, 1], [2, 3, 1]])
+        with redirect_stderr(io.StringIO()):
+            for meshes in (['2x1x1'], ['2x2x1', '3x1x1'], ['2x2x2', '2x2x2'], ['1x1x1', '2x0x2']):
+                self.assertEqual(main([str(case), '--check', '--kmesh-study', *meshes]), 1)
+            monomer = case.with_name('monomer.toml')
+            self.assertEqual(main([str(monomer), '--check', '--kmesh-study', '1x1x1', '2x2x2']), 1)
+
+    @unittest.skipUnless(importlib.util.find_spec('pyscf'), 'periodic PySCF required')
+    def test_unified_periodic_mesh_control_resume(self):
+        from wren.workflow.cli import main
+        source = Path(__file__).resolve().parents[1]/'examples/dos/h2-cell.json'
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            control = root/'input'
+            control.write_text(f'$dos\ndo=1\nmode=periodic\ninput={source}\noutput=bands\n'
+                               'method=hf\nbasis-set=gth-szv\npseudo=gth-pade\nthreads=1\nprecision=1e-6\n'
+                               'kmesh-study=1x1x1,3x1x1\n$end\n')
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(main([str(control)]), 0)
+                report = root/'bands-kmesh/kmesh-study.json'
+                first = json.loads(report.read_text())
+                self.assertEqual(main([str(control), '--resume']), 0)
+            self.assertEqual(json.loads(report.read_text()), first)
+            rows = first['meshes']
+            self.assertIsNone(rows[0]['dos_total_variation'])
+            self.assertGreater(rows[1]['dos_total_variation'], 0.)
+            self.assertAlmostEqual(rows[1]['finite_grid_integral'], 4.)
+
     @unittest.skipUnless(importlib.util.find_spec('numpy'), 'DOS math needs NumPy')
     def test_mesh_study_edges_and_full_spectrum_change(self):
         import numpy as np

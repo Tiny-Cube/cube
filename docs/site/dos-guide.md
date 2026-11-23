@@ -92,7 +92,7 @@ uv run --extra dos wren-dos examples/dos/periodic.toml
 使用 `kmesh=[n1,n2,n3]` 的完整均匀网格、等权求和；`basis-set`、`pseudo`、
 `auxbasis`、`precision` 等必须针对周期计算收敛。`auxbasis="auto"` 使用 PySCF 自动辅助基。
 默认 `max-atoms=500` 是防止意外启动巨大超胞量化的显式限额，不是对物理体系的裁剪规则。
-在 TOML 中设置 `qc-engine = "gpu-pyscf"` 启用 GPU 周期 SCF，设置 `dos-backend = "gpu"` 在 GPU 上计算元素投影与展宽。两个选项可独立设置。周期 DFT 两端均采用 Gaussian density fitting 和 `grid-level` 指定的 Becke 网格。每帧的 `spectra.json` 记录实际 SCF 后端、显卡、电子数、每个 k 点的轨道占据与带边位置。
+在 TOML 中设置 `qc-engine = "gpu-pyscf"` 启用 GPU 周期 SCF，设置 `dos-backend = "gpu"` 在 GPU 上计算元素投影与展宽。两个选项可独立设置。周期 DFT 两端均采用 Gaussian density fitting 和 `grid-level` 指定的 Becke 网格。输出目录的 `spectra.json` 记录实际 SCF 后端、显卡、电子数、每个 k 点的轨道占据与带边位置。
 
 随附的实验萘晶胞含两个分子，来自 298 K、0.4 GPa 的单晶衍射精修。用同一结构逐步加密三个倒空间方向的采样，可以分别观察总能、带隙和 DOS 形状的变化。[晶体结构与精修条件](https://doi.org/10.1107/S0108768106026814)
 
@@ -100,7 +100,29 @@ uv run --extra dos wren-dos examples/dos/periodic.toml
 uv run --extra dos wren-dos examples/dos/naphthalene-periodic.toml --kmesh-study 1x1x1 2x2x2 3x3x3
 ```
 
-`<output>-kmesh/kmesh-study.json` 给出每个网格的采样间隙、最小直接间隙，以及相对上一个网格的变化量。各网格目录保留总 DOS、元素 PDOS 和原始能级。采样间隙允许价带顶和导带底来自不同 k 点，直接间隙在同一 k 点取差。`dos_total_variation` 使用同一晶胞的原始能量零点、相同 Gaussian 宽度和覆盖所有轨道的公共能量网格，计算两条谱之差的绝对值积分除以两倍每晶胞态数。该量接近 0 表示两次展宽谱接近 ；带边、基组、结构采样仍需分别检查。使用 `--resume` 可复用输入和文件校验均通过的已完成网格。
+也可在统一的 `input` 中直接指定网格序列，输入路径相对于控制文件。以下示例在仓库根目录运行 `wren input`。独立 TOML 的 `[dos]` 表接受同一字段，例如 `kmesh-study = ["1x1x1", "2x2x2", "3x3x3"]`。
+
+```text
+$dos
+do = 1
+mode = periodic
+input = examples/dos/naphthalene-cell.json
+output = results/naphthalene
+qc-engine = gpu-pyscf
+dos-backend = gpu
+method = pbe
+basis-set = gth-szv
+pseudo = gth-pbe
+grid-level = 2
+precision = 1e-7
+conv-tol = 1e-8
+sigma = 0.1
+element-projections = true
+kmesh-study = 1x1x1,2x1x1,2x2x2,3x3x3,4x4x4
+$end
+```
+
+`<output>-kmesh/kmesh-study.json` 给出每个网格的采样间隙、最小直接间隙，以及相对上一个网格的变化量。各网格目录保留总 DOS、元素 PDOS 和原始能级。采样间隙允许价带顶和导带底来自不同 k 点，直接间隙在同一 k 点取差。`dos_total_variation` 使用同一晶胞的原始能量零点、相同 Gaussian 宽度和覆盖所有轨道的公共能量网格，计算两条谱之差的绝对值积分除以两倍每晶胞态数。该量接近 0 表示两次展宽谱接近。带边、基组、结构采样仍需分别检查。使用 `--resume` 可复用输入和文件校验均通过的已完成网格。
 
 周期计算没有天然共同真空零点。不同帧/晶胞之间的谱需明确平均静电势、真空能级或合适
 参考的对齐；未对齐原始谱不能解释为绝对输运位点无序，也不应逐分子将 HOMO 强行归零。

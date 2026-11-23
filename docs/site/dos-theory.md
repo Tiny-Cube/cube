@@ -49,9 +49,9 @@ $$D(E)=g_s\sum_n\sum_{\mathbf{k}}w_{\mathbf{k}}
 能带并进行积分，改善尖锐结构的采样；仍需收敛网格，不能通过极小展宽弥补缺失的 k 点。
 [Blöchl、Jepsen、Andersen，1994](https://doi.org/10.1103/PhysRevB.49.16223)
 
-PySCF 的 PBC 模块提供 Gamma 或 k 点 HF/DFT 与密度拟合。Wren 当前采用 CPU KRHF/KRKS
-全网格本征值求和，不假定只计算 Gamma 就已经收敛。
-[PySCF 周期 SCF 文档](https://pyscf.org/user/pbc/scf.html)
+Wren 在 CPU 或 GPU 上用周期 KRHF/KRKS 自洽求解，再对全网格本征值求和。两端使用同类高斯密度拟合，DFT 还需固定相同的数值积分网格等级。[PySCF 周期 SCF](https://pyscf.org/user/pbc/scf.html)、[GPU4PySCF 1.9.1 的周期 KRKS](https://github.com/pyscf/gpu4pyscf/blob/v1.9.1/gpu4pyscf/pbc/dft/krks.py)、[Sun 等，2017](https://doi.org/10.1063/1.4998644)
+
+在闭壳层绝缘体中，对每个采样点分别求最高占据能 $v_k$ 和最低空轨道能 $c_k$。采样带隙为 $\min_k c_k-\max_k v_k$，最小直接间隙为 $\min_k(c_k-v_k)$。当价带顶和导带底位于不同波矢时，两者可以不同。对于同一结构、同一能量参考，两个网格的展宽 DOS 还可用 $\int|D_1-D_2|\,dE/(2N)$ 衡量整体变化，其中 $N$ 是每晶胞纳入的自旋态总数。用两项指标可分别发现带边与全谱中对采样敏感的部分。实际萘晶胞计算见[数值验证](validation.md)。
 
 ## 无序材料：有限超胞与有效 Hamiltonian
 
