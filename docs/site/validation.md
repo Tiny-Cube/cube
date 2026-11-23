@@ -53,3 +53,7 @@ CPU 48.62 s、GPU 3.92 s；单次观测约 12.4 倍。GPU 已由小分子测试�
 - 三片段表面跳跃例子用 16 条轨迹、每条 200 步，出现 3 次接受跳跃。最大总能漂移约 $1.98\times10^{-10}$ Hartree。参数属于示例模型。
 
 复现实例与核验数据见[本轮验证记录](https://github.com/Tiny-Cube/cube/tree/feat/wren/runs/wren_state_pairs_2026-11-23)。
+
+## 同一 MD 几何的垂直电离能与电子亲和能
+
+对 frame 2000 的 86 原子单体，在相同几何上用 B3LYP/STO-3G、Weigend 密度拟合、1 级积分网格计算三个电荷态。CPU 和 RTX 5090 都达到 SCF 阈值 1e-7 Hartree。CPU 的垂直 IP 为 3.948143 eV，EA 为 −0.974198 eV，两端差分别为 5.84e-6 eV 和 2.18e-6 eV。每个加/减电子通道积分为 1。首次尝试的 HF 阴离子在 100 步内未收敛，未纳入此对照。B3LYP 的单次墙钟时间分别为 546.50 s 和 43.60 s，两次任务在同一主机上有重叠。这个有限基组的单个真空快照用于设备一致性核验，材料能级还需环境、扩散基函数与采样收敛检查。[原始验证数据](https://github.com/Tiny-Cube/cube/blob/feat/wren/runs/wren_state_pairs_2026-11-23/gpu-dos.json)

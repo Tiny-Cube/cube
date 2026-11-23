@@ -1,0 +1,281 @@
+{
+  "schema": "wren-gpu-dos-material-validation-1",
+  "status": "completed",
+  "date": "2026-11-23",
+  "same_host": true,
+  "hardware": {
+    "gpu": "NVIDIA GeForce RTX 5090, 32607 MiB, 615.71.09",
+    "cpu": "Intel(R) Xeon(R) Platinum 8380 CPU @ 2.30GHz"
+  },
+  "versions": {
+    "pyscf": "2.15.0",
+    "numpy": "2.5.4",
+    "gpu4pyscf-cuda13x": "1.9.1",
+    "cupy-cuda13x": "13.6.0"
+  },
+  "python_version": "3.12.15",
+  "precision": "FP64",
+  "control_and_validation_script_sha256": {
+    "check.py": "ddded5c7c9d53f64fbba60cf756c981f231479746e065972e0305f5528be9d07",
+    "retry.py": "c6be2d5930920a7a573c9c9156a581d79a450d55c3107ff80555661a26169d48"
+  },
+  "previous_attempt": {
+    "device": "gpu",
+    "method": "HF/STO-3G, Weigend auxiliary fit",
+    "scf_max_cycle": 100,
+    "status": "failed",
+    "phase": "anion SCF",
+    "error": "RuntimeError: SCF did not converge; no successful checkpoint is emitted",
+    "charges": {
+      "neutral": {
+        "status": "completed",
+        "energy_hartree": -3661.866394063941,
+        "spin_square": 0.0,
+        "source_class": "gpu4pyscf.df.df_jk.DFRHF"
+      },
+      "cation": {
+        "status": "completed",
+        "energy_hartree": -3661.7308510324265,
+        "spin_square": 0.771088176682099,
+        "source_class": "gpu4pyscf.df.df_jk.DFUHF"
+      },
+      "anion": {
+        "status": "failed",
+        "last_unconverged_spin_square": 1.2715309,
+        "cycles": 100
+      }
+    }
+  },
+  "site_projection": {
+    "model": "two orthogonal sites per unit cell, onsite zero, both real hoppings -0.1 eV",
+    "model_sha256": "cf9e4331ca7822ee70cefddb109593714e4bfd54b6730bc3255fb10680704f88",
+    "kmesh": [
+      32,
+      1,
+      1
+    ],
+    "spin_degeneracy": 2,
+    "sigma_ev": 0.02,
+    "degeneracy_tol_ev": 1e-08,
+    "devices": {
+      "cpu": {
+        "backend": "cpu",
+        "elapsed_seconds": 0.008437830954790115,
+        "integral": 4.0,
+        "site_integrals": [
+          1.999999999999999,
+          1.999999999999999
+        ],
+        "max_site_sum_residual_per_ev": 8.881784197001252e-15,
+        "rank2_groups": 1,
+        "rank2_k_index": 16,
+        "rank2_individual_ipr": null,
+        "rank2_projector_profile_ipr": 0.4999999999999998,
+        "request_fingerprint": "254ee22567592ce914d01465f3515014dea56f41c33047a0dc570e22d1e3558a"
+      },
+      "gpu": {
+        "backend": "gpu",
+        "elapsed_seconds": 0.6804376980289817,
+        "integral": 4.0,
+        "site_integrals": [
+          1.9999999999999993,
+          2.000000000000001
+        ],
+        "max_site_sum_residual_per_ev": 5.329070518200751e-15,
+        "rank2_groups": 1,
+        "rank2_k_index": 16,
+        "rank2_individual_ipr": null,
+        "rank2_projector_profile_ipr": 0.4999999999999998,
+        "request_fingerprint": "9b51b91ea42658ff9443c658379470f5c3748e6e4858b3486eb97d235f622460"
+      }
+    },
+    "max_cpu_gpu_pdos_difference_per_ev": 7.993605777301127e-15,
+    "max_cpu_gpu_profile_ipr_difference": 7.771561172376096e-16
+  },
+  "vertical_dscf": {
+    "system": "e_006_ether_12-17_0, frame 2000, molecule 1",
+    "xyz_sha256": "af97a8965886edc2496206b076ae713e7f8604e1887afe0d52ea9b114338feaf",
+    "atoms": 86,
+    "method": "B3LYP/STO-3G, Weigend auxiliary fit, grid level 1",
+    "environment": "isolated vacuum molecule",
+    "geometry": "fixed MD frame for all charges",
+    "spin_sectors": {
+      "neutral": "singlet",
+      "cation": "doublet",
+      "anion": "doublet"
+    },
+    "scf_conv_tol_hartree": 1e-07,
+    "scf_max_cycle": 150,
+    "threads_requested": 8,
+    "sigma_ev": 0.05,
+    "devices": {
+      "cpu": {
+        "device": "cpu",
+        "control": {
+          "mode": "vertical-dscf",
+          "xyz": "md-1.xyz",
+          "qc-engine": "pyscf",
+          "dos-backend": "cpu",
+          "method": "b3lyp",
+          "basis-set": "sto-3g",
+          "auxbasis": "weigend",
+          "grid-level": 1,
+          "threads": 8,
+          "conv-tol": 1e-07,
+          "max-cycle": 150,
+          "output": "b3lyp-cpu"
+        },
+        "status": "completed",
+        "energy_hartree": {
+          "neutral": -3683.894609342068,
+          "cation": -3683.749517758354,
+          "anion": -3683.85880824196
+        },
+        "vertical_ip_ev": 3.9481430926953456,
+        "vertical_ea_ev": -0.974197554981466,
+        "removal_ev": -3.9481430926953456,
+        "addition_ev": 0.974197554981466,
+        "scf": {
+          "neutral": {
+            "spin_square": 0.0,
+            "converged": true,
+            "charge": 0,
+            "spin_2s": 0,
+            "backend": "cpu",
+            "source_class": "pyscf.df.df_jk.DFRKS",
+            "last_logged_cycle": 15
+          },
+          "cation": {
+            "spin_square": 0.7706473560972142,
+            "converged": true,
+            "charge": 1,
+            "spin_2s": 1,
+            "backend": "cpu",
+            "source_class": "pyscf.df.df_jk.DFUKS",
+            "last_logged_cycle": 39
+          },
+          "anion": {
+            "spin_square": 0.7679609702773291,
+            "converged": true,
+            "charge": -1,
+            "spin_2s": 1,
+            "backend": "cpu",
+            "source_class": "pyscf.df.df_jk.DFUKS",
+            "last_logged_cycle": 21
+          }
+        },
+        "channel_integrals": {
+          "removal": 0.9999999999999992,
+          "addition": 0.9999999999999994
+        },
+        "nonpositive_vertical_ea_count": 1,
+        "elapsed_seconds": 546.4996427423321,
+        "request_fingerprint": "cf500279f224bcc1fa03047df963c4fb0cb6c884af1918cc6373673037963fd7",
+        "implementation_sha256": {
+          "wren/dos/runner.py": "c6d757638865606e5b220a73d116b7f9c2c323377895995a904c4df634c3e4ac",
+          "wren/dos/core.py": "c975f256d982a60b04da0dd60907df9b472c335f081756e9b0944fbb9e328884",
+          "wren/workflow/scf.py": "e655fc78705176bcabbe67b61b3ee05dc9a7681a2b62504b0016bba23e6e5b44",
+          "wren/quantum/checkpoints.py": "75a9e26d86c9eb58322c2c37110075ee8e2e0ce68526047a8a905b81460d5020",
+          "wren/dos/charging.py": "21a2cd14fce0c2fdd51bbb27beef576b9e7ddb7af07cc0fbbbba3531acf4db6e",
+          "wren/quantum/geometry.py": "1c284d4a5c6e56b732eea44be3d417bef9619a2773a4bbe0f85f28a6522db70f",
+          "wren/workflow/control.py": "9229e206ffe6901785f0096800231740221ac4c15258192001fa930b156fd3a0"
+        }
+      },
+      "gpu": {
+        "device": "gpu",
+        "control": {
+          "mode": "vertical-dscf",
+          "xyz": "md-1.xyz",
+          "qc-engine": "gpu-pyscf",
+          "dos-backend": "gpu",
+          "method": "b3lyp",
+          "basis-set": "sto-3g",
+          "auxbasis": "weigend",
+          "grid-level": 1,
+          "threads": 8,
+          "conv-tol": 1e-07,
+          "max-cycle": 150,
+          "output": "b3lyp-gpu"
+        },
+        "status": "completed",
+        "energy_hartree": {
+          "neutral": -3683.894609400143,
+          "cation": -3683.74951803121,
+          "anion": -3683.858808220096
+        },
+        "vertical_ip_ev": 3.9481372482117663,
+        "vertical_ea_ev": -0.9741997302359175,
+        "removal_ev": -3.9481372482117663,
+        "addition_ev": 0.9741997302359175,
+        "scf": {
+          "neutral": {
+            "spin_square": 0.0,
+            "converged": true,
+            "charge": 0,
+            "spin_2s": 0,
+            "backend": "gpu",
+            "source_class": "gpu4pyscf.df.df_jk.DFRKS",
+            "last_logged_cycle": 14
+          },
+          "cation": {
+            "spin_square": 0.7704941372233236,
+            "converged": true,
+            "charge": 1,
+            "spin_2s": 1,
+            "backend": "gpu",
+            "source_class": "gpu4pyscf.df.df_jk.DFUKS",
+            "last_logged_cycle": 29
+          },
+          "anion": {
+            "spin_square": 0.7679284728605751,
+            "converged": true,
+            "charge": -1,
+            "spin_2s": 1,
+            "backend": "gpu",
+            "source_class": "gpu4pyscf.df.df_jk.DFUKS",
+            "last_logged_cycle": 19
+          }
+        },
+        "channel_integrals": {
+          "removal": 0.9999999999999994,
+          "addition": 0.9999999999999994
+        },
+        "nonpositive_vertical_ea_count": 1,
+        "elapsed_seconds": 43.60281955078244,
+        "request_fingerprint": "0fecead91549ec3a9a117086fe04966b3a2001030861fae2026172e8542d983b",
+        "implementation_sha256": {
+          "wren/dos/runner.py": "c6d757638865606e5b220a73d116b7f9c2c323377895995a904c4df634c3e4ac",
+          "wren/dos/core.py": "c975f256d982a60b04da0dd60907df9b472c335f081756e9b0944fbb9e328884",
+          "wren/workflow/scf.py": "e655fc78705176bcabbe67b61b3ee05dc9a7681a2b62504b0016bba23e6e5b44",
+          "wren/quantum/checkpoints.py": "75a9e26d86c9eb58322c2c37110075ee8e2e0ce68526047a8a905b81460d5020",
+          "wren/dos/charging.py": "21a2cd14fce0c2fdd51bbb27beef576b9e7ddb7af07cc0fbbbba3531acf4db6e",
+          "wren/quantum/geometry.py": "1c284d4a5c6e56b732eea44be3d417bef9619a2773a4bbe0f85f28a6522db70f",
+          "wren/workflow/control.py": "9229e206ffe6901785f0096800231740221ac4c15258192001fa930b156fd3a0"
+        }
+      }
+    },
+    "cpu_gpu_ip_absolute_difference_ev": 5.844483579320325e-06,
+    "cpu_gpu_ea_absolute_difference_ev": 2.1752544515640793e-06,
+    "cpu_gpu_total_energy_absolute_difference_hartree": {
+      "neutral": 5.807487468700856e-08,
+      "cation": 2.7285568648949265e-07,
+      "anion": 2.1864252630621195e-08
+    },
+    "cpu_to_gpu_observed_wall_ratio": 12.533584946401138
+  },
+  "checks": {
+    "projected_dos_abs_diff_below_1e-9_per_ev": true,
+    "projector_profile_ipr_abs_diff_below_1e-10": true,
+    "ip_and_ea_abs_diff_below_0.01_ev": true,
+    "charge_channels_each_integrate_to_one_within_1e-8": true,
+    "all_three_scfs_converged_on_both_devices": true
+  },
+  "agreement_checks_passed": true,
+  "method_notes": [
+    "Both devices evaluated the same isolated fixed MD geometry and Wren control values for B3LYP; the CPU uses PySCF and the GPU uses GPU4PySCF.",
+    "The first UHF/STO-3G anion hit the maximum SCF cycle count and supplied no accepted EA. The independent B3LYP run used common settings on both devices.",
+    "CPU and GPU B3LYP runs overlapped on the same host. Each ran once. Times include three SCFs, file I/O and spectral construction; these are implementation observations under concurrent load.",
+    "STO-3G has no diffuse functions. Anion binding, spin stability, larger bases, integration grids, functional choice, matrix polarization and trajectory sampling require independent convergence studies.",
+    "Each channel counts one first removal or attachment transition. One vacuum molecule at one frame does not determine the material DOS or a statistical site-energy distribution."
+  ]
+}
