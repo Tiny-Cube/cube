@@ -18,7 +18,7 @@ from wren.workflow.dimers import file_hash, fingerprint
 from .core import broaden, bloch_eigensystems, disorder_statistics, element_probabilities, kmesh, participation_groups
 
 
-def _write_total_dos(directory, settings, grid, spectra, weights):
+def _write_total_dos(directory, settings, grid, spectra, weights, frames):
     curves = [broaden(e, grid, settings['sigma'], weights=w, backend=settings['dos-backend'])
               for e, w in zip(spectra, weights, strict=True)]
     mean = np.mean(curves, axis=0)
@@ -30,7 +30,23 @@ def _write_total_dos(directory, settings, grid, spectra, weights):
     integral = float(np.trapezoid(mean, grid))
     summary = {'expected_integral': expected, 'finite_grid_integral': integral,
                'integral_relative_error': abs(integral-expected)/max(expected, 1e-300)}
+    if 'block-size-frames' in settings:
+        from .sampling import block_curve_statistics
+        indices, times = _sampling_axis(frames)
+        blocks = block_curve_statistics(curves, indices, settings['block-size-frames'], times_ps=times)
+        with (directory/'dos-blocks.csv').open('w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['energy_ev', 'complete_blocks_mean', 'standard_error',
+                             *[f'block_{i}' for i in range(len(blocks['block_means']))]])
+            writer.writerows(zip(grid, blocks['retained_mean'], blocks['standard_error'], *blocks['block_means']))
+        summary['sampling_uncertainty_estimated'] = True
+        summary['sampling'] = {**blocks['metadata'], 'file': 'dos-blocks.csv'}
     return summary, mean
+
+
+def _sampling_axis(frames):
+    times = [frame.get('time_ps') for frame in frames]
+    return [frame.get('frame') for frame in frames], times if any(t is not None for t in times) else None
 
 
 def _write_pdos(directory, settings, grid, labels, spectra, projected_weights, total):
@@ -148,7 +164,8 @@ def _scf_settings(settings):
 
 def _complete(directory, result, started):
     output = directory/'result.json'
-    result.update(status='completed', sampling_uncertainty_estimated=False,
+    result.setdefault('sampling_uncertainty_estimated', False)
+    result.update(status='completed',
                   elapsed_seconds=time.perf_counter()-started,
                   output_sha256={str(p.relative_to(directory)): file_hash(p)
                                  for p in directory.rglob('*') if p.is_file() and p != output})
@@ -167,13 +184,16 @@ def run(settings, *, resume=False):
     mode = settings['mode']
     use_kpm = settings.get('solver') == 'kpm'
     datasets = _dataset(settings) if mode != 'tight-binding' else []
-    if mode == 'periodic' and len(datasets) > 1:
-        raise ValueError('multi-frame periodic DOS needs explicit potential alignment, not yet implemented; run each frame separately')
     network = json.loads(Path(settings['input']).read_text()) if mode == 'tight-binding' else None
-    sources = {key: file_hash(settings[key]) for key in ('input', 'xyz') if key in settings}
+    sources = {key: file_hash(settings[key]) for key in ('input', 'xyz', 'reference-file') if key in settings}
     request = {'settings': settings, 'datasets': datasets, 'network': network, 'source_sha256': sources,
                'implementation_sha256': {p: file_hash(p) for p in (__file__, core.__file__)},
                'numpy_version': np.__version__}
+    if 'block-size-frames' in settings:
+        from . import sampling
+        indices, times = _sampling_axis(datasets)
+        sampling.validate_sampling(indices, settings['block-size-frames'], times_ps=times)
+        request['implementation_sha256'][sampling.__file__] = file_hash(sampling.__file__)
     if use_kpm:
         from . import kpm
         import scipy
@@ -190,9 +210,11 @@ def run(settings, *, resume=False):
         from wren.quantum import checkpoints
         request['implementation_sha256'].update({p: file_hash(p) for p in (scf_module.__file__, checkpoints.__file__)})
     if mode == 'periodic':
-        from . import periodic
+        from . import alignment, periodic
+        references = alignment.reference_values(settings, datasets)
         from wren.quantum.transfer import _versions
-        request['implementation_sha256'][periodic.__file__] = file_hash(periodic.__file__)
+        for module in (periodic, alignment):
+            request['implementation_sha256'][module.__file__] = file_hash(module.__file__)
         request['versions'] = _versions()
     if mode == 'vertical-dscf':
         from . import charging
@@ -219,6 +241,13 @@ def run(settings, *, resume=False):
     result = {'schema': 'wren-dos-1', 'status': 'running', 'fingerprint': key, 'request': request,
               'mode': mode, 'energy_unit': 'eV', 'energy_reference': 'common_unshifted_input_zero',
               'backend': settings['dos-backend'], 'frames': []}
+    if mode == 'periodic' and 'periodic-reference' in settings:
+        reference = settings['periodic-reference']
+        result['energy_reference'] = {'frame-vbm': 'per_frame_vbm_shape_only',
+                                      'cell-mean-local': 'per_cell_mean_hartree_plus_local_gth',
+                                      'external': 'external_frame_reference'}[reference]
+        result['alignment'] = {'mode': reference, 'energy_axis': 'raw_orbital_energy_ev - reference_ev',
+                               'label': settings.get('reference-label', reference)}
     if not use_kpm:
         result['broadening'] = {'kernel': 'Gaussian', 'sigma_ev': settings['sigma']}
     _write_result(output, result)
@@ -302,7 +331,7 @@ def run(settings, *, resume=False):
                 else:
                     periodic_frame, levels, band_weights, groups = periodic.calculate(data, records, settings, cfg, here/'pbc.log')
                     frame_info.update(periodic_frame)
-                    spectra.append(levels)
+                    spectra.append(alignment.aligned_levels(settings, frame_info, levels, references))
                     weights.append(band_weights)
                     if groups:
                         element_frames[-1].extend(groups)
@@ -320,7 +349,7 @@ def run(settings, *, resume=False):
         if mode == 'vertical-dscf':
             result.update(charging.write_distributions(directory, frame_records, grid, settings))
         else:
-            summary, total = _write_total_dos(directory, settings, grid, spectra, weights)
+            summary, total = _write_total_dos(directory, settings, grid, spectra, weights, frame_records)
             result.update(summary)
             if site_weights:
                 result['site_projections'] = _write_site_dos(directory, settings, spectra, grid, site_weights,

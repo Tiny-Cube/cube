@@ -124,9 +124,56 @@ $end
 
 `<output>-kmesh/kmesh-study.json` 给出每个网格的采样间隙、最小直接间隙，以及相对上一个网格的变化量。各网格目录保留总 DOS、元素 PDOS 和原始能级。采样间隙允许价带顶和导带底来自不同 k 点，直接间隙在同一 k 点取差。`dos_total_variation` 使用同一晶胞的原始能量零点、相同 Gaussian 宽度和覆盖所有轨道的公共能量网格，计算两条谱之差的绝对值积分除以两倍每晶胞态数。该量接近 0 表示两次展宽谱接近。带边、基组、结构采样仍需分别检查。使用 `--resume` 可复用输入和文件校验均通过的已完成网格。
 
-周期计算没有天然共同真空零点。不同帧/晶胞之间的谱需明确平均静电势、真空能级或合适
-参考的对齐；未对齐原始谱不能解释为绝对输运位点无序，也不应逐分子将 HOMO 强行归零。
-当前尚未接通跨帧势能零点对齐，因此明确拒绝直接平均多个周期帧；可先逐帧计算并分析所需的对齐方案。
+### 从多个 MD 帧计算周期 DOS
+
+用提取模块生成的 `frames.json` 作为 `input`，各帧保持相同的分子编号、原子种类及顺序。Wren 对完整晶胞逐帧求解，再在共同能量网格上平均。三个方向的 k 网格可先用代表帧收敛。对于中性三维有机晶胞，下面的设置可以直接从坐标和 GTH 赝势计算内部参考。
+
+```text
+$dos
+do = 1
+mode = periodic
+input = mol/frames.json
+output = results/md-periodic
+qc-engine = gpu-pyscf
+dos-backend = gpu
+method = pbe
+basis-set = gth-szv
+pseudo = gth-pbe
+kmesh = 2,2,2
+periodic-reference = cell-mean-local
+sigma = 0.10
+element-projections = true
+block-size-frames = 2
+$end
+```
+
+每条轨道的绘图能量为 $E_\mathrm{raw}-E_\mathrm{ref}$。总 DOS 与元素 PDOS 使用相同的平移。平均对帧等权，对每帧的 k 点按其积分权重求和，单位为每 eV、每晶胞自旋态数。在 `spectra.json` 中，`orbital_energies_ev` 与 `band_edges` 保存原始 SCF 参考下的值，`energy_alignment` 保存减去的参考值及变换后的带边。
+
+| `periodic-reference` | 参考值的来源及用途 |
+|---|---|
+| `cell-mean-local` | 使用 PySCF 三维周期约定中 Hartree 势与离子局域 GTH 赝势之和的晶胞平均值。固定组成、赝势与体积时该值恒定，结构变化造成的带边移动会保留。变胞时按实际体积逐帧更新。适合比较同一组成的体相内部谱。 |
+| `external` | 从 `reference-file` 读取每帧在原 SCF 能量零点下测得的参考（eV）。例如从同一中性薄膜超胞的平坦真空区取平均静电势。可用 `reference-label` 记录取样位置和方法。 |
+| `frame-vbm` | 每帧减去自己的价带顶。可以比较展宽、带形及带隙。共同的价带顶涨落随之移除。要求每一帧均存在分开的占据带与空带。 |
+
+外部表格按真实 MD 帧编号匹配。可增加 `manifest_sha256` 列，将每行绑定到提取的几何文件。下面两行仅展示表格语法，实际计算需填入该帧测得的电子势能参考。
+
+```csv
+frame,reference_ev
+1980,1.832
+2000,1.794
+```
+
+### 轨迹的分块误差
+
+在单体或周期 DOS 计算中，`block-size-frames = B` 将连续等间隔帧分为每块 $B$ 帧。至少需要两个完整块。`dos.csv` 保留全部帧的谱与均值，`dos-blocks.csv` 给出每一能点上各完整块的均值、完整块总体均值和该均值的标准误。末尾不足一块的帧数记录在 `result.json` 中。该误差描述所选轨迹的时间采样。
+
+已有 DOS 结果时，可直接比较多个块长。将独立 TOML 的 `[dos]` 表中 `output` 指向已完成的计算目录，运行以下命令。
+
+```bash
+wren-dos dos.toml --block-study 1 2 4
+```
+
+`<output>-blocks/block-study.json` 记录每个块长、有效帧数和丢弃尾帧数，`block-2.csv` 等文件列出标准误随能量的变化。过短的块会保留块间相关，过长的块会导致独立统计量太少。应结合更长轨迹、多个独立初态和不同超胞检查有意义能量范围内的稳定性。[Flyvbjerg 与 Petersen，1989](https://doi.org/10.1063/1.457480)
 
 ## 有效 Hamiltonian
 

@@ -32,8 +32,10 @@ def shape_change(previous, current, sigma):
 
 
 def run_study(settings, meshes, *, resume=False):
-    from .runner import run
+    from .runner import _dataset, run
     from pyscf.data.nist import HARTREE2EV
+    if len(_dataset(settings)) != 1:
+        raise ValueError('kmesh-study compares meshes for a single crystal or representative MD frame')
     single = Path(settings['output'])
     root = single.with_name(single.name+'-kmesh')
     output = root/'kmesh-study.json'

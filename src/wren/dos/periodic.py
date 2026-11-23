@@ -76,6 +76,10 @@ def calculate(data, records, settings, cfg, log_path):
         cell = gto.Cell(atom=atoms, a=lattice, unit='Angstrom', basis=cfg.basis,
                         pseudo=settings['pseudo'], precision=settings['precision'],
                         max_memory=cfg.max_memory_mb, verbose=4, stdout=log).build()
+        local_reference = None
+        if settings.get('periodic-reference') == 'cell-mean-local':
+            from .alignment import mean_local_potential_ev
+            local_reference = mean_local_potential_ev(cell)
         ks = cell.get_abs_kpts(points)
         hf = cfg.xc.lower() == 'hf'
         mf = KRHF(cell, ks) if hf else KRKS(cell, ks, xc=cfg.xc)
@@ -120,5 +124,8 @@ def calculate(data, records, settings, cfg, log_path):
                          'xc_grid': None if hf else 'BeckeGrids', 'grid_level': None if hf else cfg.grid_level,
                          'elapsed_seconds': seconds, 'modeled_electrons_per_cell': cell.nelectron,
                          'occupation_integral_per_cell': electron_count, 'atoms_per_cell': cell.natm}}
+        if local_reference is not None:
+            frame['cell_mean_local_ev'] = local_reference
+            frame['cell_volume_bohr3'] = cell.vol
     weights = np.concatenate([np.full(len(e), 2*w) for e, w in zip(energies, kw, strict=True)])
     return frame, np.concatenate(energies), weights, groups

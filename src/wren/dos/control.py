@@ -8,7 +8,8 @@ FIELDS = {'do', 'mode', 'input', 'xyz', 'output', 'molecules', 'sigma', 'points'
           'kmesh', 'kmesh-study', 'spin-degeneracy', 'dos-backend', 'qc-engine', 'method', 'basis-set', 'auxbasis',
           'threads', 'grid-level', 'conv-tol', 'max-cycle', 'max-memory-mb', 'pseudo', 'precision', 'max-atoms',
           'site-projections', 'degeneracy-tol-ev', 'element-projections', 'solver',
-          'kpm-moments', 'kpm-trace', 'kpm-vectors', 'kpm-seed', 'kpm-bounds-ev'}
+          'kpm-moments', 'kpm-trace', 'kpm-vectors', 'kpm-seed', 'kpm-bounds-ev',
+          'periodic-reference', 'reference-file', 'reference-label', 'block-size-frames'}
 
 
 def _mesh(parts):
@@ -89,7 +90,23 @@ def normalize(raw, base):
             result['degeneracy-tol-ev'] = number('degeneracy-tol-ev', 1e-8)
         elif 'degeneracy-tol-ev' in raw:
             raise ValueError('degeneracy-tol-ev requires enabled site-projections')
-    for name in ('input', 'xyz', 'output'):
+    if {'periodic-reference', 'reference-file', 'reference-label'} & raw.keys():
+        reference = str(raw.get('periodic-reference', 'external')).strip().lower()
+        if mode != 'periodic' or reference not in ('external', 'frame-vbm', 'cell-mean-local'):
+            raise ValueError('periodic-reference requires external, frame-vbm or cell-mean-local in periodic mode')
+        if (reference == 'external') != ('reference-file' in raw):
+            raise ValueError('reference-file must be supplied for an external reference only')
+        if 'reference-label' in raw:
+            label = str(raw['reference-label']).strip()
+            if reference != 'external' or not label:
+                raise ValueError('reference-label describes a nonempty external energy reference')
+            result['reference-label'] = label
+        result['periodic-reference'] = reference
+    if 'block-size-frames' in raw:
+        if mode not in ('periodic', 'monomer-orbitals'):
+            raise ValueError('block-size-frames requires periodic or monomer-orbitals DOS')
+        result['block-size-frames'] = number('block-size-frames', None, integer=True, minimum=1)
+    for name in ('input', 'xyz', 'output', 'reference-file'):
         if name in raw or name == 'output':
             p = Path(raw.get(name, 'dos-results')).expanduser()
             p = (base/p).resolve() if not p.is_absolute() else p.resolve()
@@ -100,7 +117,7 @@ def normalize(raw, base):
         raise ValueError('DOS requires exactly one input manifest/network or xyz')
     if not molecular and 'xyz' in result:
         raise ValueError('periodic/tight-binding DOS requires an input dataset with a defined cell/model')
-    for name in ('input', 'xyz'):
+    for name in ('input', 'xyz', 'reference-file'):
         if result.get(name) == result['output']:
             raise ValueError('DOS output must not overwrite an input')
     if 'molecules' in raw:
