@@ -56,12 +56,13 @@ def main():
     def version(cmd): return run(cmd,capture_output=True,text=True).stdout.splitlines()[0]
     cpu=next((line.split(':',1)[1].strip() for line in Path('/proc/cpuinfo').read_text().splitlines()
               if line.startswith('model name')),platform.processor())
+    commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True, capture_output=True) if (ROOT/'.git').exists() else None
     result={'date':date.today().isoformat(),'cpu':cpu,'platform':platform.platform(),
             'pinned_cpu':affinity[0] if affinity else None,'repeats':args.repeats,'seed':42,
             'versions':{k:version(v) for k,v in {'python':[args.python,'--version'],'cpp':['c++','--version'],
                          'fortran':['gfortran','--version'],'rust':['rustc','--version']}.items()},
             'build':'CMake Release / Cargo release; see CMakeCache.txt for configured compilers and flags',
-            'source_commit':run(['git','rev-parse','HEAD'],capture_output=True,text=True).stdout.strip(),
+            'source_commit':commit.stdout.strip() if commit and commit.returncode == 0 else None,
             'source_sha256':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest()
                 for folder in ['src','cpp','rust/src','fortran','benchmarks'] for p in (ROOT/folder).rglob('*')
                 if p.is_file() and p.suffix in ['.py','.cpp','.hpp','.rs','.f90']},'results':[]}

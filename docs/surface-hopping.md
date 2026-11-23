@@ -50,7 +50,7 @@ H(q) = H0 + sum_k linear[:,:,k] * q[k] + 0.5 * sum_k harmonic[k] * q[k]^2 * I
 JSON 的 `schema="cube-lvc-1"`、`units="atomic"`，并包含 `h0[n,n]`、`linear[n,n,dof]`、`harmonic[dof]`。不直接从单帧转移积分拟合导数。一般 provider：
 
 ```python
-from universal_kmc.surface_hopping.engine import FSSH
+from wren.surface_hopping.engine import FSSH
 # provider.evaluate(q) -> H[n,n], dH[n,n,dof], real symmetric in a fixed orthonormal basis
 engine = FSSH(provider, coordinate_masses, dt=0.5, electronic_substeps=4)
 state = engine.initialize(coordinates, momenta, active=0)

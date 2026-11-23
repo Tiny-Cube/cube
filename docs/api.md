@@ -13,7 +13,7 @@
 最小模型实现 `propensities(self)` 和 `fire(self, event)`，不必继承任何类。引擎调用 `state()` / `position()` 只为创建可选数值观测；缺省返回空状态、零坐标。真实状态始终属于你的模型。
 
 ```python
-from universal_kmc import Event, EventModel, Engine
+from wren import Event, EventModel, Engine
 
 state = {"available": ["a", "b", "c"], "completed": []}
 

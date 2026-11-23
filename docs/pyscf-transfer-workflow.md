@@ -106,7 +106,7 @@ uv run --locked --extra quantum cube-transfer examples/quantum/transfer.toml
 在你自己的脚本中，在计算结束后加入：
 
 ```python
-from universal_kmc.quantum.checkpoints import save_transfer_checkpoint
+from wren.quantum.checkpoints import save_transfer_checkpoint
 
 mf.kernel()
 save_transfer_checkpoint(mf, "A.chk")

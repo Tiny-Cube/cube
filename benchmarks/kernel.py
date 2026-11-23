@@ -1,8 +1,8 @@
 """Time the public run API, including snapshots but excluding parsing and CSV."""
 import sys
 import time
-from universal_kmc import Engine
-from universal_kmc.io import load
+from wren import Engine
+from wren.io import load
 
 model = load(sys.argv[1])
 engine = Engine(model, int(sys.argv[3]))

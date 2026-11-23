@@ -88,7 +88,7 @@ CPU 使用 `--extra quantum` 和 `--backend cpu`。GPU 量化适配器不等于�
 只需要两个方法：
 
 ```python
-from universal_kmc import Engine
+from wren import Engine
 
 class Machine:
     def __init__(self):

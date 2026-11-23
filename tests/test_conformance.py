@@ -106,6 +106,14 @@ class ConformanceTests(unittest.TestCase):
             self.assertEqual(result.returncode,0,result.stderr)
             self.assertEqual([int(n) for n in result.stdout.split()],expected,binary)
 
+    def test_python_benchmark_uses_installed_package_and_current_io(self):
+        model = ROOT/'examples/two_state.kmc'
+        result = run([sys.executable, str(ROOT/'benchmarks/kernel.py')], model, 10, 42)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        values = result.stdout.split()
+        self.assertEqual(int(values[1]), 10)
+        self.assertGreater(float(values[2]), 0.)
+
     def test_native_rate_laws_match_python(self):
         expected=[marcus(.01,.2,.05),arrhenius(1e12,.1),miller_abrahams(1e12,1,2,.1)]
         for binary in ['test-cpp','test-fortran']:
