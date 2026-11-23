@@ -1,0 +1,16 @@
+{
+  "schema": "wren-fragment-sites-1",
+  "basis": "fixed_orthonormal",
+  "coupling_convention": "signed_real_consistent_orbital_phases",
+  "sites": [
+    {"id": "A", "center_bohr": [0.0, 0.0, 0.0], "mass_me": 300000.0, "energy_hartree": 0.0},
+    {"id": "B", "center_bohr": [6.8, 0.3, 0.0], "mass_me": 310000.0, "energy_hartree": 0.002},
+    {"id": "C", "center_bohr": [13.4, 1.0, 0.2], "mass_me": 300000.0, "energy_hartree": -0.001}
+  ],
+  "pairs": [
+    {"sites": ["A", "B"], "coupling_hartree": -0.0036, "decay_per_bohr": 1.2,
+     "spring_hartree_per_bohr2": 0.005, "site_slopes_hartree_per_bohr": [0.001, -0.0005]},
+    {"sites": ["B", "C"], "coupling_hartree": 0.0025, "decay_per_bohr": 1.1,
+     "spring_hartree_per_bohr2": 0.007, "site_slopes_hartree_per_bohr": [-0.0004, 0.0008]}
+  ]
+}

@@ -23,12 +23,18 @@ def run_control(filename, *, output=None, resume=False):
         raise ValueError('partial trajectory output exists; select a new output directory')
     import numpy as np
     from .engine import FSSH
-    from .models import TullyModel, LinearVibronicModel
+    from .models import TullyModel, LinearVibronicModel, FragmentSitesModel
     if config.model == 'lvc':
         data = json.loads(Path(config.model_file).read_text())
         if set(data) != {'schema', 'units', 'h0', 'linear', 'harmonic'} or data['schema'] != 'cube-lvc-1' or data['units'] != 'atomic':
             raise ValueError('LVC requires cube-lvc-1, atomic units, h0, linear and harmonic only')
         provider = LinearVibronicModel(data['h0'], data['linear'], data['harmonic'])
+    elif config.model == 'fragment-sites':
+        from .fragment_sites import read_fragment_model
+        fragments, digest = read_fragment_model(config.model_file)
+        if digest != provenance['sources'][config.model_file]:
+            raise ValueError('fragment model changed while preparing dynamics')
+        provider = FragmentSitesModel(fragments)
     else:
         provider = TullyModel(int(config.model[-1]))
     engine = FSSH(provider, config.masses, dt=config.dt, electronic_substeps=config.substeps,
@@ -45,6 +51,13 @@ def run_control(filename, *, output=None, resume=False):
                               'frustrated hops keep momentum; no velocity reversal',
                               'completed-result reuse only; no interrupted-trajectory restart',
                               'FSSH is approximate; convergence and observable validation required']}
+    initial_amplitudes = None
+    if config.model == 'fragment-sites':
+        result['site_ids'] = list(fragments.names)
+        result['basis'] = 'fixed_orthonormal_fragment_sites'
+        if config.fragment_site is not None:
+            initial_amplitudes = initial.frame.vectors[fragments.names.index(config.fragment_site), :].copy()
+            result['initial_active_probabilities'] = (abs(initial_amplitudes)**2).tolist()
     _write_result(result_path, result)
     counts = np.zeros(n, dtype=int)
     populations, diabatic = np.zeros(n), np.zeros(n)
@@ -64,7 +77,8 @@ def run_control(filename, *, output=None, resume=False):
         with trace_path.open('x') as trace:
             for index, child in enumerate(children):
                 rng = np.random.Generator(np.random.PCG64(child))
-                state = engine.initialize(config.coordinates, config.momenta, config.active)
+                active = config.active if initial_amplitudes is None else int(rng.choice(n, p=abs(initial_amplitudes)**2))
+                state = engine.initialize(config.coordinates, config.momenta, active, amplitudes=initial_amplitudes)
                 energy0 = engine.energy(state)
                 trace.write(json.dumps(snapshot(index, 0, state), allow_nan=False)+'\n')
                 reason = 'max_steps'

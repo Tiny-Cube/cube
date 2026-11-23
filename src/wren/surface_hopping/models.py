@@ -5,11 +5,64 @@ An atomistic provider must include all energy and force terms in this contract;
 a moving/nonorthogonal fragment basis needs additional basis-derivative terms.
 """
 from typing import Protocol
+import math
 import numpy as np
 
 
 class HamiltonianProvider(Protocol):
     def evaluate(self, coordinates: np.ndarray) -> tuple[np.ndarray, np.ndarray]: ...
+
+
+class FragmentSitesModel:
+    """Signed radial transfer, site-energy shifts and common pair springs.
+
+    Each finite-cluster site has one fixed orthonormal electronic basis state
+    and three Cartesian nuclear coordinates. All quantities are in atomic units.
+    """
+
+    def __init__(self, parameters):
+        self.parameters = parameters
+
+    def evaluate(self, coordinates):
+        n = len(self.parameters.energies)
+        q = np.asarray(coordinates)
+        if np.iscomplexobj(q) or q.shape != (3*n,) or not np.isfinite(q).all():
+            raise ValueError('fragment model requires three finite real coordinates per center')
+        centers = np.asarray(q, dtype=float).reshape(n, 3)
+        h = np.diag(self.parameters.energies)
+        dh = np.zeros((n, n, n, 3))
+        elastic_energy, elastic_gradient = 0., np.zeros((n, 3))
+        for pair in self.parameters.contacts:
+            i, j = pair.i, pair.j
+            displacement = centers[i] - centers[j]
+            r = math.hypot(*displacement)
+            if not math.isfinite(r) or r == 0:
+                raise ValueError('fragment contact has undefined radial derivative at this separation')
+            direction = displacement / r
+            dr = r - pair.reference
+            try:
+                transfer = pair.coupling * math.exp(-pair.decay * dr) if pair.coupling else 0.
+            except OverflowError as exc:
+                raise ValueError('fragment transfer overflows: check separation, decay and units') from exc
+            h[i, j] = h[j, i] = transfer
+            h[i, i] += pair.slope_i * dr
+            h[j, j] += pair.slope_j * dr
+            radial_gradient = -pair.decay * transfer * direction
+            dh[i, j, i] = dh[j, i, i] = radial_gradient
+            dh[i, j, j] = dh[j, i, j] = -radial_gradient
+            for site, slope in ((i, pair.slope_i), (j, pair.slope_j)):
+                dh[site, site, i] += slope * direction
+                dh[site, site, j] -= slope * direction
+            elastic_energy += .5 * pair.spring * dr * dr
+            spring_gradient = pair.spring * dr * direction
+            elastic_gradient[i] += spring_gradient
+            elastic_gradient[j] -= spring_gradient
+        diagonal = np.arange(n)
+        h[diagonal, diagonal] += elastic_energy
+        dh[diagonal, diagonal] += elastic_gradient
+        if not np.isfinite(h).all() or not np.isfinite(dh).all():
+            raise ValueError('nonfinite fragment energy/gradient: check geometry, parameters and units')
+        return h, dh.reshape(n, n, 3*n)
 
 
 class LinearVibronicModel:

@@ -15,7 +15,46 @@ from wren.quantum.cli import _write_result
 from wren.quantum.config import SCFConfig
 from wren.quantum.geometry import read_xyz
 from wren.workflow.dimers import file_hash, fingerprint
-from .core import broaden, bloch_spectra, disorder_statistics, kmesh
+from .core import broaden, bloch_eigensystems, disorder_statistics, kmesh, participation_groups
+
+
+def _write_total_dos(directory, settings, grid, spectra, weights, site_weights):
+    curves = [broaden(e, grid, settings['sigma'], weights=w, backend=settings['dos-backend'])
+              for e, w in zip(spectra, weights, strict=True)]
+    mean = np.mean(curves, axis=0)
+    with (directory/'dos.csv').open('w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['energy_ev', 'dos', *[f'frame_{i}' for i in range(len(curves))]])
+        writer.writerows(zip(grid, mean, *curves))
+    expected = float(np.mean([w.sum() for w in weights]))
+    integral = float(np.trapezoid(mean, grid))
+    summary = {'expected_integral': expected, 'finite_grid_integral': integral,
+               'integral_relative_error': abs(integral-expected)/max(expected, 1e-300)}
+    if site_weights:
+        summary['site_projections'] = _write_site_dos(directory, settings, spectra[0], grid, site_weights, mean)
+    return summary
+
+
+def _write_site_dos(directory, settings, energies, grid, site_weights, total):
+    """Use the same finite energy window and weights as the unprojected spectrum."""
+    curves = broaden(energies, grid, settings['sigma'], weights=np.concatenate(site_weights),
+                     backend=settings['dos-backend'])
+    residual = float(np.max(np.abs(curves.sum(axis=1)-total)))
+    if not np.allclose(curves.sum(axis=1), total, rtol=1e-10, atol=1e-12):
+        raise ValueError('sum of site-projected curves disagrees with total DOS')
+    with (directory/'pdos.csv').open('w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['energy_ev', *[f'site_{i}' for i in range(curves.shape[1])]])
+        writer.writerows((energy, *row) for energy, row in zip(grid, curves))
+    return {'pdos': 'pdos.csv', 'participation': 'participation.csv',
+            'basis': 'orthonormal_sites_within_model_cell', 'site_index_base': 0,
+            'degeneracy_tol_ev': settings['degeneracy-tol-ev'],
+            'degeneracy_grouping': 'consecutive_gaps_at_or_below_tolerance_within_each_k',
+            'ipr_convention': 'sum_squared_normalized_site_probabilities',
+            'degenerate_group_statistic': 'sum_i (P_ii/rank)^2',
+            'expected_integral_per_site': settings['spin-degeneracy'],
+            'finite_grid_integral_per_site': np.trapezoid(curves, grid, axis=0).tolist(),
+            'max_abs_site_sum_residual_per_ev': residual}
 
 
 def _dataset(settings):
@@ -76,6 +115,14 @@ def run(settings, *, resume=False):
         from wren.workflow import scf as scf_module
         from wren.quantum import checkpoints
         request['implementation_sha256'].update({p: file_hash(p) for p in (scf_module.__file__, checkpoints.__file__)})
+    if mode == 'vertical-dscf':
+        from . import charging
+        from wren.quantum import geometry
+        from wren.workflow import control as workflow_control
+        from wren.quantum.transfer import _versions
+        request['implementation_sha256'].update({p: file_hash(p) for p in
+                                                (charging.__file__, geometry.__file__, workflow_control.__file__)})
+        request['versions'] = _versions()
     key = fingerprint(request)
     directory = Path(settings['output'])
     output = directory/'result.json'
@@ -96,13 +143,28 @@ def run(settings, *, resume=False):
               'backend': settings['dos-backend'], 'frames': []}
     _write_result(output, result)
     spectra, weights, frame_records, homo_table, lumo_table = [], [], [], [], []
+    site_weights = []
     try:
         if mode == 'tight-binding':
             if network.get('schema') != 'wren-dos-tb-1' or network.get('coupling_convention') != 'signed_real_consistent_orbital_phases':
                 raise ValueError('tight-binding input needs wren-dos-tb-1 and explicit signed-coupling convention')
             points, kw = kmesh(settings['kmesh'])
-            values = bloch_spectra(network['site_energies_ev'], network['pairs'], points,
-                                   backend=settings['dos-backend'])
+            systems = bloch_eigensystems(network['site_energies_ev'], network['pairs'], points,
+                                         backend=settings['dos-backend'],
+                                         project_sites=settings.get('site-projections', False))
+            bands, groups = [], []
+            for index, (energies, probabilities) in enumerate(systems):
+                bands.append(energies)
+                if probabilities is not None:
+                    site_weights.append(probabilities * (kw[index] * settings['spin-degeneracy']))
+                    groups.extend({'k_index': index, **group} for group in participation_groups(
+                        energies, probabilities, settings['degeneracy-tol-ev']))
+            if groups:
+                with (directory/'participation.csv').open('w', newline='') as file:
+                    writer = csv.DictWriter(file, fieldnames=list(groups[0]))
+                    writer.writeheader()
+                    writer.writerows(groups)
+            values = np.asarray(bands)
             spectra.append(values.ravel())
             weights.append(np.repeat(kw*settings['spin-degeneracy'], values.shape[1]))
             frame_records.append({'eigenvalues_ev': values.tolist(), 'kpoints_fractional': points.tolist(),
@@ -124,7 +186,11 @@ def run(settings, *, resume=False):
                 here = directory/label
                 here.mkdir()
                 frame_info = {'frame': data.get('frame'), 'time_ps': data.get('time_ps'), 'molecules': []}
-                if mode == 'monomer-orbitals':
+                if mode == 'vertical-dscf':
+                    molecules = charging.calculate_frame(records, settings, here)
+                    frame_info['molecules'] = molecules
+                    spectra.append(np.array([[m['removal_ev'], m['addition_ev']] for m in molecules]))
+                elif mode == 'monomer-orbitals':
                     levels, spectral_weights, homos, lumos = [], [], [], []
                     for r in records:
                         atoms = list(zip(r['elements'], r['coordinates_angstrom']))
@@ -196,19 +262,14 @@ def run(settings, *, resume=False):
         if lower >= upper or count > 1000000 or (upper-lower)/(count-1) > settings['sigma']/2:
             raise ValueError('DOS grid must resolve sigma with step <= sigma/2 and <= 1000000 points; adjust bounds or points')
         grid = np.linspace(lower, upper, count)
-        curves = [broaden(e, grid, settings['sigma'], weights=w, backend=settings['dos-backend'])
-                  for e, w in zip(spectra, weights)]
-        mean = np.mean(curves, axis=0)
-        with (directory/'dos.csv').open('w', newline='') as file:
-            writer = csv.writer(file); writer.writerow(['energy_ev', 'dos', *[f'frame_{i}' for i in range(len(curves))]])
-            writer.writerows(zip(grid, mean, *curves))
+        if mode == 'vertical-dscf':
+            result.update(charging.write_distributions(directory, frame_records, grid, settings))
+        else:
+            result.update(_write_total_dos(directory, settings, grid, spectra, weights, site_weights))
         _write_result(directory/'spectra.json', {'schema': 'wren-dos-spectra-1', 'frames': frame_records})
         if homo_table:
             result['frontier_disorder'] = {'homo': disorder_statistics(homo_table), 'lumo': disorder_statistics(lumo_table)}
-        expected = float(np.mean([w.sum() for w in weights]))
-        result.update(status='completed', frame_count=len(curves), frames='spectra.json',
-                      expected_integral=expected, finite_grid_integral=float(np.trapezoid(mean, grid)),
-                      integral_relative_error=abs(float(np.trapezoid(mean, grid))-expected)/max(expected, 1e-300),
+        result.update(status='completed', frame_count=len(frame_records), frames='spectra.json',
                       grid_spacing_ev=float(grid[1]-grid[0]),
                       sampling_uncertainty_estimated=False, elapsed_seconds=time.perf_counter()-started,
                       output_sha256={str(p.relative_to(directory)): file_hash(p) for p in directory.rglob('*') if p.is_file() and p != output})

@@ -23,6 +23,8 @@ def broaden(energies, grid, sigma, *, weights=None, backend='cpu', chunk=2048):
 
     No finite-window renormalization or occupation weighting is implicit.
     Supply weight 2 for spin-degenerate spatial orbitals, 1 for each spin orbital.
+    For projected DOS pass a (levels, channels) weight matrix. The result then
+    has shape (grid, channels), sharing one Gaussian evaluation across channels.
     """
     levels, grid = np.asarray(energies, dtype=float), np.asarray(grid, dtype=float)
     if levels.ndim != 1 or not len(levels) or not np.isfinite(levels).all():
@@ -34,18 +36,24 @@ def broaden(energies, grid, sigma, *, weights=None, backend='cpu', chunk=2048):
     if type(chunk) is not int or chunk < 1:
         raise ValueError('chunk must be a positive integer')
     weights = np.ones_like(levels) if weights is None else np.asarray(weights, dtype=float)
-    if weights.shape != levels.shape or not np.isfinite(weights).all() or np.any(weights < 0):
+    if (weights.ndim not in (1, 2) or weights.shape[0] != len(levels) or not weights.size
+            or not np.isfinite(weights).all() or np.any(weights < 0)):
         raise ValueError('spectral weights must match levels and be finite/nonnegative')
     xp = _arrays(backend)
     x = xp.asarray(grid)
-    out = xp.zeros_like(x)
+    out = xp.zeros((len(x), *weights.shape[1:]), dtype=x.dtype)
     # Bound both axes to avoid allocating a levels-by-grid dense matrix.
     for j in range(0, len(grid), chunk):
         here = x[j:j+chunk]
-        acc = xp.zeros_like(here)
+        acc = xp.zeros_like(out[j:j+chunk])
         for i in range(0, len(levels), chunk):
             delta = (here[None, :]-xp.asarray(levels[i:i+chunk])[:, None])/sigma
-            acc += xp.sum(xp.asarray(weights[i:i+chunk])[:, None]*xp.exp(-.5*delta*delta), axis=0)
+            kernel = xp.exp(-.5*delta*delta)
+            w = xp.asarray(weights[i:i+chunk])
+            if weights.ndim == 1:
+                acc += xp.sum(w[:, None]*kernel, axis=0)
+            else:
+                acc += kernel.T @ w
         out[j:j+chunk] = acc/(math.sqrt(2*math.pi)*sigma)
     return np.asarray(out) if xp is np else xp.asnumpy(out)
 
@@ -66,6 +74,12 @@ def bloch_spectra(site_energies, pairs, kpoints, *, backend='cpu'):
     Do not pass coupling magnitudes: they cannot recover interference/band DOS.
     Self-image channels produce 2V cos(k.R), never a constant site shift.
     """
+    return np.asarray([values for values, _ in bloch_eigensystems(
+        site_energies, pairs, kpoints, backend=backend)])
+
+
+def bloch_eigensystems(site_energies, pairs, kpoints, *, backend='cpu', project_sites=False):
+    """Yield one spectrum and optional (bands, sites) probability matrix per k."""
     sites = np.asarray(site_energies, dtype=float)
     ks = np.asarray(kpoints, dtype=float)
     if sites.ndim != 1 or not len(sites) or not np.isfinite(sites).all():
@@ -89,16 +103,51 @@ def bloch_spectra(site_energies, pairs, kpoints, *, backend='cpu'):
             raise ValueError('finite signed real coupling required')
         checked.append((i, j, np.asarray(image), coupling))
     xp = _arrays(backend)
-    values = []
     for k in ks:
         h = xp.diag(xp.asarray(sites, dtype=complex))
         for i, j, image, coupling in checked:
             value = coupling*np.exp(2j*np.pi*np.dot(k, image))
             h[i, j] += value
             h[j, i] += value.conjugate()
-        eigenvalues = xp.linalg.eigvalsh(h)
-        values.append(np.asarray(eigenvalues) if xp is np else xp.asnumpy(eigenvalues))
-    return np.asarray(values)
+        probabilities = None
+        if project_sites:
+            eigenvalues, vectors = xp.linalg.eigh(h)
+            probabilities = (xp.abs(vectors)**2).T
+            if xp is not np:
+                probabilities = xp.asnumpy(probabilities)
+        else:
+            eigenvalues = xp.linalg.eigvalsh(h)
+        yield (eigenvalues if xp is np else xp.asnumpy(eigenvalues)), probabilities
+
+
+def participation_groups(energies, probabilities, tolerance_ev):
+    """Participation in model-cell sites for contiguous unresolved energy groups.
+
+    One row represents one group at a single k point. For a rank-r group the
+    normalized diagonal projector is sum_band(|C_site,band|²)/r. Its second
+    moment is rotation invariant; individual IPRs are returned only at rank one.
+    """
+    energies = np.asarray(energies, dtype=float)
+    probabilities = np.asarray(probabilities, dtype=float)
+    if energies.ndim != 1 or not energies.size or not np.isfinite(energies).all() or np.any(np.diff(energies) < 0):
+        raise ValueError('participation analysis needs sorted finite energies')
+    if (probabilities.shape != (len(energies), len(energies))
+            or not np.isfinite(probabilities).all() or np.any(probabilities < 0)
+            or not np.allclose(probabilities.sum(axis=0), 1., rtol=0, atol=1e-10)
+            or not np.allclose(probabilities.sum(axis=1), 1., rtol=0, atol=1e-10)):
+        raise ValueError('complete normalized band-by-site probabilities required')
+    if isinstance(tolerance_ev, bool) or not math.isfinite(tolerance_ev) or tolerance_ev < 0:
+        raise ValueError('degeneracy tolerance must be finite and nonnegative')
+    boundaries = [0, *(np.flatnonzero(np.diff(energies) > tolerance_ev) + 1), len(energies)]
+    for start, stop in zip(boundaries, boundaries[1:]):
+        rank = int(stop-start)
+        profile = probabilities[start:stop].mean(axis=0)
+        profile_ipr = float(profile @ profile)
+        yield {'first_band': int(start), 'last_band': int(stop-1), 'rank': rank,
+               'min_ev': float(energies[start]), 'max_ev': float(energies[stop-1]),
+               'ipr': profile_ipr if rank == 1 else None,
+               'participation_number': 1/profile_ipr if rank == 1 else None,
+               'subspace_profile_ipr': profile_ipr}
 
 
 def disorder_statistics(levels):

@@ -1,0 +1,9 @@
+[dos]
+mode = "vertical-dscf"
+xyz = "h2.xyz"
+method = "hf"
+basis-set = "aug-cc-pvdz"
+auxbasis = "weigend"
+threads = 1
+sigma = 0.05
+output = "../../build/dos/vertical-dscf"

@@ -6,7 +6,8 @@ from wren.quantum.config import SCFConfig
 
 FIELDS = {'do', 'mode', 'input', 'xyz', 'output', 'molecules', 'sigma', 'points', 'emin', 'emax',
           'kmesh', 'spin-degeneracy', 'dos-backend', 'qc-engine', 'method', 'basis-set', 'auxbasis',
-          'threads', 'grid-level', 'conv-tol', 'max-cycle', 'max-memory-mb', 'pseudo', 'precision', 'max-atoms'}
+          'threads', 'grid-level', 'conv-tol', 'max-cycle', 'max-memory-mb', 'pseudo', 'precision', 'max-atoms',
+          'site-projections', 'degeneracy-tol-ev'}
 
 
 def normalize(raw, base):
@@ -23,9 +24,21 @@ def normalize(raw, base):
             raise ValueError(f'DOS {key} must be integer')
         return int(result) if integer else result
     mode = str(raw.get('mode', 'monomer-orbitals')).lower()
-    if mode not in ('monomer-orbitals', 'periodic', 'tight-binding'):
-        raise ValueError('DOS mode must be monomer-orbitals, periodic or tight-binding')
+    molecular = mode in ('monomer-orbitals', 'vertical-dscf')
+    if not molecular and mode not in ('periodic', 'tight-binding'):
+        raise ValueError('DOS mode must be monomer-orbitals, vertical-dscf, periodic or tight-binding')
     result = {'mode': mode}
+    if 'site-projections' in raw or 'degeneracy-tol-ev' in raw:
+        if mode != 'tight-binding':
+            raise ValueError('site-projections and degeneracy-tol-ev require tight-binding mode')
+        flag = str(raw.get('site-projections', False)).strip().lower()
+        if flag not in ('true', 'false', '1', '0'):
+            raise ValueError('site-projections must be true/false or 1/0')
+        result['site-projections'] = flag in ('true', '1')
+        if result['site-projections']:
+            result['degeneracy-tol-ev'] = number('degeneracy-tol-ev', 1e-8)
+        elif 'degeneracy-tol-ev' in raw:
+            raise ValueError('degeneracy-tol-ev requires enabled site-projections')
     for name in ('input', 'xyz', 'output'):
         if name in raw or name == 'output':
             p = Path(raw.get(name, 'dos-results')).expanduser()
@@ -35,7 +48,7 @@ def normalize(raw, base):
             result[name] = str(p)
     if sum(name in result for name in ('input', 'xyz')) != 1:
         raise ValueError('DOS requires exactly one input manifest/network or xyz')
-    if mode != 'monomer-orbitals' and 'xyz' in result:
+    if not molecular and 'xyz' in result:
         raise ValueError('periodic/tight-binding DOS requires an input dataset with a defined cell/model')
     for name in ('input', 'xyz'):
         if result.get(name) == result['output']:
@@ -45,7 +58,7 @@ def normalize(raw, base):
         selected = list(map(str, value)) if isinstance(value, list) else [s.strip() for s in str(value).split(',')]
         if not selected or any(not s for s in selected) or len(set(selected)) != len(selected):
             raise ValueError('DOS molecules need a unique nonempty list')
-        if mode != 'monomer-orbitals':
+        if not molecular:
             raise ValueError('molecule selection applies only to monomer DOS')
         result['molecules'] = selected
     result['sigma'] = number('sigma', .05, strict=True)
@@ -69,13 +82,16 @@ def normalize(raw, base):
     result['spin-degeneracy'] = number('spin-degeneracy', 1, integer=True, minimum=1)
     if result['spin-degeneracy'] not in (1, 2):
         raise ValueError('spin-degeneracy must be 1 or 2')
+    if mode == 'vertical-dscf' and (result['spin-degeneracy'] != 1 or result['kmesh'] != [1, 1, 1]):
+        raise ValueError('vertical-dscf counts one transition per molecule and channel, with no k mesh or spin multiplier')
     result['dos-backend'] = str(raw.get('dos-backend', 'cpu')).lower()
     result['qc-engine'] = str(raw.get('qc-engine', 'pyscf')).lower()
     if result['dos-backend'] not in ('cpu', 'gpu') or result['qc-engine'] not in ('pyscf', 'gpu-pyscf'):
         raise ValueError('invalid DOS backend or QC engine')
     if mode == 'periodic' and result['qc-engine'] != 'pyscf':
         raise ValueError('periodic GPU DOS is not validated; explicitly request pyscf')
-    for key, default in (('method', 'b3lyp'), ('basis-set', 'gth-szv' if mode == 'periodic' else '6-31G(d,p)'),
+    default_basis = {'periodic': 'gth-szv', 'vertical-dscf': 'aug-cc-pvdz'}.get(mode, '6-31G(d,p)')
+    for key, default in (('method', 'b3lyp'), ('basis-set', default_basis),
                          ('auxbasis', 'auto' if mode == 'periodic' else 'def2-universal-jkfit'), ('pseudo', 'gth-pbe')):
         result[key] = str(raw.get(key, default))
     for key, default, minimum in (('threads', 4, 1), ('grid-level', 3, 0), ('max-cycle', 100, 1),

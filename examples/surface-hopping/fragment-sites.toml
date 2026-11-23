@@ -1,0 +1,20 @@
+# Illustrative finite three-fragment model. Energies and gradients require fitting for a material.
+[model]
+type = "fragment-sites"
+file = "fragment-sites.json"
+
+[initial]
+# Start at the model reference centers with a localized electronic state on A.
+fragment-site = "A"
+momenta = [60.0, 1.0, 0.0, -72.0, -3.0, 0.0, 12.0, 2.0, 0.0]
+
+[dynamics]
+dt-au = 3.0
+electronic-substeps = 4
+trajectories = 16
+max-steps = 200
+seed = 2026
+output-stride = 8
+
+[output]
+directory = "../../build/surface-hopping/fragment-sites"

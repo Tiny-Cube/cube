@@ -1,0 +1,9 @@
+[dos]
+mode = "tight-binding"
+input = "two-site-chain.json"
+output = "../../build/dos/projected-chain"
+kmesh = [32, 1, 1]
+spin-degeneracy = 2
+sigma = 0.02
+site-projections = true
+degeneracy-tol-ev = 1e-8

@@ -5,6 +5,7 @@
 | `mode` | 输入 | 当前实现 |
 |---|---|---|
 | `monomer-orbitals` | 单体 XYZ、单帧 manifest 或 frames.json | 中性闭壳层单体的 HF/KS 轨道谱；CPU/GPU 分子 SCF |
+| `vertical-dscf` | 单体 XYZ、单帧 manifest 或 frames.json | 固定输入几何，从三个电荷态的单点总能量分别构建第一电离、电子添加能级分布 |
 | `periodic` | 带原始分子位置与晶格的完整 manifest | CPU PySCF PBC KRHF/KRKS、全 k 网格；不裁剪分子子集 |
 | `tight-binding` | 明确的位点能与有符号实耦合 | 正交局域基 Hamiltonian 的 Bloch 谱；CPU/CuPy 数值后端 |
 
@@ -48,6 +49,38 @@ output = "results/dos"
 对同一条 MD 轨迹，不要把每帧当作独立样本。当前报告给出有限样本的静态/动态方差分解，
 尚未自动估计相关时间和置信区间，`sampling_uncertainty_estimated=false`。
 
+### 从 MD 计算垂直电离和电子添加能级
+
+每帧取相同的一组分子，在每个分子原始坐标上执行三次真空单点 SCF。中性态取闭壳层单重态，
+阳离子和阴离子取双重态。可先执行小分子示例，再将 `xyz` 换为轨迹提取目录的 `input`。
+
+```bash
+uv run --extra dos wren-dos examples/dos/vertical-dscf.toml
+```
+
+```toml
+[dos]
+mode = "vertical-dscf"
+input = "mol/frames.json"
+molecules = ["1", "2"]
+method = "b3lyp"
+basis-set = "aug-cc-pvdz"
+threads = 4
+sigma = 0.05
+output = "results/vertical-dscf"
+```
+
+`vertical-energies.csv` 保留每帧每个分子的三份总能量（Hartree）、垂直 IP 和 EA（eV），
+以及电子能量轴上的移除能级 $-IP$ 和添加能级 $-EA$。`removal.csv` 和 `addition.csv`
+分别给出这两个通道的逐帧及平均分布，每通道全能窗积分各为 1。每个分子在每个通道贡献一个跃迁，
+帧内按选取分子数平均，随后按帧等权平均。`spectra.json` 记录原始能量、电子态和各 SCF 状态文件；
+`result.json` 逐通道给出归一化与能级波动。
+
+步长、轨迹帧数决定构象采样，基组中的弥散函数尤其影响阴离子。可检查各带电态的
+$\langle S^2\rangle$（理想双重态为 0.75），并通过增加弥散函数和比较电子密度分布检查束缚性。
+`nonpositive_vertical_ea_count` 统计计算得到 EA ≤ 0 的样本数。这一模式给出指定自旋态和有限
+分子模型下的第一加减电子能量分布。材料的环境极化、分子间混合和其他多体激发需要单独建模。
+
 ## 周期 PySCF
 
 ```bash
@@ -74,6 +107,29 @@ uv run --extra dos wren-dos examples/dos/periodic.toml
 `spin-degeneracy=1/2` 显式选择计数；k 点权重和为 1，输出每模型晶胞的态密度。
 只有耦合绝对值的转移积分 CSV 不足以可靠重建带干涉的谱，不能直接当作此模型的输入。
 
+### 查看每个位点对能谱的贡献
+
+在 `mode="tight-binding"` 的控制文件中设置 `site-projections=true`，同时导出位点投影 DOS
+和参与数。示例由两个位点构成模型晶胞，晶胞内和跨晶胞的耦合均为 −0.1 eV。
+
+```bash
+uv run --extra dos wren-dos examples/dos/projected-chain.toml
+```
+
+| 输出 | 如何读取 |
+|---|---|
+| `pdos.csv` | 第一列为 eV，`site_0`、`site_1` 等列对应输入中从 0 编号的位点。在每个能量点把各列相加即可得到 `dos.csv` 的总 DOS。 |
+| `participation.csv` | 每一行对应一个 k 点的一组能级。`k_index` 对应 `spectra.json` 的 k 点次序；`first_band`、`last_band` 从 0 计数，均含端点。`rank=1` 时给出 IPR 和参与数 `1/IPR`。 |
+| `result.json` 中的 `site_projections` | 记录每个位点的预期积分、实际能窗积分及位点和相对于总 DOS 的最大绝对残差。裁剪能窗会减少积分。 |
+
+此例使用 32 个 k 点和自旋权重 2，两个位点的全能窗积分各为 2，总积分为 4。
+在分数波矢 $(1/2,0,0)$ 处，两个耦合恰好抵消，`rank=2`。此行的单态 IPR 和参与数留空，
+`subspace_profile_ipr=0.5` 表示整个二维子空间在模型晶胞内的两个位点均匀分布。
+
+`degeneracy-tol-ev` 默认为 $10^{-8}$ eV。每个 k 点独立分组，相邻能级差小于或等于阈值
+就归入同一组。该阈值只影响参与数的分组，PDOS 保留每个本征值自己的能量。
+投影需要存储各 k 点的位点权重；位点数为 $N$、k 点数为 $N_k$ 时，这部分内存随 $N_kN^2$ 增长。
+
 ## 展宽、单位与输出
 
 - `sigma` 单位 eV，表示 Gaussian 标准差，不是 FWHM；也不是自动估计的物理无序宽度。
@@ -82,6 +138,6 @@ uv run --extra dos wren-dos examples/dos/periodic.toml
 - 不对截断能窗强制重新归一化。`finite_grid_integral` 和 `expected_integral` 供核验。
 - 全部能量保留原始参考，不默认逐帧/逐分子平移。
 
-输出：`dos.csv`（eV 网格、平均 DOS、逐帧 DOS）、`spectra.json`（原始能级、占据、k 点或
+轨道和紧束缚模式输出 `dos.csv`（eV 网格、平均 DOS、逐帧 DOS）、`spectra.json`（原始能级、占据、k 点或
 分子 ID）、`result.json`（参数、来源/源码哈希、归一化、积分和采样诊断），以及 SCF 日志/检查点。
 此处 DOS 是能级计数，不能把其积分当作直接计算了电子密度或光吸收强度。

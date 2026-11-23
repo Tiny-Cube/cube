@@ -2,7 +2,7 @@
 import unittest
 try:
     import numpy as np
-    from wren.dos import broaden, bloch_spectra, disorder_statistics, kmesh
+    from wren.dos import broaden, bloch_eigensystems, bloch_spectra, disorder_statistics, kmesh, participation_groups
 except ImportError:
     np = None
 
@@ -37,6 +37,34 @@ class DosCoreTests(unittest.TestCase):
         result = disorder_statistics(levels)
         self.assertAlmostEqual(result['variance_total_ev2'], result['variance_static_ev2']+result['variance_dynamic_ev2'])
         self.assertFalse(result['statistical_uncertainty_estimated'])
+
+    def test_complex_bloch_dimer_site_weights_and_participation(self):
+        point = [[.25, 0, 0]]
+        energies, weights = next(bloch_eigensystems([-.75, .75], [(0, 1, [1, 0, 0], 1.)],
+                                                    point, project_sites=True))
+        np.testing.assert_allclose(energies, [-1.25, 1.25], atol=1e-13)
+        np.testing.assert_allclose(weights, [[.8, .2], [.2, .8]], atol=1e-13)
+        groups = list(participation_groups(energies, weights, 1e-8))
+        np.testing.assert_allclose([g['ipr'] for g in groups], [.68, .68])
+        np.testing.assert_allclose([g['participation_number'] for g in groups], [1/.68, 1/.68])
+        grid = np.linspace(-2., 2., 401)
+        curves = broaden(energies, grid, .05, weights=weights, chunk=29)
+        np.testing.assert_allclose(curves[:, 0], broaden(energies, grid, .05, weights=[.8, .2]))
+        np.testing.assert_allclose(curves.sum(axis=1), broaden(energies, grid, .05))
+
+    def test_degenerate_projector_profile_is_invariant_to_rotation_within_subspace(self):
+        energies = [0., 1e-10, 2.]
+        rotation = np.eye(3, dtype=complex)
+        rotation[:2, :2] = np.array([[1., 1j], [1j, 1.]])/np.sqrt(2.)
+        for probabilities in (np.eye(3), np.abs(rotation)**2):
+            groups = list(participation_groups(energies, probabilities, 1e-8))
+            self.assertEqual([g['rank'] for g in groups], [2, 1])
+            self.assertIsNone(groups[0]['ipr'])
+            self.assertIsNone(groups[0]['participation_number'])
+            self.assertAlmostEqual(groups[0]['subspace_profile_ipr'], .5)
+            self.assertAlmostEqual(groups[1]['ipr'], 1.)
+        with self.assertRaisesRegex(ValueError, 'complete normalized'):
+            list(participation_groups(energies, np.ones((3, 3)), 0.))
 
     def test_invalid_inputs_and_no_finite_window_rescaling(self):
         self.assertLess(float(np.trapezoid(broaden([0.], [-.01, .01], .1), [-.01, .01])), .1)
