@@ -1,0 +1,21 @@
+{
+  "schema": "wren-vertical-gradient-1",
+  "method": "analytic displaced harmonic oscillator",
+  "environment": "vacuum",
+  "states": {
+    "a": {"name": "S0", "charge": 0, "multiplicity": 1, "root": 0, "solver": "analytic"},
+    "b": {"name": "S1", "charge": 0, "multiplicity": 1, "root": 1, "solver": "analytic"}
+  },
+  "reference": "a",
+  "reference_stationary": true,
+  "mode_subspace": "One mass-weighted diatomic stretch. The gradient and modes use the atom_ids order.",
+  "cartesian": {
+    "atom_ids": ["H1", "H2"],
+    "masses_u": [1.0, 1.0],
+    "gradient_ev_per_angstrom": [[-0.5, 0, 0], [0.5, 0, 0]]
+  },
+  "modes": [
+    {"id": "stretch", "wavenumber_cm1": 1000.0,
+     "mass_weighted_direction": [[-0.7071067811865475, 0, 0], [0.7071067811865475, 0, 0]]}
+  ]
+}

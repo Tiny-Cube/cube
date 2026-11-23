@@ -1,0 +1,10 @@
+{
+  "schema": "wren-qmmm-forcefield-1",
+  "model": "LJ12-6",
+  "units": {"energy": "kJ/mol", "length": "nm"},
+  "source": "Illustrative resolved Na-water cross coefficients for the file-format example",
+  "pairs": [
+    {"types": ["OW", "Na"], "c6": 0.0015, "c12": 0.0000010},
+    {"types": ["HW", "Na"], "c6": 0.0, "c12": 0.0}
+  ]
+}

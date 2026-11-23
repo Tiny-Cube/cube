@@ -1,0 +1,18 @@
+$reorganization-energy
+do = 1
+coordinates = separated/coordinates.extxyz
+topology = separated/topology.json
+forcefield = separated/forcefield.json
+environment = qmmm
+electrostatics = point-charge
+mm-vdw = forcefield
+state-a = {name="neutral", charge=0, multiplicity=1, solver="scf", root=0}
+state-b = {name="anion", charge=-1, multiplicity=2, solver="scf", root=0}
+qc-engine = pyscf
+method = hf
+basis-set = sto-3g
+auxbasis = weigend
+threads = 1
+opt-maxsteps = 100
+output = ../../build/reorganization/separated
+$end

@@ -1,0 +1,14 @@
+$reorganization-energy
+do = 1
+re-method = 4-points
+state-a = {name="neutral", charge=0, multiplicity=1, solver="scf", root=0}
+state-b = {name="cation", charge=1, multiplicity=2, solver="scf", root=0}
+xyz = ../dos/h2.xyz
+qc-engine = pyscf
+method = hf
+basis-set = sto-3g
+auxbasis = weigend
+threads = 1
+environment = vacuum
+output = ../../build/reorganization/scf-pair
+$end

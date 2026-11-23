@@ -1,0 +1,13 @@
+# Synthetic energies to illustrate input columns and sign conventions.
+$reorganization-energy
+do = 1
+re-method = linear-response
+state-a = {name="donor", charge=0, multiplicity=1, solver="external", root=0}
+state-b = {name="acceptor", charge=0, multiplicity=1, solver="external", root=0}
+temperature = 300
+environment = synthetic two-surface example
+ensemble-a = ensemble-a.csv
+ensemble-b = ensemble-b.csv
+block-size = 2
+output = ../../build/reorganization/gap-ensembles
+$end

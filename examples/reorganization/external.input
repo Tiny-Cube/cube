@@ -1,0 +1,7 @@
+$reorganization-energy
+do = 1
+re-method = 4-points
+energy-source = external
+input = external-points.json
+output = ../../build/reorganization/external
+$end

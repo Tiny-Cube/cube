@@ -1,0 +1,6 @@
+$reorganization-energy
+do = 1
+re-method = vertical-gradient
+input = vg-modes.json
+output = ../../build/reorganization/vertical-gradient
+$end

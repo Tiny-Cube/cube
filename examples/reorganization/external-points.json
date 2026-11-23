@@ -1,0 +1,49 @@
+{
+  "schema": "wren-four-point-input-1",
+  "energy_kind": "total",
+  "energy_unit": "hartree",
+  "method": "PySCF 2.15.0, B3LYP/6-31G(d,p), density fitting with def2-universal-jkfit",
+  "environment": "vacuum",
+  "pairs": [
+    {
+      "id": "F2-neutral-cation",
+      "states": {
+        "a": {"name": "neutral", "charge": 0, "multiplicity": 1, "solver": "RKS", "root": 0},
+        "b": {"name": "cation", "charge": 1, "multiplicity": 2, "solver": "UKS", "root": 0}
+      },
+      "energies": {
+        "E_A_RA": -199.49548205818422,
+        "E_B_RA": -198.92372704850942,
+        "E_B_RB": -198.93074804972758,
+        "E_A_RB": -199.48760064633268
+      },
+      "sources": {
+        "E_A_RA": "../../runs/cube_input_2026-11-07/cpu-F2-reorganization.json",
+        "E_B_RA": "../../runs/cube_input_2026-11-07/cpu-F2-reorganization.json",
+        "E_B_RB": "../../runs/cube_input_2026-11-07/cpu-F2-reorganization.json",
+        "E_A_RB": "../../runs/cube_input_2026-11-07/cpu-F2-reorganization.json"
+      },
+      "converged": {"E_A_RA": true, "E_B_RA": true, "E_B_RB": true, "E_A_RB": true}
+    },
+    {
+      "id": "F2-neutral-anion",
+      "states": {
+        "a": {"name": "neutral", "charge": 0, "multiplicity": 1, "solver": "RKS", "root": 0},
+        "b": {"name": "anion", "charge": -1, "multiplicity": 2, "solver": "UKS", "root": 0}
+      },
+      "energies": {
+        "E_A_RA": -199.49548205818422,
+        "E_B_RA": -199.446199433789,
+        "E_B_RB": -199.5672890964704,
+        "E_A_RB": -199.40686031473487
+      },
+      "sources": {
+        "E_A_RA": "../../runs/cube_input_2026-11-07/cpu-F2-reorganization.json",
+        "E_B_RA": "../../runs/cube_input_2026-11-07/cpu-F2-reorganization.json",
+        "E_B_RB": "../../runs/cube_input_2026-11-07/cpu-F2-reorganization.json",
+        "E_A_RB": "../../runs/cube_input_2026-11-07/cpu-F2-reorganization.json"
+      },
+      "converged": {"E_A_RA": true, "E_B_RA": true, "E_B_RB": true, "E_A_RB": true}
+    }
+  ]
+}

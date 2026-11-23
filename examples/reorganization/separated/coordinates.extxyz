@@ -1,0 +1,6 @@
+4
+Properties=species:S:1:pos:R:3:region:S:1:frozen:L:1:atom_id:I:1 coordinate_unit=Angstrom
+O    0.0000   0.0000   0.0000  QM F 1
+H    0.7572   0.5861   0.0000  QM F 2
+H   -0.7572   0.5861   0.0000  QM F 3
+Na   0.0000  -2.4400   0.0000  MM T 4

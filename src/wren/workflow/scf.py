@@ -15,7 +15,7 @@ from .control import scf_config
 from .dimers import file_hash, fingerprint
 
 
-def make_mean_field(atoms, config, *, charge=0, spin=0, log=None, embedding=None):
+def make_mean_field(atoms, config, *, charge=0, spin=0, log=None, embedding=None, density_fit=True):
     from pyscf import gto, lib
     config.validate()
     lib.num_threads(config.threads)
@@ -26,7 +26,8 @@ def make_mean_field(atoms, config, *, charge=0, spin=0, log=None, embedding=None
         mf = mol.UHF() if spin else mol.RHF()
     else:
         mf = mol.UKS(xc=config.xc) if spin else mol.RKS(xc=config.xc)
-    mf = mf.density_fit(auxbasis=config.auxbasis)
+    if density_fit:
+        mf = mf.density_fit(auxbasis=config.auxbasis)
     mf.conv_tol, mf.max_cycle, mf.direct_scf_tol = config.conv_tol, config.max_cycle, 1e-13
     if hasattr(mf, 'grids'):
         mf.grids.level = config.grid_level

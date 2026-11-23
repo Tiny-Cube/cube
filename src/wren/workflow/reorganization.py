@@ -29,12 +29,14 @@ def four_point_terms(e0_r0, eq_r0, eq_rq, e0_rq):
     return {'charged_relaxation': terms['on_b'], 'neutral_relaxation': terms['on_a'], 'total': terms['sum']}
 
 
-def _optimize(atoms, config, charge, directory, maxsteps, *, resume=False, embedding=None):
+def _optimize(atoms, config, charge, directory, maxsteps, *, resume=False, embedding=None, spin=None, label=None):
     from pyscf.geomopt import as_pyscf_method, geometric_solver
-    spin = 0 if charge == 0 else 1
-    label = 'neutral' if charge == 0 else ('cation' if charge > 0 else 'anion')
+    if spin is None:
+        spin = 0 if charge == 0 else 1
+    if label is None:
+        label = 'neutral' if charge == 0 else ('cation' if charge > 0 else 'anion')
     from . import scf, embedding as embedding_module
-    key = fingerprint({'atoms': atoms, 'config': asdict(config), 'charge': charge, 'maxsteps': maxsteps,
+    key = fingerprint({'atoms': atoms, 'config': asdict(config), 'charge': charge, 'spin_2s': spin, 'maxsteps': maxsteps,
                        'embedding_fingerprint': embedding.fingerprint if embedding else None,
                        'implementation_sha256': {p: file_hash(p) for p in (__file__, scf.__file__, embedding_module.__file__)}})
     metadata = directory/f'{label}.optimization.json'
@@ -97,7 +99,11 @@ def _optimize(atoms, config, charge, directory, maxsteps, *, resume=False, embed
         # The optimizer is on CPU; evaluate() explicitly executes the requested
         # CPU/GPU energy+gradient and transfers only the optimizer's gradient.
         adapter = as_pyscf_method(mf.mol, evaluate)
-        converged, optimized = geometric_solver.kernel(adapter, maxsteps=maxsteps, assert_convergence=True)
+        # A finite frozen environment exerts a real net force and torque on
+        # the QM fragment. geomeTRIC's vacuum projection can remove both.
+        optimization_options = {'subfrctor': 0} if embedding is not None else {}
+        converged, optimized = geometric_solver.kernel(
+            adapter, maxsteps=maxsteps, assert_convergence=True, **optimization_options)
         if not converged or not trace:
             raise RuntimeError(f'{label} geometry optimization did not converge in {maxsteps} steps')
         xyz = optimized.atom_coords(unit='Angstrom')

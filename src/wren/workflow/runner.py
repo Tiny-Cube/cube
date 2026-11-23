@@ -7,7 +7,7 @@ import re
 
 from wren.quantum.cli import _write_result
 from wren.quantum.geometry import normalize_atoms, read_xyz
-from .control import EXTRACTION, scf_config
+from .control import EXTRACTION, scf_config, needs_extraction
 from .calculations import CALCULATIONS, KMC, DOS, SURFACE_DYNAMICS, QUANTUM_SECTIONS
 
 
@@ -30,6 +30,13 @@ def _select(records, selection, label):
 
 
 def _load_dataset(settings, extracted, control_dir):
+    if 'coordinates' in settings:
+        from .separated_embedding import read_separated_embedding
+        atoms, environment, identity = read_separated_embedding(
+            settings['coordinates'], settings['topology'], settings.get('forcefield'))
+        records = [{'id': str(identity), 'elements': [a[0] for a in atoms], 'coordinates_angstrom': [a[1] for a in atoms]}]
+        _select(records, None, 'molecules')
+        return {'monomers': records, 'dimers': [], 'frozen_environment': environment, 'root': control_dir/'cube-results'}
     if 'xyz' in settings:
         monomers = []
         for name in settings['xyz']:
@@ -52,7 +59,7 @@ def _load_dataset(settings, extracted, control_dir):
 
 
 def _dataset_sources(settings, extracted):
-    if 'xyz' in settings:
+    if 'xyz' in settings or 'coordinates' in settings:
         return [None]
     source = Path(settings['input']) if 'input' in settings else extracted
     if source is None:
@@ -85,8 +92,6 @@ def _dataset_sources(settings, extracted):
 def run_workflow(control, *, only=None, resume=False):
     plan = control.execution_plan(only)
     tasks = plan['tasks']
-    if any(task != SURFACE_DYNAMICS for task in tasks):
-        from .dimers import extract_dimers_monomers, file_hash, fingerprint
     sections = control.sections
     extracted = None
     report = {'schema': 'cube-workflow-1', 'status': 'running', 'control': str(control.path),
@@ -102,6 +107,7 @@ def run_workflow(control, *, only=None, resume=False):
 
     def single(record, settings, prefix):
         from .scf import run_single_point
+        from .dimers import fingerprint
         atoms = _atoms(record)
         key = fingerprint({'prefix': str(prefix), 'atoms': atoms, 'config': asdict(scf_config(settings))})
         if key not in monomer_cache:
@@ -110,7 +116,8 @@ def run_workflow(control, *, only=None, resume=False):
         return monomer_cache[key]
 
     try:
-        if EXTRACTION in sections and (EXTRACTION in tasks or any('input' not in sections[t] and 'xyz' not in sections[t] for t in tasks if t in QUANTUM_SECTIONS)):
+        if EXTRACTION in sections and (EXTRACTION in tasks or any(needs_extraction(sections[t]) for t in tasks if t in QUANTUM_SECTIONS)):
+            from .dimers import extract_dimers_monomers
             print('wren: extracting complete molecules/dimers', flush=True)
             extracted = extract_dimers_monomers(sections[EXTRACTION], one_settings=sections.get('one-mol'),
                                        two_settings=sections.get('two-mol'), resume=resume)
@@ -127,6 +134,13 @@ def run_workflow(control, *, only=None, resume=False):
             if task == EXTRACTION:
                 continue
             original_settings = sections[task]
+            if task == 'reorganization-energy' and original_settings.get('energy-source') == 'external':
+                from .reorganization_task import analyze_existing
+                if summary_path is None:
+                    summary_path = control.path.parent/'cube-results/workflow.json'
+                report['tasks'][task] = analyze_existing(original_settings, resume=resume)
+                _write_result(summary_path, report)
+                continue
             if task == DOS:
                 from wren.dos.runner import run as run_dos
                 if summary_path is None:
@@ -171,6 +185,7 @@ def run_workflow(control, *, only=None, resume=False):
                     outputs = {r['id']: single(r, settings, directory/r['id']) for r in records}
                     task_result = {'status': 'completed', 'count': len(outputs), 'outputs': outputs}
                 elif task == 'two-mol':
+                    from .dimers import fingerprint, file_hash
                     from wren.quantum.checkpoints import calculate_from_checkpoints
                     from wren.quantum.control import TransferControl
                     from .scf import translated_checkpoint
@@ -238,42 +253,9 @@ def run_workflow(control, *, only=None, resume=False):
                     task_result = {'status': 'completed' if complete else 'partial', 'count': len(outputs),
                                              'csv': str(directory/'transfer_integrals.csv'), 'outputs': outputs}
                 else:
-                    from .reorganization import calculate_reorganization
-                    from .reorganization_csv import write_reorganization_csv, UNITS
-                    directory = Path(settings.get('output', data['root']/'reorganization'))
+                    from .reorganization_task import run_quantum_reorganization
                     records = _select(data['monomers'], settings.get('molecules'), 'molecules')
-                    outputs = {}
-                    csv_results = {}
-                    csv_paths = write_reorganization_csv(csv_results, directory, settings['carriers'])
-                    frame = fixed_environment = pair_parameters = None
-                    if settings['environment'] == 'qmmm':
-                        from .embedding import read_charges, load_gromacs_environment, cluster_from_frame
-                        if settings['mm-source'] == 'file':
-                            fixed_environment = read_charges(settings['mm-charges'])
-                        else:
-                            frame = load_gromacs_environment(data)
-                        if settings.get('mm-vdw') == 'tpr':
-                            from .lj import read_gromacs_lj
-                            pair_parameters = read_gromacs_lj(data['provenance']['settings']['tpr'], settings['gmx-executable'])
-                    for record in records:
-                        environment = (cluster_from_frame(frame, record, settings['mm-cutoff'])
-                                       if frame is not None else fixed_environment)
-                        if settings.get('mm-vdw') in ('tpr', 'file'):
-                            from dataclasses import replace
-                            from .lj import bind_gromacs_lj, read_lj_file
-                            vdw = (bind_gromacs_lj(pair_parameters, record, environment) if pair_parameters is not None else
-                                   read_lj_file(settings['mm-vdw-file'], _atoms(record), environment))
-                            environment = replace(environment, vdw=vdw)
-                        print(f'wren: {settings["environment"]} four-point reorganization {record["id"]}', flush=True)
-                        result = calculate_reorganization(_atoms(record), settings, directory/record['id'], resume=resume,
-                                                          embedding=environment)
-                        csv_results[record['id']] = result
-                        csv_paths = write_reorganization_csv(csv_results, directory, settings['carriers'])
-                        outputs[record['id']] = {'output': str(directory/record['id']/'reorganization.json'),
-                            'reorganization_ev': {c:v['reorganization_energy_ev'] for c,v in result['results'].items()},
-                            'reused': result['reused']}
-                    task_result = {'status': 'completed', 'environment': settings['environment'], 'count': len(outputs),
-                                   'csv': csv_paths, 'csv_units': UNITS, 'outputs': outputs}
+                    task_result = run_quantum_reorganization(settings, data, records, _atoms, resume=resume)
                 results[frame_label] = task_result
                 report['tasks'][task] = (task_result if not multi else {
                     'status': ('running' if len(results) < len(sources) else

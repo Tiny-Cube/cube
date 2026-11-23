@@ -1,0 +1,11 @@
+{
+  "schema": "wren-qmmm-topology-1",
+  "charge_unit": "e",
+  "atoms": [
+    {"atom_id": 1, "molecule_id": 1, "element": "O", "ff_type": "OW", "charge": -0.834},
+    {"atom_id": 2, "molecule_id": 1, "element": "H", "ff_type": "HW", "charge": 0.417},
+    {"atom_id": 3, "molecule_id": 1, "element": "H", "ff_type": "HW", "charge": 0.417},
+    {"atom_id": 4, "molecule_id": 2, "element": "Na", "ff_type": "Na", "charge": 1.0}
+  ],
+  "bonds": [[1, 2], [1, 3]]
+}
