@@ -1,0 +1,70 @@
+{
+  "schema": "wren-dos-device-validation-1",
+  "status": "completed",
+  "versions": {
+    "python": "3.12.15",
+    "numpy": "2.5.4",
+    "pyscf": "2.15.0",
+    "cupy": "13.6.0",
+    "gpu4pyscf": "1.9.1"
+  },
+  "cases": {
+    "h2-cpu": {
+      "scope": "isolated_molecular_orbital_ensemble_no_inter_molecular_coupling",
+      "elapsed_seconds": 0.1589070870541036,
+      "expected_integral": 4.0,
+      "finite_grid_integral": 3.9999999999999973
+    },
+    "h2-gpu": {
+      "elapsed_seconds": 0.9687984231859446,
+      "expected_integral": 4.0,
+      "finite_grid_integral": 3.9999999999999973,
+      "max_orbital_error_ev": 7.140954494389007e-13,
+      "actual_scf_class": "gpu4pyscf.df.df_jk.DFRHF"
+    },
+    "gaussian": {
+      "max_abs_error": 1.3642420526593924e-12,
+      "wall_seconds_including_transfer": {
+        "cpu": 0.07222857186570764,
+        "gpu": 0.0012713521718978882
+      },
+      "levels": 1000,
+      "grid_points": 4001,
+      "gpu_warmed": true
+    },
+    "bloch": {
+      "sites": 16,
+      "kpoints": 8,
+      "max_abs_error_ev": 7.771561172376096e-16
+    },
+    "md-monomer": {
+      "scope": "isolated_molecular_orbital_ensemble_no_inter_molecular_coupling",
+      "elapsed_seconds": 3.9163385666906834,
+      "expected_integral": 604.0,
+      "finite_grid_integral": 604.0,
+      "frontier_disorder": {
+        "homo": {
+          "mean_ev": -4.5034617878770975,
+          "variance_total_ev2": 0.0,
+          "variance_static_ev2": 0.0,
+          "variance_dynamic_ev2": 0.0,
+          "frames": 1,
+          "sites": 1,
+          "statistical_uncertainty_estimated": false
+        },
+        "lumo": {
+          "mean_ev": 3.5110292782579267,
+          "variance_total_ev2": 0.0,
+          "variance_static_ev2": 0.0,
+          "variance_dynamic_ev2": 0.0,
+          "frames": 1,
+          "sites": 1,
+          "statistical_uncertainty_estimated": false
+        }
+      },
+      "note": "HF/STO-3G with Weigend fitting: functionality only; basis/auxiliary basis not material-converged"
+    }
+  },
+  "scope": "small-system implementation validation, not material convergence",
+  "device": "NVIDIA GeForce RTX 5090"
+}

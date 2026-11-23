@@ -2,6 +2,15 @@
 
 # wren — 有机分子载流子输运计算软件
 
+Wren 集成分支为 `feat/wren`。首次使用可执行：
+
+```bash
+git clone --branch feat/wren https://github.com/Tiny-Cube/cube.git wren
+cd wren
+uv sync --locked --extra dos --extra dynamics
+uv run wren examples/dos/input
+```
+
 wren 面向有机分子晶体、非晶和聚合物的载流子输运研究。当前可用功能包括四语言通用 KMC、速率函数、真实体系验证，以及可选的 CPU/GPU 转移积分、vacuum 与冻结 MM 静电嵌入四点法重组能；完整材料输运工作流仍在建设。Python 包与主命令为 `wren`；独立命令为 `wren-kmc`、`wren-transfer` 和 `wren-surface-hopping`。旧命令作为兼容别名保留，历史 cube 科学数据 schema 不做无依据的转换。
 
 [网页手册源码](docs/site/index.md) · [DOS 理论](docs/site/dos-theory.md) · [DOS 使用](docs/site/dos-guide.md) · [软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)

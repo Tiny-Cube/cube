@@ -1,0 +1,17 @@
+{
+  "schema": "wren-dos-md-device-comparison-1",
+  "status": "completed",
+  "same_host": true,
+  "threads": 8,
+  "method": "HF/STO-3G, Weigend auxiliary fitting, conv_tol=1e-7",
+  "cpu_wall_seconds": 48.61523304320872,
+  "gpu_wall_seconds": 3.9163385666906834,
+  "max_orbital_error_ev": 0.0008349309777031522,
+  "cpu_total_energy_hartree": -3661.866394092195,
+  "gpu_total_energy_hartree": -3661.866394063937,
+  "cpu_homo_ev": -4.503522620272918,
+  "gpu_homo_ev": -4.5034617878770975,
+  "cpu_lumo_ev": 3.5109129780250794,
+  "gpu_lumo_ev": 3.5110292782579267,
+  "note": "One repetition; GPU warmed by H2 checks; implementation timing only, not material convergence or statistical benchmark"
+}

@@ -56,15 +56,57 @@
     }
   },
   "real_md": {
-    "status": "running",
-    "session_id": 78204,
-    "output": "build/dos/md-two-frames-retry/result.json",
+    "status": "completed",
+    "frame_count": 2,
+    "scope": "isolated_molecular_orbital_ensemble_no_inter_molecular_coupling",
+    "expected_integral": 604.0,
+    "finite_grid_integral": 604.0000000000001,
+    "elapsed_seconds": 452.19294123899454,
+    "frontier_disorder": {
+      "homo": {
+        "mean_ev": -4.470313421029681,
+        "variance_total_ev2": 0.0011028509013460998,
+        "variance_static_ev2": 0.0,
+        "variance_dynamic_ev2": 0.0011028509013460998,
+        "frames": 2,
+        "sites": 1,
+        "statistical_uncertainty_estimated": false
+      },
+      "lumo": {
+        "mean_ev": 3.3827430212945937,
+        "variance_total_ev2": 0.01642753770712739,
+        "variance_static_ev2": 0.0,
+        "variance_dynamic_ev2": 0.01642753770712739,
+        "frames": 2,
+        "sites": 1,
+        "statistical_uncertainty_estimated": false
+      }
+    },
+    "molecules": [
+      "1"
+    ],
+    "frames": [
+      1980,
+      2000
+    ],
+    "qm_atoms_per_molecule": 86,
+    "method": "HF/STO-3G with Weigend auxiliary fitting; functionality only",
     "previous_attempt_exit_code": 143
   },
   "limitations": [
-    "new GPU DOS not verified yet",
     "monomer vacuum spectra are not complete material DOS",
     "periodic multi-frame alignment, PDOS and KPM pending",
     "atomistic quantum-driven surface hopping pending"
-  ]
+  ],
+  "gpu": {
+    "status": "completed",
+    "device": "NVIDIA GeForce RTX 5090",
+    "report": "gpu/validation.json",
+    "same_host_md_comparison": "gpu/md-comparison.json"
+  },
+  "github_docs_ci": {
+    "status": "success",
+    "run_url": "https://github.com/Tiny-Cube/cube/actions/runs/45168889194",
+    "commit": "7fcc9ebd7ce63be22d14521989457eaf0089ed27"
+  }
 }

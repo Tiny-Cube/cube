@@ -5,7 +5,16 @@
 
 136 项测试：135 通过、1 项显式 GPU opt-in 跳过。Sphinx 严格构建通过，浏览器验证导航、公式、
 图标和中文搜索。已构建并在隔离环境安装 wheel，检查无科学依赖时的主命令/配置预检。
-网页尚未验证公网部署。实际 MD 两帧的单分子 CPU 功能算例在运行，不计为已完成材料 DOS。
+网页尚未验证公网部署。实际 MD 的 frame1980/frame2000、分子 1（86 原子）已完成 CPU 功能算例，用时约 452 s，
+积分为 604.0000000000001（期望 604）。这是两帧、一个分子的 HF/STO-3G + Weigend 辅助基
+真空轨道谱，不是已收敛的材料 DOS；两帧不足以估计统计不确定性。
 
 原始本地输出保留在 build/dos，日志位于 /tmp/wren-full-tests.log 和 /tmp/wren-docs-build.log。
 这些临时日志不是发行物，长期可追踪数值以 validation.json 与源测试为准。
+
+## GPU 对照
+
+GPU 报告为 gpu/validation.json，同机 86 原子 CPU/GPU 对照为 gpu/md-comparison.json。
+CPU 48.62 s、RTX5090 3.92 s（8 线程、HF/STO-3G+Weigend、单次、GPU 预热）；
+最大轨道差 0.835 meV。不要将不同主机的 CPU 两帧 452 s 与服务器 GPU 单帧直接相除。
+GitHub 文档构建也已通过：https://github.com/Tiny-Cube/cube/actions/runs/45168889194 。

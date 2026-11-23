@@ -3,6 +3,13 @@
 需要 Python 3.11 或更新版本，使用 uv 管理 Python 包和可选依赖。
 新集成工作区位于 `wren`，命令均在该仓库根目录运行。
 
+当前实现发布在现有 GitHub 仓库的 `feat/wren` 分支，原 `main` 和开发分支保留：
+
+```bash
+git clone --branch feat/wren https://github.com/Tiny-Cube/cube.git wren
+cd wren
+```
+
 ```bash
 uv sync --locked --extra workflow --extra transport --extra dynamics --extra dos
 uv run wren --help
