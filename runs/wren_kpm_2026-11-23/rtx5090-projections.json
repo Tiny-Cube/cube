@@ -1,0 +1,119 @@
+{
+  "pdos": {
+    "method": "HF/STO-3G, Weigend density fit",
+    "cpu_threads": 4,
+    "convergence_tolerance_hartree": 1e-07,
+    "gpu_device": "NVIDIA GeForce RTX 5090",
+    "cpu_scf_seconds": 76.57601313386112,
+    "gpu_scf_seconds": 4.125869385898113,
+    "cpu_scf_hartree": -3661.8663940921824,
+    "gpu_scf_hartree": -3661.866394063937,
+    "homo_difference_ev": 6.083239584242506e-05,
+    "lumo_difference_ev": 0.00011630023362174668,
+    "element_integrals": {
+      "C": 339.9999999999998,
+      "H": 72.0000000000001,
+      "N": 40.00000000000007,
+      "O": 79.9999999999998,
+      "S": 71.99999999999991
+    },
+    "cpu_seconds": 78.16851214505732,
+    "gpu_seconds": 5.466913105454296,
+    "cpu_integral": 604.0,
+    "gpu_integral": 604.0,
+    "source_sha256": {
+      "xyz": "af97a8965886edc2496206b076ae713e7f8604e1887afe0d52ea9b114338feaf"
+    },
+    "max_abs_eigenvalue_difference_ev": 0.000834930976054693,
+    "max_abs_element_or_site_pdos_difference_per_ev": {
+      "C": 0.10348385272673255,
+      "H": 0.004280091684890408,
+      "N": 0.0110417319274827,
+      "O": 0.01891450772378178,
+      "S": 0.03703882157201388
+    },
+    "max_difference_divided_by_channel_peak": {
+      "C": 0.0019470329066602777,
+      "H": 0.0005008208855200718,
+      "N": 0.0009120366607790459,
+      "O": 0.001100969007649046,
+      "S": 0.0021168323619954552
+    }
+  },
+  "nonorthogonal": {
+    "cpu_seconds": 0.012243582867085934,
+    "gpu_seconds": 1.3608913319185376,
+    "cpu_integral": 4.0,
+    "gpu_integral": 4.0,
+    "source_sha256": {
+      "input": "494e91518c8f2ae5f4443a66e936893c4d753478cd703554efa5947a579f9d1d"
+    },
+    "max_abs_eigenvalue_difference_ev": 5.551115123125783e-16,
+    "max_abs_element_or_site_pdos_difference_per_ev": {
+      "site_0": 1.1457501614131615e-13,
+      "site_1": 3.375077994860476e-14
+    },
+    "max_difference_divided_by_channel_peak": {
+      "site_0": 7.613096105091985e-15,
+      "site_1": 3.082662814333901e-15
+    }
+  },
+  "tight-pdos": {
+    "method": "HF/STO-3G, Weigend density fit",
+    "cpu_threads": 4,
+    "convergence_tolerance_hartree": 1e-10,
+    "gpu_device": "NVIDIA GeForce RTX 5090",
+    "cpu_scf_seconds": 99.56958734802902,
+    "gpu_scf_seconds": 5.170171404723078,
+    "cpu_scf_hartree": -3661.866394102405,
+    "gpu_scf_hartree": -3661.866394102196,
+    "homo_difference_ev": 6.677861454917888e-07,
+    "lumo_difference_ev": 1.4707954001380585e-06,
+    "element_integrals": {
+      "C": 339.99999999999926,
+      "H": 72.00000000000013,
+      "N": 39.999999999999964,
+      "O": 79.99999999999996,
+      "S": 72.0000000000001
+    },
+    "cpu_seconds": 101.1660699355416,
+    "gpu_seconds": 6.252536966931075,
+    "cpu_integral": 604.0,
+    "gpu_integral": 604.0,
+    "source_sha256": {
+      "xyz": "af97a8965886edc2496206b076ae713e7f8604e1887afe0d52ea9b114338feaf"
+    },
+    "max_abs_eigenvalue_difference_ev": 2.5863903715617198e-05,
+    "max_abs_element_or_site_pdos_difference_per_ev": {
+      "C": 0.0014039881902476736,
+      "H": 9.105651437479878e-05,
+      "N": 0.0012445171149018108,
+      "O": 0.0010388463234161094,
+      "S": 0.0010227302154843798
+    },
+    "max_difference_divided_by_channel_peak": {
+      "C": 2.6411040308870867e-05,
+      "H": 1.0654707470966084e-05,
+      "N": 0.00010277138981491868,
+      "O": 6.0449536018724486e-05,
+      "S": 5.844374509357496e-05
+    }
+  },
+  "same_checkpoint": {
+    "checkpoint_sha256": "255135145a2dde185331c1fccb5f4e27524b16d8dd446336757aea72ae281eb8",
+    "elements": [
+      "C",
+      "H",
+      "N",
+      "O",
+      "S"
+    ],
+    "grid_ev": [
+      -8,
+      7
+    ],
+    "grid_points": 1501,
+    "max_abs_orbital_population_difference": 6.8833827526759706e-15,
+    "max_abs_element_pdos_difference_per_ev": 2.1316282072803006e-14
+  }
+}

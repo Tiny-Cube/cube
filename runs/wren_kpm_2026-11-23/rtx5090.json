@@ -1,0 +1,67 @@
+{
+  "tested_revision": "c8eb0588674786e217526936d7fcc0076568642a",
+  "device": "NVIDIA GeForce RTX 5090",
+  "platform": "Linux-6.12.0-211.64.1.el10_2.x86_64-x86_64-with-glibc2.39",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "cupy": "13.6.0",
+  "cuda_runtime": 13000,
+  "timing": "three sequential fresh-process runs per backend on same host, one CPU thread; per-case Wren elapsed time includes model read, computation and output, with a warm CUDA process for the checkpoint (last case); no new SCF in KPM runs",
+  "cases": {
+    "disordered_layer": {
+      "bins": 512,
+      "max_abs_dos_difference_states_per_ev": 6.658051887598049e-10,
+      "max_abs_dos_difference_relative_to_peak": 4.583095976418447e-15,
+      "max_abs_trace_moment_difference": 3.637978807091713e-11,
+      "max_abs_trace_se_difference_states_per_ev": 3.2883648408421617e-10,
+      "cpu_seconds": [
+        1.6617330638691783,
+        1.8718177499249578,
+        1.6820763377472758
+      ],
+      "cpu_median_seconds": 1.6820763377472758,
+      "cpu_integral": 65536.0,
+      "gpu_seconds": [
+        0.9919385220855474,
+        0.7668745871633291,
+        0.7642775238491595
+      ],
+      "gpu_median_seconds": 0.7668745871633291,
+      "gpu_integral": 65536.0,
+      "cpu_over_gpu_median": 2.193417758136021,
+      "network_sha256": "b257442b11e00413bc808a2d64fc639783907e31badccb6e5a9ebb0d94782416"
+    },
+    "md_checkpoint": {
+      "bins": 512,
+      "max_abs_dos_difference_states_per_ev": 2.930988785010413e-14,
+      "max_abs_dos_difference_relative_to_peak": 4.508173081945275e-15,
+      "max_abs_trace_moment_difference": 2.0463630789890885e-12,
+      "max_abs_trace_se_difference_states_per_ev": 0.0,
+      "cpu_seconds": [
+        1.7589656240306795,
+        1.7424629339948297,
+        1.7791648609563708
+      ],
+      "cpu_median_seconds": 1.7589656240306795,
+      "cpu_integral": 604.0000000000005,
+      "gpu_seconds": [
+        3.881502798292786,
+        1.2773107793182135,
+        1.2695173299871385
+      ],
+      "gpu_median_seconds": 1.2773107793182135,
+      "gpu_integral": 604.0000000000005,
+      "cpu_over_gpu_median": 1.3770850857217047,
+      "network_sha256": "b15b6496a14cf6b84534fe72e03b7ea09f09885c37f7b5a4feedb9e80f635b1e",
+      "checkpoint_sha256": "840851a01f8ed3ba1903e3be8eafb0b0ab0e2eb47442e51a1c2d2fe25cfb828e",
+      "gpu_max_abs_moment_error_vs_orbitals": 9.322320693172514e-12
+    },
+    "complex_bloch_32_k": {
+      "bins": 512,
+      "max_abs_dos_difference_states_per_ev": 1.1368683772161603e-13,
+      "max_abs_dos_difference_relative_to_peak": 1.4571613924122062e-15,
+      "max_abs_trace_moment_difference": 2.220446049250313e-15,
+      "max_abs_trace_se_difference_states_per_ev": 0.0
+    }
+  }
+}
