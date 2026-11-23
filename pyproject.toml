@@ -13,7 +13,7 @@ license-files = ["LICENSE"]
 dependencies = []
 
 [project.optional-dependencies]
-dos = ["numpy>=2.0,<2.6", "pyscf>=2.8,<3"]
+dos = ["numpy>=2.0,<2.6", "pyscf>=2.8,<3", "scipy>=1.13"]
 docs = ["sphinx>=8,<10", "myst-parser>=4,<6", "furo>=2024.8", "jieba>=0.42,<1"]
 dynamics = ["numpy>=2.0,<2.6"]
 transport = ["numpy>=2.0,<2.6"]

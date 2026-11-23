@@ -2349,6 +2349,8 @@ dos = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "pyscf" },
+    { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "scipy", version = "1.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
 dynamics = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
@@ -2399,6 +2401,7 @@ requires-dist = [
     { name = "pyscf", marker = "extra == 'quantum'", specifier = ">=2.8,<3" },
     { name = "pyscf", marker = "extra == 'quantum-cuda13'", specifier = ">=2.8,<3" },
     { name = "pyscf", marker = "extra == 'workflow'", specifier = ">=2.8,<3" },
+    { name = "scipy", marker = "extra == 'dos'", specifier = ">=1.13" },
     { name = "sphinx", marker = "extra == 'docs'", specifier = ">=8,<10" },
 ]
 provides-extras = ["dos", "docs", "dynamics", "transport", "quantum", "workflow", "quantum-cuda13"]

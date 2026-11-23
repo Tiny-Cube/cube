@@ -146,10 +146,21 @@ def _scf_settings(settings):
     return cfg
 
 
+def _complete(directory, result, started):
+    output = directory/'result.json'
+    result.update(status='completed', sampling_uncertainty_estimated=False,
+                  elapsed_seconds=time.perf_counter()-started,
+                  output_sha256={str(p.relative_to(directory)): file_hash(p)
+                                 for p in directory.rglob('*') if p.is_file() and p != output})
+    _write_result(output, result)
+    return {**result, 'output': str(output), 'reused': False}
+
+
 def run(settings, *, resume=False):
     from . import core
     started = time.perf_counter()
     mode = settings['mode']
+    use_kpm = settings.get('solver') == 'kpm'
     datasets = _dataset(settings) if mode != 'tight-binding' else []
     if mode == 'periodic' and len(datasets) > 1:
         raise ValueError('multi-frame periodic DOS needs explicit potential alignment, not yet implemented; run each frame separately')
@@ -158,6 +169,15 @@ def run(settings, *, resume=False):
     request = {'settings': settings, 'datasets': datasets, 'network': network, 'source_sha256': sources,
                'implementation_sha256': {p: file_hash(p) for p in (__file__, core.__file__)},
                'numpy_version': np.__version__}
+    if use_kpm:
+        from . import kpm
+        import scipy
+        del request['network']  # The input hash identifies large sparse networks without duplicating them.
+        request['implementation_sha256'][kpm.__file__] = file_hash(kpm.__file__)
+        request['scipy_version'] = scipy.__version__
+        if settings['dos-backend'] == 'gpu':
+            import cupy
+            request['cupy_version'] = cupy.__version__
     if mode != 'tight-binding':
         import pyscf
         request['pyscf_version'] = pyscf.__version__
@@ -188,14 +208,20 @@ def run(settings, *, resume=False):
     directory.mkdir(parents=True, exist_ok=True)
     result = {'schema': 'wren-dos-1', 'status': 'running', 'fingerprint': key, 'request': request,
               'mode': mode, 'energy_unit': 'eV', 'energy_reference': 'common_unshifted_input_zero',
-              'broadening': {'kernel': 'Gaussian', 'sigma_ev': settings['sigma']},
               'backend': settings['dos-backend'], 'frames': []}
+    if not use_kpm:
+        result['broadening'] = {'kernel': 'Gaussian', 'sigma_ev': settings['sigma']}
     _write_result(output, result)
     spectra, weights, frame_records, homo_table, lumo_table = [], [], [], [], []
     site_weights, element_frames = [], []
     try:
         if mode == 'tight-binding':
             pairs, overlaps = _network_terms(network)
+            if use_kpm:
+                if overlaps:
+                    raise ValueError('sparse KPM requires an orthonormal Hamiltonian; use diagonalization for overlap pairs')
+                result.update(kpm.calculate(directory, network, pairs, settings))
+                return _complete(directory, result, started)
             points, kw = kmesh(settings['kmesh'])
             systems = bloch_eigensystems(network['site_energies_ev'], pairs, points, overlap_pairs=overlaps,
                                          backend=settings['dos-backend'],
@@ -333,12 +359,8 @@ def run(settings, *, resume=False):
         _write_result(directory/'spectra.json', {'schema': 'wren-dos-spectra-1', 'frames': frame_records})
         if homo_table:
             result['frontier_disorder'] = {'homo': disorder_statistics(homo_table), 'lumo': disorder_statistics(lumo_table)}
-        result.update(status='completed', frame_count=len(frame_records), frames='spectra.json',
-                      grid_spacing_ev=float(grid[1]-grid[0]),
-                      sampling_uncertainty_estimated=False, elapsed_seconds=time.perf_counter()-started,
-                      output_sha256={str(p.relative_to(directory)): file_hash(p) for p in directory.rglob('*') if p.is_file() and p != output})
-        _write_result(output, result)
-        return {**result, 'output': str(output), 'reused': False}
+        result.update(frame_count=len(frame_records), frames='spectra.json', grid_spacing_ev=float(grid[1]-grid[0]))
+        return _complete(directory, result, started)
     except Exception as exc:
         result.update(status='failed', error={'type': type(exc).__name__, 'message': str(exc)})
         _write_result(output, result)

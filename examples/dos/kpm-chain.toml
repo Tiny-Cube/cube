@@ -1,0 +1,10 @@
+[dos]
+mode = "tight-binding"
+solver = "kpm"
+input = "two-site-chain.json"
+output = "../../build/dos/kpm-chain"
+kmesh = [32, 1, 1]
+spin-degeneracy = 2
+kpm-trace = "exact"
+kpm-moments = 128
+points = 512

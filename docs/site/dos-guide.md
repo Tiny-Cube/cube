@@ -167,7 +167,48 @@ $end
 `result.json` 的 `element_projections` 保存各元素的离散谱权重、能窗内积分和逐点求和残差。
 上述最小基组便于功能核验，材料计算需另做基组、构型和环境收敛。
 
-## 展宽、单位与输出
+## 大型无序网络的稀疏 KPM
+
+已有正交有效哈密顿量时，可在同一 `$dos` 段选择 KPM。输入的位点能、带符号耦合、
+分子编号与周期像沿用前文紧束缚格式。对真实材料，轨道相位约定和位点能的共同参考需来自参数化过程。
+
+```text
+$dos
+do = 1
+mode = tight-binding
+solver = kpm
+input = network.json
+kmesh = 1,1,1
+spin-degeneracy = 1
+kpm-moments = 128
+kpm-trace = stochastic
+kpm-vectors = 16
+kpm-seed = 314159
+points = 512
+dos-backend = cpu
+output = dos-kpm
+$end
+```
+
+运行 `wren input`。仓库另附可直接运行的双位点周期示例
+`uv run --extra dos wren-dos examples/dos/kpm-chain.toml`，使用 `kpm-trace = exact` 对每个基向量求迹。
+稀疏 KPM 输出总 DOS。需要非正交 $S$、单态能量、IPR 或位点投影时，使用默认的 `diagonalization`。
+
+| 参数或文件 | 含义 |
+|---|---|
+| `kpm-moments` | 保留 $T_0$ 至 $T_{M-1}$。默认 128。逐步加倍检查关心的带边或峰形。 |
+| `kpm-vectors`、`kpm-seed` | 随机迹的独立向量数和种子。默认 16、0。提高向量数并用独立种子检查随机波动。 |
+| `kpm-bounds-ev` | 可选的缩放能量范围，须覆盖程序从矩阵元得到的全部 Gershgorin 界。程序再扩大半宽 1%。可用于让几个模型具有相同的谱分辨率；全平谱需指定有限范围。 |
+| `emin`、`emax`、`points` | 输出窗口及等宽能量箱数。默认窗口覆盖缩放区间，默认箱数为 $\max(512,4M)$。裁剪窗口会减少积分，不改变缩放。 |
+| `dos.csv` | 每行给出箱中心、箱平均 DOS、该箱的随机迹标准误以及左右边界。总态数等于 `sum(dos * (right_ev - left_ev))`。 |
+| `moments.csv` | 按阶数记录含 k 点与自旋权重的原始迹矩和标准误。精确迹的随机误差为零，多项式截断仍影响分辨率。 |
+| `result.json` | 记录核、缩放、最大稀疏矩阵非零元数、预期态数、窗口积分与输入哈希。 |
+
+单个 MD 快照的随机迹标准误衡量数值估计误差。讨论材料无序还需增加快照、分子和超胞，并检查时间相关性。
+CPU 使用 SciPy CSR。选择 `dos-backend = gpu` 时，CSR 转入 CuPy，Chebyshev 递推在 GPU 执行，
+能量箱积分于主机完成。当前本模块的实测结果见[验证记录](validation.md)。
+
+## Gaussian 展宽、单位与输出
 
 - `sigma` 单位 eV，表示 Gaussian 标准差，不是 FWHM；也不是自动估计的物理无序宽度。
 - `emin/emax` 可裁剪能窗；不指定时自动覆盖能级两侧 8 sigma。

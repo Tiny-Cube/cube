@@ -7,7 +7,8 @@ from wren.quantum.config import SCFConfig
 FIELDS = {'do', 'mode', 'input', 'xyz', 'output', 'molecules', 'sigma', 'points', 'emin', 'emax',
           'kmesh', 'spin-degeneracy', 'dos-backend', 'qc-engine', 'method', 'basis-set', 'auxbasis',
           'threads', 'grid-level', 'conv-tol', 'max-cycle', 'max-memory-mb', 'pseudo', 'precision', 'max-atoms',
-          'site-projections', 'degeneracy-tol-ev', 'element-projections'}
+          'site-projections', 'degeneracy-tol-ev', 'element-projections', 'solver',
+          'kpm-moments', 'kpm-trace', 'kpm-vectors', 'kpm-seed', 'kpm-bounds-ev'}
 
 
 def normalize(raw, base):
@@ -28,6 +29,37 @@ def normalize(raw, base):
     if not molecular and mode not in ('periodic', 'tight-binding'):
         raise ValueError('DOS mode must be monomer-orbitals, vertical-dscf, periodic or tight-binding')
     result = {'mode': mode}
+    solver = str(raw.get('solver', 'diagonalization')).lower()
+    if 'solver' in raw or any(key.startswith('kpm-') for key in raw):
+        if mode != 'tight-binding' or solver not in ('diagonalization', 'kpm'):
+            raise ValueError('DOS solver requires tight-binding and diagonalization or kpm')
+        result['solver'] = solver
+    if solver == 'kpm':
+        result['kpm-moments'] = number('kpm-moments', 128, integer=True, minimum=2)
+        trace = str(raw.get('kpm-trace', 'stochastic')).lower()
+        if trace not in ('stochastic', 'exact'):
+            raise ValueError('kpm-trace must be stochastic or exact')
+        result['kpm-trace'] = trace
+        if trace == 'stochastic':
+            result['kpm-vectors'] = number('kpm-vectors', 16, integer=True, minimum=2)
+            try:
+                seed = int(str(raw.get('kpm-seed', 0)))
+            except ValueError as exc:
+                raise ValueError('kpm-seed must be a nonnegative integer') from exc
+            if seed < 0:
+                raise ValueError('kpm-seed must be a nonnegative integer')
+            result['kpm-seed'] = seed
+        elif {'kpm-vectors', 'kpm-seed'} & raw.keys():
+            raise ValueError('kpm-vectors and kpm-seed require stochastic trace')
+        if 'kpm-bounds-ev' in raw:
+            bounds = raw['kpm-bounds-ev']
+            bounds = bounds if isinstance(bounds, list) else str(bounds).split(',')
+            values = [float(v) for v in bounds]
+            if len(values) != 2 or not all(map(math.isfinite, values)) or values[0] >= values[1]:
+                raise ValueError('kpm-bounds-ev needs two increasing finite energies')
+            result['kpm-bounds-ev'] = values
+    elif any(key.startswith('kpm-') for key in raw):
+        raise ValueError('kpm parameters require solver=kpm')
     def flag(name):
         value = str(raw.get(name, False)).strip().lower()
         if value not in ('true', 'false', '1', '0'):
@@ -41,6 +73,8 @@ def normalize(raw, base):
         if mode != 'tight-binding':
             raise ValueError('site-projections and degeneracy-tol-ev require tight-binding mode')
         result['site-projections'] = flag('site-projections')
+        if result['site-projections'] and solver == 'kpm':
+            raise ValueError('site-projections and participation require diagonalization')
         if result['site-projections']:
             result['degeneracy-tol-ev'] = number('degeneracy-tol-ev', 1e-8)
         elif 'degeneracy-tol-ev' in raw:
@@ -67,7 +101,11 @@ def normalize(raw, base):
         if not molecular:
             raise ValueError('molecule selection applies only to monomer DOS')
         result['molecules'] = selected
-    result['sigma'] = number('sigma', .05, strict=True)
+    if solver == 'kpm':
+        if 'sigma' in raw:
+            raise ValueError('KPM uses Jackson damping; set kpm-moments for energy resolution')
+    else:
+        result['sigma'] = number('sigma', .05, strict=True)
     if 'points' in raw:
         result['points'] = number('points', None, integer=True, minimum=2)
     for name in ('emin', 'emax'):

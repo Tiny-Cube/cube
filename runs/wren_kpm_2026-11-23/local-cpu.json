@@ -1,0 +1,112 @@
+{
+  "backend": "cpu",
+  "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "disordered_layer": {
+    "expected_integral": 65536,
+    "finite_grid_integral": 65536.0,
+    "integral_relative_error": 0.0,
+    "elapsed_seconds": 4.375568960997043,
+    "kpm": {
+      "gershgorin_bounds_ev": [
+        -0.4854564561860183,
+        0.46510632633494536
+      ],
+      "center_ev": -0.010175064925536464,
+      "scale_ev": 0.4800342051730867,
+      "trace": "stochastic",
+      "random_vectors": 16,
+      "seed": 314159,
+      "max_scaled_csr_nnz": 327680,
+      "grid": "bin_averages",
+      "bin_count": 512,
+      "trace_error_estimated": true
+    },
+    "broadening": {
+      "kernel": "Jackson",
+      "moments": 128
+    },
+    "network_sha256": "b257442b11e00413bc808a2d64fc639783907e31badccb6e5a9ebb0d94782416",
+    "sites": 65536,
+    "bonds": 131072,
+    "standard_errors_for_m1_m2": [
+      34.99800015760951,
+      14.882648088294845
+    ],
+    "errors_in_standard_errors_for_m1_m2": [
+      0.26978785770695746,
+      -3.1934198691346958
+    ],
+    "onsite_sd_ev": 0.05,
+    "hopping_x_ev": -0.1,
+    "hopping_y_ev": -0.035,
+    "structure": "synthetic periodic square layer, Gamma"
+  },
+  "convergence": {
+    "sites": 256,
+    "mesh": "Gamma",
+    "comparisons": [
+      {
+        "moments": 64,
+        "vectors": 8,
+        "max_cdf_difference_stochastic_vs_exact_jackson": 0.015130863017327079,
+        "max_cdf_difference_exact_jackson_vs_discrete": 0.008437342262612613,
+        "midband_resolution_scale_ev": 0.02078390027960093
+      },
+      {
+        "moments": 64,
+        "vectors": 64,
+        "max_cdf_difference_stochastic_vs_exact_jackson": 0.0065581305288091585,
+        "max_cdf_difference_exact_jackson_vs_discrete": 0.008437342262612613,
+        "midband_resolution_scale_ev": 0.02078390027960093
+      },
+      {
+        "moments": 128,
+        "vectors": 8,
+        "max_cdf_difference_stochastic_vs_exact_jackson": 0.016730858489900746,
+        "max_cdf_difference_exact_jackson_vs_discrete": 0.0063382126333606514,
+        "midband_resolution_scale_ev": 0.010472507892822173
+      },
+      {
+        "moments": 128,
+        "vectors": 64,
+        "max_cdf_difference_stochastic_vs_exact_jackson": 0.0071398979612663505,
+        "max_cdf_difference_exact_jackson_vs_discrete": 0.0063382126333606514,
+        "midband_resolution_scale_ev": 0.010472507892822173
+      }
+    ]
+  },
+  "md_checkpoint": {
+    "expected_integral": 604,
+    "finite_grid_integral": 604.0000000000002,
+    "integral_relative_error": 3.764464825219074e-16,
+    "elapsed_seconds": 4.127858945998014,
+    "kpm": {
+      "gershgorin_bounds_ev": [
+        -2850.072115599954,
+        167.04907910003476
+      ],
+      "center_ev": -1341.5115182499596,
+      "scale_ev": 1523.6462033234943,
+      "trace": "exact",
+      "random_vectors": 0,
+      "seed": null,
+      "max_scaled_csr_nnz": 91204,
+      "grid": "bin_averages",
+      "bin_count": 512,
+      "trace_error_estimated": false
+    },
+    "broadening": {
+      "kernel": "Jackson",
+      "moments": 128
+    },
+    "network_sha256": "934fcefe2ac744df00343a680ed7556e5b2c3abff54fb9795e40d1dfec159171",
+    "atoms": 86,
+    "spatial_orbitals": 302,
+    "checkpoint_sha256": "a762bd695fb10f233d52678ae7dbdbfb3e7bc9c259afc03a514cd09d8e606afc",
+    "max_absolute_moment_error": 2.05773176276125e-11,
+    "scope": "complete individual molecular Fock spectrum in symmetric Lowdin AOs"
+  },
+  "wall_seconds": 10.231610467999417
+}

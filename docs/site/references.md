@@ -13,6 +13,7 @@
 | 有机无序输运 | Bässler, *Charge Transport in Disordered Organic Photoconductors a Monte Carlo Simulation Study*, pss(b) **175**, 15–56 (1993), [DOI](https://doi.org/10.1002/pssb.2221750102) |
 | 动态耦合无序 | Troisi, Orlandi, *Electronic disorder in crystalline organic semiconductors: the role of thermal motions modulating the transfer integrals in polyacenes*, [作者预印本](https://arxiv.org/abs/cond-mat/0511314) |
 | 大型稀疏 DOS | Weiße, Wellein, Alvermann, Fehske, *The kernel polynomial method*, RMP **78**, 275 (2006), [DOI](https://doi.org/10.1103/RevModPhys.78.275) |
+| Jackson 核谱重建 | Silver, Roeder, Voter, Kress, *Kernel Polynomial Approximations for Densities of States and Spectral Functions*, J. Comput. Phys. **124**, 115–130 (1996), [DOI](https://doi.org/10.1006/jcph.1996.0048) |
 | Marcus | Marcus, *On the Theory of Oxidation–Reduction Reactions Involving Electron Transfer. I*, JCP **24**, 966 (1956), [DOI](https://doi.org/10.1063/1.1742723) |
 | FSSH | Tully, *Molecular dynamics with electronic transitions*, JCP **93**, 1061 (1990), [DOI](https://doi.org/10.1063/1.459170) |
 | 退相干修正 | Granucci, Persico, *Critical appraisal of the fewest switches algorithm for surface hopping*, JCP **126**, 134114 (2007), [DOI](https://doi.org/10.1063/1.2715585) |
