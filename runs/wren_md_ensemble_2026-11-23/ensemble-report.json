@@ -1,0 +1,150 @@
+{
+  "schema": "wren-md-monomer-sampling-1",
+  "scope": "finite_time_series_one_complete_isolated_vacuum_monomer",
+  "energy_reference": "unshifted_molecular_orbital_energies_vacuum_boundary",
+  "frame_count": 8,
+  "frame_indices": [
+    1860,
+    1880,
+    1900,
+    1920,
+    1940,
+    1960,
+    1980,
+    2000
+  ],
+  "times_ps": [
+    18600.0,
+    18800.0,
+    19000.0,
+    19200.0,
+    19400.0,
+    19600.0,
+    19800.0,
+    20000.0
+  ],
+  "molecule_id": 1,
+  "qm_atom_count": 86,
+  "spatial_orbitals_per_frame": 302,
+  "spin_degeneracy": 2,
+  "gaussian_sigma_ev": 0.1,
+  "plot_window_ev": [
+    -8.0,
+    6.0
+  ],
+  "total_spin_states_expected": 604.0,
+  "all_orbitals_integral_by_frame": [
+    604.0,
+    604.0,
+    604.0,
+    604.0,
+    604.0,
+    604.0,
+    604.0,
+    604.0
+  ],
+  "dos_units": "spin states per molecule per eV",
+  "observed": {
+    "homo_ev": {
+      "mean": -4.480813952302446,
+      "min": -4.6195134451080975,
+      "max": -4.34272715776025,
+      "population_standard_deviation": 0.0773689042616559,
+      "sample_standard_deviation": 0.08271083775349447,
+      "first_half_mean": -4.4859110433729645,
+      "second_half_mean": -4.475716861231928
+    },
+    "lumo_ev": {
+      "mean": 3.2200284647609694,
+      "min": 2.926579265977265,
+      "max": 3.510912977630419,
+      "population_standard_deviation": 0.1688398989548471,
+      "sample_standard_deviation": 0.18049744431616274,
+      "first_half_mean": 3.2160527059100246,
+      "second_half_mean": 3.2240042236119137
+    },
+    "molecular_orbital_gap_ev": {
+      "mean": 7.700842417063415,
+      "min": 7.269306423737515,
+      "max": 8.014435597707143,
+      "population_standard_deviation": 0.21551313490017926,
+      "sample_standard_deviation": 0.23039323232744705,
+      "first_half_mean": 7.7019637492829895,
+      "second_half_mean": 7.699721084843841
+    }
+  },
+  "block_standard_errors_ev": {
+    "1": {
+      "homo_ev": 0.029242697126558123,
+      "lumo_ev": 0.06381548343139996,
+      "molecular_orbital_gap_ev": 0.08145630845911275
+    },
+    "2": {
+      "homo_ev": 0.010126607726339495,
+      "lumo_ev": 0.07212333504586517,
+      "molecular_orbital_gap_ev": 0.0664011680887118
+    },
+    "4": {
+      "homo_ev": 0.005097091070518366,
+      "lumo_ev": 0.003975758850944588,
+      "molecular_orbital_gap_ev": 0.0011213322195744446
+    }
+  },
+  "block_metadata": {
+    "1": {
+      "method": "nonoverlapping_block_means",
+      "error_scope": "pointwise_standard_error_of_complete_block_mean",
+      "block_size_frames": 1,
+      "full_blocks": 8,
+      "degrees_of_freedom": 7,
+      "input_frames": 8,
+      "used_frames": 8,
+      "discarded_tail_frames": 0,
+      "first_frame": 1860,
+      "last_used_frame": 2000,
+      "last_input_frame": 2000,
+      "frame_stride": 20,
+      "sample_spacing_ps": 200.0,
+      "block_independence_verified": false,
+      "material_convergence_verified": false
+    },
+    "2": {
+      "method": "nonoverlapping_block_means",
+      "error_scope": "pointwise_standard_error_of_complete_block_mean",
+      "block_size_frames": 2,
+      "full_blocks": 4,
+      "degrees_of_freedom": 3,
+      "input_frames": 8,
+      "used_frames": 8,
+      "discarded_tail_frames": 0,
+      "first_frame": 1860,
+      "last_used_frame": 2000,
+      "last_input_frame": 2000,
+      "frame_stride": 20,
+      "sample_spacing_ps": 200.0,
+      "block_independence_verified": false,
+      "material_convergence_verified": false
+    },
+    "4": {
+      "method": "nonoverlapping_block_means",
+      "error_scope": "pointwise_standard_error_of_complete_block_mean",
+      "block_size_frames": 4,
+      "full_blocks": 2,
+      "degrees_of_freedom": 1,
+      "input_frames": 8,
+      "used_frames": 8,
+      "discarded_tail_frames": 0,
+      "first_frame": 1860,
+      "last_used_frame": 2000,
+      "last_input_frame": 2000,
+      "frame_stride": 20,
+      "sample_spacing_ps": 200.0,
+      "block_independence_verified": false,
+      "material_convergence_verified": false
+    }
+  },
+  "pointwise_dos_standard_error_csv": "frontier-dos.csv",
+  "equilibration_demonstrated": false,
+  "block_independence_demonstrated": false,
+  "material_dos_convergence_demonstrated": false
+}

@@ -1,0 +1,139 @@
+{
+  "material": "e_006_ether_12-17_0",
+  "frame": 2000,
+  "molecules": 100,
+  "pairs": 550,
+  "model": "one orthonormal frontier orbital per molecule per channel, fixed periodic morphology",
+  "source_sha256": {
+    "sites.csv": "cc550ad762ad3d1a1b8ce943fbab11930b178441303bb2c7667bae686f143435",
+    "rates_and_geometry.csv": "62760d54f8d799810b451e5fc18645acbe73a8edb5206d0250037e1747e0dabf",
+    "input_audit.json": "068911039d33e153742c74baa32bf71bf757e82359773921cbdfbfddd9d60c57"
+  },
+  "script_sha256": "312ff86bce73bec28fd7e402d103d0b4ffbcd44de635d3e2421cf62625648130",
+  "onsite": {
+    "model": "uniform_zero_both_channels",
+    "reference": "independent arbitrary zero for each frontier manifold"
+  },
+  "lattice_angstrom": [
+    [
+      45.7679,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      45.7679,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      45.7679
+    ]
+  ],
+  "sigma_ev": 0.005,
+  "spin_degeneracy": 2,
+  "energy_axis": "electron energies in eV",
+  "csv_density_units": "states / (eV molecule)",
+  "gauge_from_original_checkpoints_independently_verified": false,
+  "channels": {
+    "homo": {
+      "spectra": {
+        "signed_k1": {
+          "kpoints": 1,
+          "min_ev": -0.07546081936994598,
+          "max_ev": 0.07521558503323124,
+          "bandwidth_ev": 0.1506764044031772,
+          "integral_states_per_molecule": 2.0
+        },
+        "signed_k2": {
+          "kpoints": 8,
+          "min_ev": -0.07546787418273386,
+          "max_ev": 0.0752160779728174,
+          "bandwidth_ev": 0.15068395215555125,
+          "integral_states_per_molecule": 2.0000000000000004
+        },
+        "signed_k4": {
+          "kpoints": 64,
+          "min_ev": -0.07546787418273386,
+          "max_ev": 0.0752160779728174,
+          "bandwidth_ev": 0.15068395215555125,
+          "integral_states_per_molecule": 1.9999999999999996
+        },
+        "flipped_k4": {
+          "kpoints": 64,
+          "min_ev": -0.07546787418273385,
+          "max_ev": 0.07521607797281753,
+          "bandwidth_ev": 0.15068395215555136,
+          "integral_states_per_molecule": 1.9999999999999996
+        },
+        "absolute_k4": {
+          "kpoints": 64,
+          "min_ev": -0.0750356422436679,
+          "max_ev": 0.07605266102421421,
+          "bandwidth_ev": 0.1510883032678821,
+          "integral_states_per_molecule": 1.9999999999999996
+        }
+      },
+      "mesh_tv_k1_to_k2": 0.0029638154470229376,
+      "mesh_tv_k2_to_k4": 1.8776785045505414e-05,
+      "site_flip_max_band_change_ev": 3.3306690738754696e-16,
+      "site_flip_max_dos_change": 1.7763568394002505e-14,
+      "absolute_max_band_change_ev": 0.007941897016285324,
+      "absolute_dos_tv": 0.049182884024807035,
+      "first_moment_ev": 0.0,
+      "second_moment_ev2": 0.00087817761512,
+      "sha256_csv": "5f665bdf7c2a7e7d6b0eb8eb2129c0fd7b4a71a15dbd56a6c9bf5175a9e5c4f4",
+      "grid_spacing_ev": 0.0009972038216560508
+    },
+    "lumo": {
+      "spectra": {
+        "signed_k1": {
+          "kpoints": 1,
+          "min_ev": -0.12067214265866266,
+          "max_ev": 0.12185192487645072,
+          "bandwidth_ev": 0.24252406753511338,
+          "integral_states_per_molecule": 2.0
+        },
+        "signed_k2": {
+          "kpoints": 8,
+          "min_ev": -0.1206806902768696,
+          "max_ev": 0.12185221715716885,
+          "bandwidth_ev": 0.24253290743403844,
+          "integral_states_per_molecule": 2.0
+        },
+        "signed_k4": {
+          "kpoints": 64,
+          "min_ev": -0.1206806902768696,
+          "max_ev": 0.12185221715716885,
+          "bandwidth_ev": 0.24253290743403844,
+          "integral_states_per_molecule": 1.9999999999999996
+        },
+        "flipped_k4": {
+          "kpoints": 64,
+          "min_ev": -0.12068069027686952,
+          "max_ev": 0.12185221715716885,
+          "bandwidth_ev": 0.24253290743403838,
+          "integral_states_per_molecule": 1.9999999999999996
+        },
+        "absolute_k4": {
+          "kpoints": 64,
+          "min_ev": -0.12024316239602745,
+          "max_ev": 0.12279851289620501,
+          "bandwidth_ev": 0.24304167529223247,
+          "integral_states_per_molecule": 1.9999999999999993
+        }
+      },
+      "mesh_tv_k1_to_k2": 0.006229811868914383,
+      "mesh_tv_k2_to_k4": 0.00033807865637062285,
+      "site_flip_max_band_change_ev": 4.579669976578771e-16,
+      "site_flip_max_dos_change": 1.4210854715202004e-14,
+      "absolute_max_band_change_ev": 0.00732749597995111,
+      "absolute_dos_tv": 0.054327164949011214,
+      "first_moment_ev": 0.0,
+      "second_moment_ev2": 0.0017215098158,
+      "sha256_csv": "e93606239b42942824f1da19027c4d08cb6572efaeed8ff2e88511ee1502dc9b",
+      "grid_spacing_ev": 0.00099902528735632
+    }
+  }
+}

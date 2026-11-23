@@ -48,6 +48,8 @@ output = "results/dos"
 
 单体报告给出有限样本的静态/动态方差分解。需要逐能点的时间采样误差时设置 `block-size-frames`，并比较多个块长及独立轨迹。
 
+你的 `anneal_a` 案例使用第 1860、1880 至 2000 帧的 1 号完整分子，共 8 个构型，每帧相隔 200 ps。归档提供 302 个空间轨道的逐帧能量与占据，可直接重算平均 DOS 和分块误差。若目标是无序盒子的整体电子谱，请按下面的周期晶胞或片段 Hamiltonian 路线建模。[八帧结果与图](validation.md)、[复算数据和命令](https://github.com/Tiny-Cube/cube/tree/feat/wren/runs/wren_md_ensemble_2026-11-23)
+
 ### 从 MD 计算垂直电离和电子添加能级
 
 每帧取相同的一组分子，在每个分子原始坐标上执行三次真空单点 SCF。中性态取闭壳层单重态，
@@ -295,3 +297,8 @@ CPU 使用 SciPy CSR。选择 `dos-backend = gpu` 时，CSR 转入 CuPy，Chebys
 轨道和紧束缚模式输出 `dos.csv`（eV 网格、平均 DOS、逐帧 DOS）、`spectra.json`（原始能级、占据、k 点或
 分子 ID）、`result.json`（参数、来源/源码哈希、归一化、积分和采样诊断），以及 SCF 日志/检查点。
 此处 DOS 是能级计数，不能把其积分当作直接计算了电子密度或光吸收强度。
+
+
+### 用自己的 dimer 结果构建整盒前线谱
+
+以 `e_006_ether_12-17_0` 为例，先选定同一 MD 帧，对全部 100 个单体采用同一基组、泛函、环境和能量参考计算 HOMO/LUMO。从 `monomer-orbitals` 的 `spectra.json` 按分子号生成 `mol,homo_ev,lumo_ev` 表。每个 dimer 还需要两个分子编号、周期镜像和带符号耦合；同一位点在各对中要使用一致的轨道相位。若归档仅有 Marcus 速率或耦合绝对值，含闭合回路的 Hamiltonian 谱通常不唯一。Wren 的整盒示例分别对 HOMO 和 LUMO 求 Bloch 谱，输出原始能级和按分子归一的 DOS；在输入未提供对角能时，仅演示均匀零位点能的耦合展宽。[100 分子样例、生成位点表和复算步骤](https://github.com/Tiny-Cube/cube/tree/feat/wren/runs/wren_effective_dos_2026-11-23)、[有机半导体的片段参数化](https://doi.org/10.1021/ct200388s)
