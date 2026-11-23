@@ -33,6 +33,9 @@ assert all(name not in sys.modules for name in ('numpy','pyscf','cupy','MDAnalys
                 normalize({'xyz': 'h2.xyz', 'sigma': 0}, root)
             with self.assertRaisesRegex(ValueError, 'periodic GPU'):
                 normalize({'mode': 'periodic', 'input': 'h2.xyz', 'qc-engine': 'gpu-pyscf'}, root)
+            for mode in ('vertical-dscf', 'tight-binding'):
+                with self.assertRaisesRegex(ValueError, 'element-projections'):
+                    normalize({'mode': mode, 'input': 'h2.xyz', 'element-projections': True}, root)
 
 
 @unittest.skipUnless(importlib.util.find_spec('numpy'), 'DOS NumPy dependency required')
@@ -164,6 +167,45 @@ class DosWorkflowTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'missing or changed'):
                 run(normalize({'mode': 'tight-binding', 'input': 'model.json', 'output': 'results', 'kmesh': '32,1,1'}, root), resume=True)
 
+    def test_raw_network_schema_and_sum_rule(self):
+        from wren.dos.runner import run, _network_terms
+        network = Path(__file__).resolve().parents[1]/'examples/dos/nonorthogonal-chain.json'
+        with tempfile.TemporaryDirectory() as temp:
+            settings = normalize({'mode': 'tight-binding', 'input': network, 'output': temp,
+                                  'kmesh': [9, 1, 1], 'site-projections': True}, Path(temp))
+            result = run(settings)
+            self.assertEqual(result['site_projections']['basis'], 'symmetric_lowdin_sites_within_model_cell')
+            self.assertAlmostEqual(result['finite_grid_integral'], 2., places=10)
+        model = json.loads(network.read_text())
+        with self.assertRaisesRegex(ValueError, 'require schema'):
+            _network_terms(dict(model, schema='wren-dos-tb-1', coupling_convention='signed_real_consistent_orbital_phases'))
+        del model['overlap_pairs']
+        with self.assertRaisesRegex(ValueError, 'overlap_pairs'):
+            _network_terms(model)
+
+    @unittest.skipUnless(importlib.util.find_spec('pyscf'), 'periodic PySCF required')
+    def test_element_resolved_periodic_lih(self):
+        import numpy as np
+        from wren.dos.runner import run
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root/'cell.json'
+            source.write_text(json.dumps({'schema': 'cube-dimers-1', 'coordinate_unit': 'Angstrom',
+                'lattice_angstrom': np.diag([5., 5., 5.]).tolist(), 'frame': 0,
+                'monomers': [{'id': '1', 'elements': ['Li', 'H'], 'transport_position_angstrom': [2.5]*3,
+                              'coordinates_angstrom': [[-.8, 0., 0.], [.8, 0., 0.]]}]}))
+            settings = normalize({'mode': 'periodic', 'input': source, 'output': 'out', 'method': 'hf',
+                                  'basis-set': 'gth-szv', 'pseudo': 'gth-pade', 'threads': 1,
+                                  'kmesh': [3, 1, 1], 'precision': 1e-6, 'element-projections': True}, root)
+            with redirect_stdout(io.StringIO()):
+                result = run(settings)
+            projected = result['element_projections']
+            self.assertEqual(projected['elements'], ['H', 'Li'])
+            for symbol, count in projected['expected_integral_per_element'].items():
+                self.assertAlmostEqual(projected['finite_grid_integral_per_element'][symbol], count, places=8)
+            self.assertAlmostEqual(projected['expected_integral_per_element']['H'], 2., places=8)
+            self.assertLess(projected['max_abs_element_sum_residual_per_ev'], 1e-8)
+
     @unittest.skipUnless(importlib.util.find_spec('pyscf'), 'PySCF required')
     def test_real_monomer_multiframe_scf_and_raw_frontier_statistics(self):
         from wren.workflow.dimers import file_hash
@@ -177,15 +219,20 @@ class DosWorkflowTests(unittest.TestCase):
                 p = here/'manifest.json'
                 p.write_text(json.dumps({'schema': 'cube-dimers-1', 'coordinate_unit': 'Angstrom',
                     'frame': i, 'monomers': [{'id': '1', 'elements': ['H', 'H'],
-                        'coordinates_angstrom': [[0., 0., 0.], [length, 0., 0.]]}], 'dimers': []}))
+                        'coordinates_angstrom': [[0., 0., 0.], [length, 0., 0.]]},
+                        {'id': '2', 'elements': ['H', 'F'],
+                         'coordinates_angstrom': [[0., 0., 0.], [length+.16, 0., 0.]]}], 'dimers': []}))
                 frames.append({'frame': i, 'manifest': str(p.relative_to(root)), 'sha256': file_hash(p)})
             (root/'frames.json').write_text(json.dumps({'schema': 'cube-frames-1', 'frame_count': 2, 'frames': frames}))
-            settings = normalize({'input': 'frames.json', 'output': 'results', 'method': 'hf',
+            settings = normalize({'input': 'frames.json', 'output': 'results', 'method': 'hf', 'element-projections': True,
                                   'basis-set': 'sto-3g', 'threads': '1'}, root)
             with redirect_stdout(io.StringIO()):
                 result = run(settings)
             self.assertEqual(result['frame_count'], 2)
-            self.assertAlmostEqual(result['finite_grid_integral'], 4., places=10)
+            self.assertAlmostEqual(result['finite_grid_integral'], 8., places=10)
+            integrals = result['element_projections']['finite_grid_integral_per_element']
+            self.assertAlmostEqual(integrals['H'], 3., places=10)
+            self.assertAlmostEqual(integrals['F'], 5., places=10)
             self.assertGreater(result['frontier_disorder']['homo']['variance_dynamic_ev2'], 0.)
             raw = json.loads((root/'results/spectra.json').read_text())
             self.assertNotEqual(raw['frames'][0]['molecules'][0]['homo_ev'], raw['frames'][1]['molecules'][0]['homo_ev'])

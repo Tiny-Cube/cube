@@ -81,7 +81,11 @@ e^{i\mathbf{k}\cdot\mathbf{R}}.$$
 
 $$HC=SC\varepsilon,\qquad C^\dagger SC=I,$$
 
-或在控制病态重叠本征值的前提下做对称正交化。Wren 当前 TB DOS 只接受已定义的正交模型。
+Wren 对每个采样波矢分别组装 $H(\mathbf k)$ 和 $S(\mathbf k)$。对归一化片段轨道，
+$S_{i0,i0}=1$。定义 $X=S^{-1/2}$，求解 $XHXU=U\varepsilon$，便得到满足原广义本征方程的
+$C=XU$。能量零点平移 $a$ 时应同时执行 $H\mapsto H+aS$。程序检查每个采样点的重叠
+本征值，要求 $s_{\min}>10^{-10}s_{\max}$ 且 $s_{\min}>0$。
+[Löwdin，1950](https://doi.org/10.1063/1.1747632)
 
 ## 有机材料的位点能与极化
 
@@ -139,8 +143,12 @@ $$P_{ii}=\sum_{n\in G}|C_{in}|^2,\quad
 q_i=P_{ii}/r,\quad \text{subspace profile IPR}=\sum_i q_i^2.$$
 
 该量在子空间内部旋转下保持不变，表示均匀混合该组态时的位点分布。
-Wren 在紧束缚模式中用 `site-projections=true` 输出上述结果。分子和周期 PySCF 的
-非正交 AO 投影需要另外选择投影约定，当前可输出其总轨道 DOS。
+Wren 在紧束缚模式中用 `site-projections=true` 输出上述结果。对于非正交片段或 PySCF
+原子轨道，令 $U=S^{1/2}C$。Löwdin 权重为 $p_{An}=\sum_{\mu\in A}|U_{\mu n}|^2$，
+每个归一化轨道满足 $\sum_A p_{An}=1$。紧束缚模型按位点分组，PySCF 可按化学元素汇总。
+周期计算在每个波矢使用各自的 $C(\mathbf k)$、$S(\mathbf k)$。元素权重依赖基组和
+投影约定；使用赝势时，积分计数仅覆盖所建模的轨道空间。
+[Löwdin，1950](https://doi.org/10.1063/1.1747632) · [PySCF 周期重叠矩阵](https://pyscf.org/_modules/pyscf/pbc/scf/khf.html#get_ovlp)
 
 ## 大体系的谱算法
 

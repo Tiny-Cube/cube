@@ -15,10 +15,10 @@ from wren.quantum.cli import _write_result
 from wren.quantum.config import SCFConfig
 from wren.quantum.geometry import read_xyz
 from wren.workflow.dimers import file_hash, fingerprint
-from .core import broaden, bloch_eigensystems, disorder_statistics, kmesh, participation_groups
+from .core import broaden, bloch_eigensystems, disorder_statistics, element_probabilities, kmesh, participation_groups
 
 
-def _write_total_dos(directory, settings, grid, spectra, weights, site_weights):
+def _write_total_dos(directory, settings, grid, spectra, weights):
     curves = [broaden(e, grid, settings['sigma'], weights=w, backend=settings['dos-backend'])
               for e, w in zip(spectra, weights, strict=True)]
     mean = np.mean(curves, axis=0)
@@ -30,31 +30,78 @@ def _write_total_dos(directory, settings, grid, spectra, weights, site_weights):
     integral = float(np.trapezoid(mean, grid))
     summary = {'expected_integral': expected, 'finite_grid_integral': integral,
                'integral_relative_error': abs(integral-expected)/max(expected, 1e-300)}
-    if site_weights:
-        summary['site_projections'] = _write_site_dos(directory, settings, spectra[0], grid, site_weights, mean)
-    return summary
+    return summary, mean
 
 
-def _write_site_dos(directory, settings, energies, grid, site_weights, total):
-    """Use the same finite energy window and weights as the unprojected spectrum."""
-    curves = broaden(energies, grid, settings['sigma'], weights=np.concatenate(site_weights),
-                     backend=settings['dos-backend'])
+def _write_pdos(directory, settings, grid, labels, spectra, projected_weights, total):
+    """Apply the same frame average and finite energy window as the total DOS."""
+    curves = np.zeros((len(grid), len(labels)))
+    counts = np.zeros(len(labels))
+    for energies, weights in zip(spectra, projected_weights, strict=True):
+        curves += broaden(energies, grid, settings['sigma'], weights=weights, backend=settings['dos-backend'])
+        counts += weights.sum(axis=0)
+    curves /= len(spectra)
+    counts /= len(spectra)
     residual = float(np.max(np.abs(curves.sum(axis=1)-total)))
-    if not np.allclose(curves.sum(axis=1), total, rtol=1e-10, atol=1e-12):
-        raise ValueError('sum of site-projected curves disagrees with total DOS')
+    if not np.allclose(curves.sum(axis=1), total, rtol=1e-8, atol=1e-12):
+        raise ValueError('sum of projected curves disagrees with total DOS')
     with (directory/'pdos.csv').open('w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['energy_ev', *[f'site_{i}' for i in range(curves.shape[1])]])
+        writer.writerow(['energy_ev', *labels])
         writer.writerows((energy, *row) for energy, row in zip(grid, curves))
+    return counts.tolist(), np.trapezoid(curves, grid, axis=0).tolist(), residual
+
+
+def _write_site_dos(directory, settings, spectra, grid, site_weights, total, nonorthogonal):
+    labels = [f'site_{i}' for i in range(site_weights[0].shape[1])]
+    _, integrals, residual = _write_pdos(directory, settings, grid, labels, spectra,
+                                         [np.concatenate(site_weights)], total)
     return {'pdos': 'pdos.csv', 'participation': 'participation.csv',
-            'basis': 'orthonormal_sites_within_model_cell', 'site_index_base': 0,
+            'basis': 'symmetric_lowdin_sites_within_model_cell' if nonorthogonal else 'orthonormal_sites_within_model_cell',
+            'site_index_base': 0,
             'degeneracy_tol_ev': settings['degeneracy-tol-ev'],
             'degeneracy_grouping': 'consecutive_gaps_at_or_below_tolerance_within_each_k',
             'ipr_convention': 'sum_squared_normalized_site_probabilities',
             'degenerate_group_statistic': 'sum_i (P_ii/rank)^2',
             'expected_integral_per_site': settings['spin-degeneracy'],
-            'finite_grid_integral_per_site': np.trapezoid(curves, grid, axis=0).tolist(),
+            'finite_grid_integral_per_site': integrals,
             'max_abs_site_sum_residual_per_ev': residual}
+
+
+def _write_element_dos(directory, settings, spectra, grid, frames, weights, total):
+    labels = sorted({symbol for frame in frames for symbols, _ in frame for symbol in symbols})
+    def frame_weights():
+        for frame, line_weights in zip(frames, weights, strict=True):
+            blocks = []
+            for symbols, populations in frame:
+                block = np.zeros((len(populations), len(labels)))
+                block[:, [labels.index(symbol) for symbol in symbols]] = populations
+                blocks.append(block)
+            yield np.vstack(blocks) * line_weights[:, None]
+    counts, integrals, residual = _write_pdos(directory, settings, grid, labels, spectra, frame_weights(), total)
+    return {'pdos': 'pdos.csv', 'basis': 'symmetric_lowdin_atomic_orbitals', 'elements': labels,
+            'expected_integral_per_element': dict(zip(labels, counts)),
+            'finite_grid_integral_per_element': dict(zip(labels, integrals)),
+            'max_abs_element_sum_residual_per_ev': residual}
+
+
+def _network_terms(network):
+    schema = network.get('schema')
+    if schema == 'wren-dos-tb-1':
+        if network.get('coupling_convention') != 'signed_real_consistent_orbital_phases':
+            raise ValueError('orthonormal model requires an explicit signed-coupling convention')
+        if {'overlap_pairs', 'hamiltonian_pairs_ev', 'matrix_element_convention'} & network.keys():
+            raise ValueError('raw Hamiltonian and overlap pairs require schema wren-dos-tb-2')
+        return network['pairs'], None
+    if schema == 'wren-dos-tb-2':
+        if network.get('matrix_element_convention') != 'raw_signed_H_and_S_in_same_orbital_gauge':
+            raise ValueError('nonorthogonal model requires raw signed H and S in the same orbital gauge')
+        if 'pairs' in network or 'coupling_convention' in network:
+            raise ValueError('use hamiltonian_pairs_ev for the raw nonorthogonal Hamiltonian')
+        if not all(isinstance(network.get(k), list) for k in ('hamiltonian_pairs_ev', 'overlap_pairs')):
+            raise ValueError('nonorthogonal model requires hamiltonian_pairs_ev and overlap_pairs lists')
+        return network['hamiltonian_pairs_ev'], network['overlap_pairs']
+    raise ValueError('unknown tight-binding schema; expected wren-dos-tb-1 or wren-dos-tb-2')
 
 
 def _dataset(settings):
@@ -78,6 +125,8 @@ def _dataset(settings):
 def _molecules(data, selected):
     records = data['monomers']
     ids = [str(r['id']) for r in records]
+    if any(not name or name in ('.', '..') or Path(name).name != name for name in ids):
+        raise ValueError('DOS molecule IDs must be nonempty single path components')
     if len(set(ids)) != len(ids):
         raise ValueError('duplicate DOS molecule IDs')
     if selected:
@@ -143,13 +192,12 @@ def run(settings, *, resume=False):
               'backend': settings['dos-backend'], 'frames': []}
     _write_result(output, result)
     spectra, weights, frame_records, homo_table, lumo_table = [], [], [], [], []
-    site_weights = []
+    site_weights, element_frames = [], []
     try:
         if mode == 'tight-binding':
-            if network.get('schema') != 'wren-dos-tb-1' or network.get('coupling_convention') != 'signed_real_consistent_orbital_phases':
-                raise ValueError('tight-binding input needs wren-dos-tb-1 and explicit signed-coupling convention')
+            pairs, overlaps = _network_terms(network)
             points, kw = kmesh(settings['kmesh'])
-            systems = bloch_eigensystems(network['site_energies_ev'], network['pairs'], points,
+            systems = bloch_eigensystems(network['site_energies_ev'], pairs, points, overlap_pairs=overlaps,
                                          backend=settings['dos-backend'],
                                          project_sites=settings.get('site-projections', False))
             bands, groups = [], []
@@ -169,7 +217,8 @@ def run(settings, *, resume=False):
             weights.append(np.repeat(kw*settings['spin-degeneracy'], values.shape[1]))
             frame_records.append({'eigenvalues_ev': values.tolist(), 'kpoints_fractional': points.tolist(),
                                   'kpoint_weights': kw.tolist()})
-            result.update(scope='orthonormal_effective_Hamiltonian', normalization='states_per_model_cell_per_eV')
+            result.update(scope='orthonormal_effective_Hamiltonian' if overlaps is None else 'nonorthogonal_effective_Hamiltonian',
+                          normalization='states_per_model_cell_per_eV')
         else:
             from pyscf.data.nist import HARTREE2EV
             from pyscf.scf import chkfile
@@ -186,6 +235,8 @@ def run(settings, *, resume=False):
                 here = directory/label
                 here.mkdir()
                 frame_info = {'frame': data.get('frame'), 'time_ps': data.get('time_ps'), 'molecules': []}
+                if settings.get('element-projections'):
+                    element_frames.append([])
                 if mode == 'vertical-dscf':
                     molecules = charging.calculate_frame(records, settings, here)
                     frame_info['molecules'] = molecules
@@ -193,13 +244,16 @@ def run(settings, *, resume=False):
                 elif mode == 'monomer-orbitals':
                     levels, spectral_weights, homos, lumos = [], [], [], []
                     for r in records:
-                        atoms = list(zip(r['elements'], r['coordinates_angstrom']))
+                        atoms = list(zip(r['elements'], r['coordinates_angstrom'], strict=True))
                         status = run_single_point(atoms, settings, here/str(r['id']))
-                        _, checkpoint = chkfile.load_scf(status['checkpoint'])
+                        mol, checkpoint = chkfile.load_scf(status['checkpoint'])
                         e = np.asarray(checkpoint['mo_energy'])*HARTREE2EV
                         occ = np.asarray(checkpoint['mo_occ'])
                         if e.ndim != 1 or not np.any(occ > 0) or not np.any(occ == 0):
                             raise ValueError('DOS currently requires restricted closed-shell orbitals with virtual states')
+                        if settings.get('element-projections'):
+                            element_frames[-1].append(element_probabilities(mol, checkpoint['mo_coeff'],
+                                mol.intor_symmetric('int1e_ovlp'), backend=settings['dos-backend']))
                         homo, lumo = float(e[occ > 0].max()), float(e[occ == 0].min())
                         homos.append(homo); lumos.append(lumo)
                         levels.extend(e.tolist()); spectral_weights.extend([2/len(records)]*len(e))
@@ -221,7 +275,7 @@ def run(settings, *, resume=False):
                         center = np.asarray(r.get('transport_position_angstrom'), dtype=float)
                         if center.shape != (3,):
                             raise ValueError('periodic DOS needs original transport_position_angstrom; re-extract this frame')
-                        atoms.extend(zip(r['elements'], (np.asarray(r['coordinates_angstrom'])+center).tolist()))
+                        atoms.extend(zip(r['elements'], (np.asarray(r['coordinates_angstrom'])+center).tolist(), strict=True))
                     if len(atoms) > settings['max-atoms']:
                         raise ValueError('periodic cell exceeds max-atoms; choose an explicitly justified smaller cell or raise the limit')
                     from pyscf.pbc import gto, scf, dft
@@ -244,6 +298,9 @@ def run(settings, *, resume=False):
                         if not mf.converged:
                             raise RuntimeError('periodic SCF did not converge')
                         values = np.asarray(mf.mo_energy)*HARTREE2EV
+                        if settings.get('element-projections'):
+                            for c, s in zip(mf.mo_coeff, mf.get_ovlp(), strict=True):
+                                element_frames[-1].append(element_probabilities(cell, c, s, backend=settings['dos-backend']))
                         spectra.append(values.ravel()); weights.append(np.repeat(2*kw, values.shape[1]))
                         frame_info.update(orbital_energies_ev=values.tolist(), occupations=np.asarray(mf.mo_occ).tolist(),
                                           kpoints_fractional=points.tolist(), kpoint_weights=kw.tolist(),
@@ -265,7 +322,14 @@ def run(settings, *, resume=False):
         if mode == 'vertical-dscf':
             result.update(charging.write_distributions(directory, frame_records, grid, settings))
         else:
-            result.update(_write_total_dos(directory, settings, grid, spectra, weights, site_weights))
+            summary, total = _write_total_dos(directory, settings, grid, spectra, weights)
+            result.update(summary)
+            if site_weights:
+                result['site_projections'] = _write_site_dos(directory, settings, spectra, grid, site_weights,
+                                                            total, overlaps is not None)
+            if element_frames:
+                result['element_projections'] = _write_element_dos(directory, settings, spectra, grid,
+                                                                  element_frames, weights, total)
         _write_result(directory/'spectra.json', {'schema': 'wren-dos-spectra-1', 'frames': frame_records})
         if homo_table:
             result['frontier_disorder'] = {'homo': disorder_statistics(homo_table), 'lumo': disorder_statistics(lumo_table)}

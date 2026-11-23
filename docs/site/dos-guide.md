@@ -7,7 +7,7 @@
 | `monomer-orbitals` | 单体 XYZ、单帧 manifest 或 frames.json | 中性闭壳层单体的 HF/KS 轨道谱；CPU/GPU 分子 SCF |
 | `vertical-dscf` | 单体 XYZ、单帧 manifest 或 frames.json | 固定输入几何，从三个电荷态的单点总能量分别构建第一电离、电子添加能级分布 |
 | `periodic` | 带原始分子位置与晶格的完整 manifest | CPU PySCF PBC KRHF/KRKS、全 k 网格；不裁剪分子子集 |
-| `tight-binding` | 明确的位点能与有符号实耦合 | 正交局域基 Hamiltonian 的 Bloch 谱；CPU/CuPy 数值后端 |
+| `tight-binding` | 位点能、带符号矩阵元，可提供片段重叠 | 正交或非正交模型的 Bloch 谱、位点投影和参与数 |
 
 单体轨道分布用于观察构象、化学环境模型下的能级变化；当前单体模式使用真空独立分子，
 不包含静电/极化环境或分子间轨道混合。完整材料 DOS 应根据问题采用周期或经过验证的有效 Hamiltonian。
@@ -103,9 +103,20 @@ uv run --extra dos wren-dos examples/dos/periodic.toml
 输入 JSON 的字段为 `schema="wren-dos-tb-1"`、
 `coupling_convention="signed_real_consistent_orbital_phases"`、`site_energies_ev`、`pairs`。
 每个 pair 是 `[i,j,[image_a,image_b,image_c],signed_coupling_ev]`；编号从 0 开始。
-每条无向周期通道只列一次，程序补 Hermitian 共轭。局域基必须正交。
+每条无向周期通道只列一次，程序补 Hermitian 共轭。这个版本的输入使用正交局域基。
 `spin-degeneracy=1/2` 显式选择计数；k 点权重和为 1，输出每模型晶胞的态密度。
 只有耦合绝对值的转移积分 CSV 不足以可靠重建带干涉的谱，不能直接当作此模型的输入。
+
+对于有重叠的归一化片段轨道，使用 `schema="wren-dos-tb-2"` 和
+`matrix_element_convention="raw_signed_H_and_S_in_same_orbital_gauge"`。分别在
+`hamiltonian_pairs_ev` 与 `overlap_pairs` 中列出原始带符号的 $H_{ij}$（eV）与 $S_{ij}$（无量纲）。
+两表可有不同的非零项，使用相同的轨道编号、相位和周期像约定。省略的非对角元为零。
+`site_energies_ev` 给出原始 $H$ 的对角元，程序补单位现场重叠。
+已经通过二聚体正交化得到的有效转移积分与原始 $H_{ij}$ 有不同的定义。
+
+```bash
+uv run --extra dos wren-dos examples/dos/nonorthogonal-chain.toml
+```
 
 ### 查看每个位点对能谱的贡献
 
@@ -129,6 +140,32 @@ uv run --extra dos wren-dos examples/dos/projected-chain.toml
 `degeneracy-tol-ev` 默认为 $10^{-8}$ eV。每个 k 点独立分组，相邻能级差小于或等于阈值
 就归入同一组。该阈值只影响参与数的分组，PDOS 保留每个本征值自己的能量。
 投影需要存储各 k 点的位点权重；位点数为 $N$、k 点数为 $N_k$ 时，这部分内存随 $N_kN^2$ 增长。
+
+### 从 MD 帧查看各元素的贡献
+
+在 `monomer-orbitals` 或 `periodic` 模式加入 `element-projections = true`。
+例如对提取帧中的 1 号分子使用以下控制段，运行 `wren input`。
+
+```text
+$dos
+do = 1
+mode = monomer-orbitals
+input = mol/frames.json
+molecules = 1
+element-projections = true
+method = hf
+basis-set = sto-3g
+auxbasis = weigend
+sigma = 0.1
+output = dos-mol1
+$end
+```
+
+`pdos.csv` 的第一列为 `energy_ev`，其余列以元素符号命名。`dos.csv` 保存总 DOS
+及逐帧曲线。两者使用相同能量网格、自旋权重和展宽；逐行求和可核对元素分解。
+分子模式在每帧内对选中分子等权，再对帧等权；周期模式按每晶胞的 k 点权重求和。
+`result.json` 的 `element_projections` 保存各元素的离散谱权重、能窗内积分和逐点求和残差。
+上述最小基组便于功能核验，材料计算需另做基组、构型和环境收敛。
 
 ## 展宽、单位与输出
 

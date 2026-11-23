@@ -1,17 +1,22 @@
 ![Wren](docs/site/_static/wren.svg)
 
-# wren — 有机分子载流子输运计算软件
+# Wren — 有机材料的电子结构与输运动力学
 
 Wren 集成分支为 `feat/wren`。首次使用可执行：
 
 ```bash
 git clone --branch feat/wren https://github.com/Tiny-Cube/cube.git wren
 cd wren
-uv sync --locked --extra dos --extra dynamics
-uv run wren examples/dos/input
+uv sync --locked --extra dos --extra dynamics --extra workflow --extra transport
+cmake -S . -B build/cmake -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE="$PWD/.venv/bin/python"
+cmake --build build/cmake --parallel
+ctest --test-dir build/cmake --output-on-failure
+uv run --no-sync wren examples/dos/input
 ```
 
-wren 面向有机分子晶体、非晶和聚合物的载流子输运研究。当前可用功能包括四语言通用 KMC、速率函数、真实体系验证，以及可选的 CPU/GPU 转移积分、vacuum 与冻结 MM 静电嵌入四点法重组能；完整材料输运工作流仍在建设。Python 包与主命令为 `wren`；独立命令为 `wren-kmc`、`wren-transfer` 和 `wren-surface-hopping`。旧命令作为兼容别名保留，历史 cube 科学数据 schema 不做无依据的转换。
+Wren 提供四语言通用 KMC、MD 帧提取、CPU/GPU 转移积分、冻结 MM 重组能及模型表面跳跃。
+态密度模块支持 PySCF 单体和周期晶胞的元素投影、垂直电离与电子添加能级分布，以及正交和非正交紧束缚模型。
+独立命令为 `wren-kmc`、`wren-transfer`、`wren-dos` 和 `wren-surface-hopping`。兼容入口可以读取原有 cube 控制文件和科学数据。
 
 [网页手册源码](docs/site/index.md) · [DOS 理论](docs/site/dos-theory.md) · [DOS 使用](docs/site/dos-guide.md) · [软件调研与证据](docs/research/README.md) · [输运理论契约](docs/research/transport-theory.md) · [cube 架构与实施路线](docs/plans/2026-11-05-cube-carrier-transport-design.md)
 

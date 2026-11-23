@@ -7,7 +7,7 @@ from wren.quantum.config import SCFConfig
 FIELDS = {'do', 'mode', 'input', 'xyz', 'output', 'molecules', 'sigma', 'points', 'emin', 'emax',
           'kmesh', 'spin-degeneracy', 'dos-backend', 'qc-engine', 'method', 'basis-set', 'auxbasis',
           'threads', 'grid-level', 'conv-tol', 'max-cycle', 'max-memory-mb', 'pseudo', 'precision', 'max-atoms',
-          'site-projections', 'degeneracy-tol-ev'}
+          'site-projections', 'degeneracy-tol-ev', 'element-projections'}
 
 
 def normalize(raw, base):
@@ -28,13 +28,19 @@ def normalize(raw, base):
     if not molecular and mode not in ('periodic', 'tight-binding'):
         raise ValueError('DOS mode must be monomer-orbitals, vertical-dscf, periodic or tight-binding')
     result = {'mode': mode}
+    def flag(name):
+        value = str(raw.get(name, False)).strip().lower()
+        if value not in ('true', 'false', '1', '0'):
+            raise ValueError(f'{name} must be true/false or 1/0')
+        return value in ('true', '1')
+    if 'element-projections' in raw:
+        if mode not in ('periodic', 'monomer-orbitals'):
+            raise ValueError('element-projections requires periodic or monomer-orbitals mode')
+        result['element-projections'] = flag('element-projections')
     if 'site-projections' in raw or 'degeneracy-tol-ev' in raw:
         if mode != 'tight-binding':
             raise ValueError('site-projections and degeneracy-tol-ev require tight-binding mode')
-        flag = str(raw.get('site-projections', False)).strip().lower()
-        if flag not in ('true', 'false', '1', '0'):
-            raise ValueError('site-projections must be true/false or 1/0')
-        result['site-projections'] = flag in ('true', '1')
+        result['site-projections'] = flag('site-projections')
         if result['site-projections']:
             result['degeneracy-tol-ev'] = number('degeneracy-tol-ev', 1e-8)
         elif 'degeneracy-tol-ev' in raw:

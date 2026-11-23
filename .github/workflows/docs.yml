@@ -2,9 +2,9 @@ name: Wren documentation
 on:
   push:
     branches: [main, feat/wren]
-    paths: ['docs/site/**', 'pyproject.toml', 'uv.lock', '.github/workflows/docs.yml']
+    paths: ['docs/site/**', 'CMakeLists.txt', 'pyproject.toml', 'uv.lock', '.github/workflows/docs.yml']
   pull_request:
-    paths: ['docs/site/**', 'pyproject.toml', 'uv.lock', '.github/workflows/docs.yml']
+    paths: ['docs/site/**', 'CMakeLists.txt', 'pyproject.toml', 'uv.lock', '.github/workflows/docs.yml']
   workflow_dispatch:
     inputs:
       publish:
@@ -22,10 +22,14 @@ jobs:
         with:
           python-version: '3.13'
       - run: uv sync --locked --extra docs
-      - run: uv run sphinx-build -W --keep-going -b html docs/site build/html
+      - run: >
+          cmake -S . -B build/manual -DWREN_BUILD_DOCS=ON -DBUILD_TESTING=OFF
+          -DWREN_BUILD_CPP=OFF -DWREN_BUILD_RUST=OFF -DWREN_BUILD_FORTRAN=OFF
+          -DWREN_BUILD_PYTHON=OFF -DPython3_EXECUTABLE="$PWD/.venv/bin/python"
+      - run: cmake --build build/manual --target wren_docs
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: build/html
+          path: build/manual/html
   deploy:
     if: github.event_name == 'workflow_dispatch' && inputs.publish
     needs: build

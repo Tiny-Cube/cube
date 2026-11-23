@@ -1,0 +1,8 @@
+[dos]
+mode = "tight-binding"
+input = "nonorthogonal-chain.json"
+output = "../../build/dos/nonorthogonal-chain"
+kmesh = [32, 1, 1]
+spin-degeneracy = 2
+sigma = 0.02
+site-projections = true

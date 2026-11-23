@@ -67,34 +67,27 @@ def kmesh(mesh):
     return points, np.full(len(points), 1/len(points))
 
 
-def bloch_spectra(site_energies, pairs, kpoints, *, backend='cpu'):
-    """Eigenvalues of an orthonormal one-orbital-per-site tight-binding model.
+def bloch_spectra(site_energies, pairs, kpoints, *, backend='cpu', overlap_pairs=None):
+    """Eigenvalues of a normalized one-orbital-per-site tight-binding model.
 
     Pairs are (i,j,image[3],signed_real_coupling_eV), each undirected channel ONCE.
     Do not pass coupling magnitudes: they cannot recover interference/band DOS.
     Self-image channels produce 2V cos(k.R), never a constant site shift.
     """
     return np.asarray([values for values, _ in bloch_eigensystems(
-        site_energies, pairs, kpoints, backend=backend)])
+        site_energies, pairs, kpoints, backend=backend, overlap_pairs=overlap_pairs)])
 
 
-def bloch_eigensystems(site_energies, pairs, kpoints, *, backend='cpu', project_sites=False):
-    """Yield one spectrum and optional (bands, sites) probability matrix per k."""
-    sites = np.asarray(site_energies, dtype=float)
-    ks = np.asarray(kpoints, dtype=float)
-    if sites.ndim != 1 or not len(sites) or not np.isfinite(sites).all():
-        raise ValueError('finite site energies required')
-    if ks.ndim != 2 or ks.shape[1] != 3 or not len(ks) or not np.isfinite(ks).all():
-        raise ValueError('finite fractional Nx3 kpoints required')
+def _check_pairs(pairs, nsites):
     checked, seen = [], set()
     for i, j, image, coupling in pairs:
-        if type(i) is not int or type(j) is not int or not (0 <= i < len(sites) and 0 <= j < len(sites)):
+        if type(i) is not int or type(j) is not int or not (0 <= i < nsites and 0 <= j < nsites):
             raise ValueError('pair site index out of range')
         image = tuple(image)
         if len(image) != 3 or any(type(n) is not int for n in image):
             raise ValueError('pair image must contain three integers')
         if i == j and image == (0, 0, 0):
-            raise ValueError('onsite energy belongs in site_energies')
+            raise ValueError('diagonal zero-image entries belong in the onsite diagonal')
         key = min((i, j, *image), (j, i, *(-n for n in image)))
         if key in seen:
             raise ValueError('duplicate/reversed pair would double count a coupling')
@@ -102,13 +95,71 @@ def bloch_eigensystems(site_energies, pairs, kpoints, *, backend='cpu', project_
         if isinstance(coupling, bool) or not math.isfinite(coupling):
             raise ValueError('finite signed real coupling required')
         checked.append((i, j, np.asarray(image), coupling))
+    return checked
+
+
+def _bloch_matrix(diagonal, pairs, k, xp):
+    matrix = xp.diag(xp.asarray(diagonal, dtype=complex))
+    for i, j, image, coefficient in pairs:
+        value = coefficient*np.exp(2j*np.pi*np.dot(k, image))
+        matrix[i, j] += value
+        matrix[j, i] += value.conjugate()
+    return matrix
+
+
+def _overlap_power(overlap, exponent, xp):
+    """Symmetric matrix power of a well-conditioned Hermitian overlap."""
+    if (overlap.ndim != 2 or not overlap.size or overlap.shape[0] != overlap.shape[1]
+            or not xp.isfinite(overlap).all()
+            or not xp.allclose(overlap, overlap.conj().T, rtol=1e-10, atol=1e-12)):
+        raise ValueError('finite Hermitian square overlap matrix required')
+    values, vectors = xp.linalg.eigh(overlap)
+    if float(values[0]) <= 1e-10 * max(float(values[-1]), 0.):
+        raise ValueError(f'overlap must be positive definite and well conditioned (min={float(values[0]):g}, max={float(values[-1]):g})')
+    return (vectors * values**exponent) @ vectors.conj().T
+
+
+def element_probabilities(mol, coefficients, overlap, *, backend='cpu'):
+    """Return element labels and (bands, elements) symmetric Löwdin populations."""
+    xp = _arrays(backend)
+    c = xp.asarray(coefficients)
+    s = xp.asarray(overlap)
+    if c.ndim != 2 or c.shape[0] != mol.nao_nr() or s.shape != (c.shape[0], c.shape[0]):
+        raise ValueError('AO coefficient and overlap dimensions must match the basis')
+    u = _overlap_power(s, .5, xp) @ c
+    if not xp.allclose(u.conj().T @ u, xp.eye(c.shape[1]), atol=1e-8, rtol=0):
+        raise ValueError('orbitals are not orthonormal in the supplied AO overlap metric')
+    symbols = [mol.atom_pure_symbol(i) for i in range(mol.natm)]
+    labels = sorted(set(symbols))
+    weights = xp.abs(u)**2
+    groups = xp.zeros((c.shape[1], len(labels)))
+    for symbol, (_, _, start, end) in zip(symbols, mol.aoslice_by_atom(), strict=True):
+        groups[:, labels.index(symbol)] += weights[start:end].sum(axis=0)
+    return labels, groups if xp is np else xp.asnumpy(groups)
+
+
+def bloch_eigensystems(site_energies, pairs, kpoints, *, backend='cpu', project_sites=False,
+                       overlap_pairs=None):
+    """Yield energies and optional symmetric Löwdin (bands, sites) probabilities."""
+    sites = np.asarray(site_energies, dtype=float)
+    ks = np.asarray(kpoints, dtype=float)
+    if sites.ndim != 1 or not len(sites) or not np.isfinite(sites).all():
+        raise ValueError('finite site energies required')
+    if ks.ndim != 2 or ks.shape[1] != 3 or not len(ks) or not np.isfinite(ks).all():
+        raise ValueError('finite fractional Nx3 kpoints required')
+    checked = _check_pairs(pairs, len(sites))
+    overlaps = None if overlap_pairs is None else _check_pairs(overlap_pairs, len(sites))
     xp = _arrays(backend)
     for k in ks:
-        h = xp.diag(xp.asarray(sites, dtype=complex))
-        for i, j, image, coupling in checked:
-            value = coupling*np.exp(2j*np.pi*np.dot(k, image))
-            h[i, j] += value
-            h[j, i] += value.conjugate()
+        h = _bloch_matrix(sites, checked, k, xp)
+        if overlaps:
+            s = _bloch_matrix(np.ones(len(sites)), overlaps, k, xp)
+            try:
+                x = _overlap_power(s, -.5, xp)
+            except ValueError as exc:
+                raise ValueError(f'k={k.tolist()}: {exc}') from exc
+            h = x @ h @ x
+            h = (h + h.conj().T) * .5
         probabilities = None
         if project_sites:
             eigenvalues, vectors = xp.linalg.eigh(h)

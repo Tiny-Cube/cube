@@ -4,6 +4,7 @@ mode = monomer-orbitals
 # Run get_dimers_monomers first; replace this with the generated manifest/frames index.
 input = ../../mol/frame2000/manifest.json
 molecules = 1
+element-projections = true
 qc-engine = pyscf
 method = b3lyp
 basis-set = 6-31G(d,p)

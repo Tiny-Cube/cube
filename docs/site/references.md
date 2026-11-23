@@ -5,6 +5,7 @@
 
 | 主题 | 文献 |
 |---|---|
+| 非正交片段轨道与元素 PDOS | P.-O. Löwdin, *On the Non-Orthogonality Problem Connected with the Use of Atomic Wave Functions in the Theory of Molecules and Crystals*, JCP **18**, 365–375 (1950), [DOI](https://doi.org/10.1063/1.1747632) |
 | KS 与电子添加/移除能量 | Perdew, Parr, Levy, Balduz, *Density-Functional Theory for Fractional Particle Number: Derivative Discontinuities of the Energy*, PRL **49**, 1691 (1982), [DOI](https://doi.org/10.1103/PhysRevLett.49.1691) |
 | 单粒子/多体激发与谱 | Onida, Reining, Rubio, *Electronic excitations: density-functional versus many-body Green's-function approaches*, RMP **74**, 601 (2002), [DOI](https://doi.org/10.1103/RevModPhys.74.601) |
 | k 点积分 | Blöchl, Jepsen, Andersen, *Improved tetrahedron method for Brillouin-zone integrations*, PRB **49**, 16223 (1994), [DOI](https://doi.org/10.1103/PhysRevB.49.16223) |

@@ -1,4 +1,5 @@
 """DOS sum rules, analytic Bloch spectra and finite-sample disorder identities."""
+import importlib.util
 import unittest
 try:
     import numpy as np
@@ -31,6 +32,35 @@ class DosCoreTests(unittest.TestCase):
         np.testing.assert_allclose(negative, positive[::-1], atol=1e-16)
         with self.assertRaisesRegex(ValueError, 'double count'):
             bloch_spectra([0., 0.], [(0, 1, [1, 0, 0], .1), (1, 0, [-1, 0, 0], .1)], points)
+
+    def test_nonorthogonal_chain_and_invalid_overlap(self):
+        points, _ = kmesh([32, 1, 1])
+        image = [1, 0, 0]
+        c = np.cos(2*np.pi*points[:, 0])
+        levels = bloch_spectra([.7], [(0, 0, image, -.2)], points, overlap_pairs=[(0, 0, image, .15)])
+        np.testing.assert_allclose(levels[:, 0], (.7-.4*c)/(1+.3*c), atol=1e-14)
+        for s in (.5, .7):
+            with self.assertRaisesRegex(ValueError, 'positive definite'):
+                bloch_spectra([.7], [], points, overlap_pairs=[(0, 0, image, s)])
+
+    @unittest.skipUnless(importlib.util.find_spec('scipy'), 'independent SciPy reference required')
+    def test_nonorthogonal_complex_k_matches_generalized_solver_and_energy_shift(self):
+        from scipy.linalg import eigh, sqrtm
+        k = [.271, 0, 0]
+        phase = np.exp(2j*np.pi*k[0])
+        def offdiag(intra, inter):
+            return [(0, 1, [0, 0, 0], intra), (0, 1, [1, 0, 0], inter)]
+        overlap = offdiag(.08, .04)
+        h12 = -.18-.12*phase
+        s12 = .08+.04*phase
+        h = [[-.35, h12], [h12.conjugate(), .15]]
+        s = [[1., s12], [s12.conjugate(), 1.]]
+        ref, c = eigh(h, s)
+        for shift in (0., 2.7):
+            e, p = next(bloch_eigensystems(np.array([-.35, .15])+shift,
+                offdiag(-.18+shift*.08, -.12+shift*.04), [k], overlap_pairs=overlap, project_sites=True))
+            np.testing.assert_allclose(e, ref+shift, atol=1e-13)
+            np.testing.assert_allclose(p, (np.abs(sqrtm(s) @ c)**2).T, atol=1e-13)
 
     def test_static_dynamic_total_variance_identity(self):
         levels = np.array([[1, 3, 5], [2, 2, 7], [-1, 4, 6]], dtype=float)
@@ -65,6 +95,23 @@ class DosCoreTests(unittest.TestCase):
             self.assertAlmostEqual(groups[1]['ipr'], 1.)
         with self.assertRaisesRegex(ValueError, 'complete normalized'):
             list(participation_groups(energies, np.ones((3, 3)), 0.))
+
+    def test_element_weights_use_overlap_and_accept_rectangular_orbitals(self):
+        from unittest.mock import Mock
+        from wren.dos.core import element_probabilities
+        mol = Mock(natm=2)
+        mol.nao_nr.return_value = 3
+        mol.atom_pure_symbol.side_effect = ['O', 'H']
+        mol.aoslice_by_atom.return_value = [(0, 1, 0, 2), (1, 2, 2, 3)]
+        # Construct S from its known positive square root, then C from known U.
+        root = np.array([[1., 0., .16j], [0., 1.1, .08], [-.16j, .08, 1.2]])
+        u = np.array([[.6, 0.], [0., 1.j], [.8j, 0.]])
+        c = np.linalg.solve(root, u)
+        labels, weights = element_probabilities(mol, c, root @ root)
+        self.assertEqual(labels, ['H', 'O'])
+        np.testing.assert_allclose(weights, [[.64, .36], [0., 1.]], atol=1e-12)
+        with self.assertRaisesRegex(ValueError, 'not orthonormal'):
+            element_probabilities(mol, c * 2, root @ root)
 
     def test_invalid_inputs_and_no_finite_window_rescaling(self):
         self.assertLess(float(np.trapezoid(broaden([0.], [-.01, .01], .1), [-.01, .01])), .1)

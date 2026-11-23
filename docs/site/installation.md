@@ -48,6 +48,7 @@ cmake --install build/cmake --prefix "$HOME/.local"
 | wheel 和源码包 | `cmake --build build/cmake --target wren_package` |
 | 只重新构建 Python wheel | `cmake --build build/cmake --target wren_python` |
 | 四语言计时所需的原生程序 | `cmake --build build/cmake --target wren_benchmarks` |
+| 同时构建并安装网页使用手册 | 配置时加 `-DWREN_BUILD_DOCS=ON` 并在所选 Python 环境安装 `docs` extra |
 | 只构建 C++/Fortran | 配置时加 `-DWREN_BUILD_PYTHON=OFF -DWREN_BUILD_RUST=OFF -DBUILD_TESTING=OFF` |
 | 只使用 Python | `uv sync --locked`，按计算类型选择 extras |
 
@@ -57,9 +58,14 @@ cmake --install build/cmake --prefix "$HOME/.local"
 
 ```bash
 uv sync --locked --extra docs
-uv run sphinx-build -W --keep-going -b html docs/site build/html
-uv run python -m http.server 38501 --directory build/html
+cmake -S . -B build/manual -DWREN_BUILD_DOCS=ON -DBUILD_TESTING=OFF \
+  -DWREN_BUILD_CPP=OFF -DWREN_BUILD_FORTRAN=OFF -DWREN_BUILD_RUST=OFF \
+  -DWREN_BUILD_PYTHON=OFF -DPython3_EXECUTABLE="$PWD/.venv/bin/python"
+cmake --build build/manual --target wren_docs
+uv run --no-sync python -m http.server 38501 --directory build/manual/html
 ```
 
+生成的入口为 `build/manual/html/index.html`。可选执行
+`cmake --install build/manual --prefix "$HOME/.local" --component Documentation` 安装手册。
 网页含侧栏、搜索、代码块与数学公式。公式由 MathJax 显示，默认需要能访问其脚本来源。
 源文档随软件版本管理。部署流程可使用相同静态构建产物，不需要将用户科学数据发布到网站。
