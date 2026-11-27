@@ -130,9 +130,13 @@ def _dataset(settings):
     from wren.workflow.runner import _dataset_sources
     sources = _dataset_sources({'input': settings['input']}, None)
     result = []
+    digests = {}
     for source in sources:
         data = load_frame(source)
-        data['_source_sha256'] = file_hash(source)
+        path = Path(source)
+        if path not in digests:
+            digests[path] = file_hash(path)
+        data['_source_sha256'] = digests[path]
         result.append(data)
     return result
 

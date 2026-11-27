@@ -25,7 +25,7 @@ class LammpsExtractionTests(unittest.TestCase):
             if source.is_file():
                 shutil.copy(source, self.root / source.name)
         self.input = self.root/'input'
-        self.input.write_text(self.input.read_text().replace('../../build/lammps/mol', 'mol'))
+        self.input.write_text(self.input.read_text().replace('../../build/lammps/mol', 'mol').replace('format = hdf5', 'format = xyz'))
         self.settings = load_input(self.input).sections['get_dimers_monomers']
 
     def extract(self):

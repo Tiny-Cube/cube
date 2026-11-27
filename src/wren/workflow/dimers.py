@@ -93,13 +93,24 @@ def selected_frames(start, step, count):
 
 def _mm_shells(positions, lattice, cutoff):
     """Both directions of every whole-molecule contact, including self images."""
-    shells = [set() for _ in positions]
+    shells = [{} for _ in positions]
     for i, j, shift, distance in contact_images(positions, lattice, cutoff, include_self=True):
         if distance < 0.5:
             raise ValueError('QM atom is within 0.5 Angstrom of an MM site; check QM exclusion/coordinates')
-        shells[i].add((j, tuple(map(int, shift))))
-        shells[j].add((i, tuple(map(int, -shift))))
+        shells[i][j, tuple(map(int, shift))] = distance
+        shells[j][i, tuple(map(int, -shift))] = distance
     return shells
+
+
+def dimer_shell(shells, i, j, shift):
+    """Merge MM images in molecule A's cell, keeping the nearest QM atom distance."""
+    shell = shells[i].copy()
+    for (k, offset), distance in shells[j].items():
+        site = (k, tuple(a+b for a, b in zip(offset, shift)))
+        shell[site] = min(distance, shell.get(site, distance))
+    shell.pop((i, (0, 0, 0)), None)
+    shell.pop((j, shift), None)
+    return shell
 
 
 def _write_members(writer, qm, shell, mol_ids):
@@ -108,6 +119,15 @@ def _write_members(writer, qm, shell, mol_ids):
     members = sorted(shell)
     writer.writerow([qm, '-'.join(str(mol_ids[j]) for j, _ in members)])
     return {k: offset for k, (_, offset) in enumerate(members) if any(offset)}
+
+
+def validate_fragments(molecules, local):
+    if not molecules or max(local) >= min(map(len, molecules)):
+        raise ValueError('fragment-file atom number exceeds a complete molecule')
+    if any(not np.array_equal(m.elements, molecules[0].elements) or not np.array_equal(m.names, molecules[0].names) for m in molecules):
+        raise ValueError('one fragment-file currently requires identical molecules and consistent local atom ordering')
+    if any(abs(float(m.charges.sum())) >= .01 for m in molecules):
+        raise ValueError('this neutral closed-shell extraction requires neutral molecules')
 
 
 def _extract_frame(frame, frame_count, read_frame, labels, atom_ids, settings, provenance, resume):
@@ -128,12 +148,7 @@ def _extract_frame(frame, frame_count, read_frame, labels, atom_ids, settings, p
     molecules, lattice, time_ps, details = read_frame(frame)
     mol_ids = labels if labels is not None else list(range(1, len(molecules)+1))
     local = read_core(settings['fragment-file'])
-    if not molecules or max(local) >= min(map(len, molecules)):
-        raise ValueError('fragment-file atom number exceeds a complete molecule')
-    if any(not np.array_equal(m.elements, molecules[0].elements) or not np.array_equal(m.names, molecules[0].names) for m in molecules):
-        raise ValueError('one fragment-file currently requires identical molecules and consistent local atom ordering')
-    if any(abs(float(m.charges.sum())) >= .01 for m in molecules):
-        raise ValueError('this neutral closed-shell extraction requires neutral molecules')
+    validate_fragments(molecules, local)
     positions = [m.positions.astype(float).copy() for m in molecules]
     cores = [p[local] for p in positions]
     cutoff = settings.get('dimers_cutoff', settings.get('cutoff', 6.))
@@ -179,9 +194,7 @@ def _extract_frame(frame, frame_count, read_frame, labels, atom_ids, settings, p
                 shift = tuple(map(int, image))
                 if any(shift):
                     identity += '_img_'+'_'.join(map(str, shift))
-                shell = shells[i].union((k, tuple(a+b for a, b in zip(offset, shift)))
-                                        for k, offset in shells[j])
-                shell.difference_update([(i, (0, 0, 0)), (j, shift)])
+                shell = dimer_shell(shells, i, j, shift)
                 offsets = _write_members(writer, f'{mol_ids[i]}-{mol_ids[j]}', shell, mol_ids)
                 ma, mb = molecules[i].masses[local], molecules[j].masses[local]
                 if not np.all(ma > 0) or not np.all(mb > 0):
@@ -213,12 +226,12 @@ def _environment_frame(frame, lattice, molecules, provenance, labels=None):
 
 
 @contextmanager
-def molecular_trajectory(settings):
+def _trajectory(settings):
     if 'lammps-data' in settings:
         from .lammps import LammpsTrajectory
         reader = LammpsTrajectory(settings)
         try:
-            yield len(reader.offsets), reader.read, reader.mol_ids, reader.ids
+            yield len(reader.offsets), reader.read, reader.mol_ids, reader.ids, lambda: reader.bonds
         finally:
             reader.stream.close()
         return
@@ -238,20 +251,31 @@ def molecular_trajectory(settings):
             ts = universe.trajectory[frame]
             universe.atoms.unwrap(compound='fragments', reference=None)
             return universe.atoms.fragments, np.asarray(ts.triclinic_dimensions, dtype=float), ts.time, {}
-        yield len(universe.trajectory), read_frame, None, None
+        yield len(universe.trajectory), read_frame, None, None, lambda: universe.bonds.indices
     except NoDataError as exc:
         raise ValueError(f'TPR must provide bonds, elements, masses and charges: {exc}') from exc
     finally:
         universe.trajectory.close()
 
 
+@contextmanager
+def molecular_trajectory(settings):
+    with _trajectory(settings) as trajectory:
+        yield trajectory[:4]
+
+
 def extract_dimers_monomers(settings, *, one_settings=None, two_settings=None, resume=False):
-    """Store monomer XYZs and membership tables; legacy GJF settings are ignored."""
-    if settings.get('format', ['xyz']) != ['xyz']:
-        raise ValueError('extraction requires format = xyz; use xyz2gjf for Gaussian files')
+    """Extract selected frames and their complete monomer and dimer environments."""
+    fmt = settings.get('format', ['hdf5'])
+    if fmt not in (['hdf5'], ['xyz']):
+        raise ValueError('extraction format must be hdf5 or xyz')
     source_files = ('lammps-data', 'lammps-dump', 'element-map') if 'lammps-data' in settings else ('tpr','gro','xtc')
     provenance = {'settings': settings,
                   'sha256': {k: file_hash(settings[k]) for k in (*source_files, 'fragment-file')}}
+    if fmt == ['hdf5']:
+        from .hdf_archive import write_archive
+        with _trajectory(settings) as trajectory:
+            return write_archive(settings, provenance, trajectory, resume)
     with molecular_trajectory(settings) as (count, read_frame, labels, atom_ids):
         frames = selected_frames(settings['frame'], settings.get('frame_step', 1), count)
         index_path = Path(settings['output'])/'frames.json'

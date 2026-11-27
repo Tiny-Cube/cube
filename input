@@ -35,7 +35,7 @@ dimers_cutoff = 6               # Å；两个分子的 core 原子最短距离�
 fragment-file = ../core.txt
 monomers-qmmm-cutoff = 6        # Å；完整 QM 分子与完整 MM 分子的最短距离
 output = mol
-format = xyz
+format = hdf5
 $end
 
 # core.txt 填写分子内部从 1 开始的原子编号，例如：1 2 3 4 5。
@@ -57,8 +57,8 @@ max-memory-mb = 24000           # PySCF 主机内存预算；不是显存上限�
 
 # 默认处理全部单体；需要限制时取消注释并填写清单中的 ID：
 # molecules = 1,2
-# 默认数据来自本次提取；单独运行时可使用已有清单或 XYZ（二选一）：
-# input = mol/frame2000/manifest.json
+# 默认数据来自本次提取；单独运行时可使用已有 HDF5 或 XYZ（二选一）：
+# input = mol/geometry.wren.h5
 # xyz = molecule_A.xyz,molecule_B.xyz
 # 默认输出为提取帧目录下的 qc/one-mol；也可自定义：
 # output = results/one-mol
@@ -81,9 +81,9 @@ carriers = hole,electron
 assume-equivalent = false       # 使用 ESID 时须明确为 true 并满足等价片段条件
 
 # 其他已支持方法：orbital_gmh；多个方法用逗号分隔。
-# 默认处理全部 dimer；指定含镜像的 ID 见 manifest.json 的 dimers[].id：
+# 默认处理全部 dimer；可按两个分子编号与周期镜像指定 dimer：
 # dimers = 1_8_img_0_-1_0
-# input = mol/frame2000/manifest.json
+# input = mol/geometry.wren.h5
 # 默认输出为提取帧目录下的 qc/two-mol：
 # output = results/two-mol
 $end
@@ -113,7 +113,7 @@ mm-vdw = tpr                   # 原 TPR 的 C6/C12；静电嵌入 + QM–MM LJ1
 
 # 默认对全部单体分别构建环境并计算；先验证一个分子时取消注释：
 # molecules = 1
-# input = mol/frame2000/manifest.json
+# input = mol/geometry.wren.h5
 # 默认输出为提取帧目录下的 reorganization：
 # output = results/reorganization-qmmm
 $end
@@ -148,7 +148,7 @@ output = results/charge-carrier
 # 跳过全部量化、直接运行已有参数网络时：
 # input = charge-network.json
 # 单帧已有量化结果也可分别指定：
-# manifest = mol/frame2000/manifest.json
+# manifest = mol/geometry.wren.h5
 # couplings = mol/frame2000/qc/two-mol/transfer_integrals.csv
 # reorganization = reorganization-index.json  # {"1":"path/1/reorganization.json", ...}
 $end

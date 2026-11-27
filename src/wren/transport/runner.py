@@ -122,9 +122,12 @@ def run_task(settings,preparation_report,extracted,*,resume=False):
         paths=_dataset_sources({'input':str(manifest)},None)
         if len(paths)>1 and any(k in settings for k in ('couplings','reorganization')):
             raise ValueError('multiple frames need matching workflow outputs per frame; external source files must be run frame by frame')
+        from wren.workflow.frame_geometry import is_archive, load_frame
+        source_path = str(Path(manifest).resolve())
+        source_digest = sha256(manifest)
         for path in paths:
-            sources={};data=read_source(path,sources)
-            sources[str(Path(manifest).resolve())]=sha256(manifest)
+            sources = {source_path: source_digest}
+            data = load_frame(path) if is_archive(path) else read_source(path, sources)
             label=f"frame{data['frame']:04d}" if 'frame' in data else 'dataset'
             def task(name):
                 result=preparation_report['tasks'].get(name,{})
@@ -132,7 +135,7 @@ def run_task(settings,preparation_report,extracted,*,resume=False):
             coupling=settings.get('couplings') or task('two-mol').get('csv')
             reorganization=settings.get('reorganization') or task('reorganization-energy').get('outputs')
             if not coupling or not reorganization:raise ValueError('KMC is missing completed couplings or reorganization results')
-            network=assemble(path,coupling,reorganization,settings,sources)
+            network=assemble(path,coupling,reorganization,settings,sources, manifest=data)
             jobs.append((label,network,sources))
     results={}
     for label,data,sources in jobs:

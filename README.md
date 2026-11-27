@@ -22,7 +22,7 @@ Wren 提供四语言通用 KMC、MD 帧提取、CPU/GPU 转移积分、冻结 MM
 
 ## wren input 统一入口
 
-提供可执行脚本 `wren`，默认读取 `$get_dimers_monomers/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 轨迹按起始帧/帧间隔保存单体 XYZ 压缩包，按 core 距离筛选 dimer，并把 dimer 和完整分子 MM 邻居写入两张 CSV。支持 CPU/GPU 单体与 dimer 量化、DIPRO，以及 vacuum / 冻结 MM 静电嵌入四点法。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
+提供可执行脚本 `wren`，默认读取 `$get_dimers_monomers/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。从 GROMACS 或 LAMMPS 轨迹选帧，将完整单体坐标、按 core 距离筛选的 dimer，以及每个单体和 dimer 的 MM 邻居索引写入同一个 HDF5 文件。详见 [HDF5 格式](docs/hdf5-geometry.md)。支持 CPU/GPU 单体与 dimer 量化、DIPRO，以及 vacuum / 冻结 MM 静电嵌入四点法。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
 
 ```bash
 uv sync --locked --extra workflow

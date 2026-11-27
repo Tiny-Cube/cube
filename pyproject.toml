@@ -19,7 +19,7 @@ dynamics = ["numpy>=2.0,<2.6"]
 transport = ["numpy>=2.0,<2.6"]
 transport-cuda13 = ["numpy>=2.0,<2.6", "cupy-cuda13x==13.6.0", "cuda-toolkit[cudart,nvrtc]==13.5.0"]
 quantum = ["numpy>=2.0,<2.6", "pyscf>=2.8,<3"]
-workflow = ["numpy>=2.0,<2.6", "MDAnalysis>=2.11,<3", "pyscf>=2.8,<3", "geometric>=1.1,<2"]
+workflow = ["h5py>=3.11,<4", "numpy>=2.0,<2.6", "MDAnalysis>=2.11,<3", "pyscf>=2.8,<3", "geometric>=1.1,<2"]
 quantum-cuda13 = ["numpy>=2.0,<2.6", "pyscf>=2.8,<3", "gpu4pyscf-cuda13x==1.9.1", "cupy-cuda13x==13.6.0", "cuda-toolkit[cublas,cudart,cufft,curand,cusolver,cusparse,nvrtc]==13.5.0"]
 
 [project.scripts]

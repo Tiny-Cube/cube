@@ -11,11 +11,16 @@ import numpy as np
 HARTREE_EV=27.211386245981
 
 
-def assemble(manifest_path,couplings_path,reorganization,settings,sources):
+def assemble(manifest_path,couplings_path,reorganization,settings,sources, *, manifest=None):
     from .runner import read_source
-    manifest_path=Path(manifest_path)
-    manifest=read_source(manifest_path,sources)
-    if manifest.get('schema') not in ('cube-dimers-1','wren-dimers-2') or manifest.get('coordinate_unit')!='Angstrom':
+    if manifest is None:
+        from wren.workflow.frame_geometry import is_archive, load_frame
+        if is_archive(manifest_path):
+            read_source(manifest_path, sources, json_data=False)
+            manifest = load_frame(manifest_path)
+        else:
+            manifest = read_source(manifest_path, sources)
+    if manifest.get('schema') not in ('cube-dimers-1','wren-dimers-2','wren-geometry/1') or manifest.get('coordinate_unit')!='Angstrom':
         raise ValueError('KMC assembly requires one Angstrom extraction manifest per calculation')
     ids=[str(m['id']) for m in manifest['monomers']]
     if len(ids)!=len(set(ids)):raise ValueError('duplicate monomer IDs in KMC manifest')

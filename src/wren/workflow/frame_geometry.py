@@ -1,5 +1,6 @@
 """Read a monomer by frame/molecule key or assemble a periodic QM pair in memory."""
 import argparse
+from dataclasses import dataclass
 import json
 from pathlib import Path
 import re
@@ -9,17 +10,37 @@ from zipfile import BadZipFile, ZipFile
 from wren.quantum.geometry import parse_xyz
 
 
+@dataclass(frozen=True)
+class ArchiveFrame:
+    path: Path
+    frame: int
+
+    def __fspath__(self):
+        return str(self.path)
+
+
+def is_archive(path):
+    return Path(path).suffix.lower() in ('.h5', '.hdf5')
+
+
 def indexed_xyz(root, key):
     match = re.fullmatch(r'frame([0-9]+)\.mol([0-9]+)', key)
     if not match:
         raise ValueError('expected frameX.molY, e.g. frame2000.mol8')
     frame, molecule = map(int, match.groups())
+    path = Path(root)
+    if is_archive(path) or (path/'geometry.wren.h5').is_file():
+        from .hdf_archive import archive_path, monomer_xyz
+        return monomer_xyz(archive_path(root), frame, molecule)
     with ZipFile(Path(root)/f'frame{frame:04d}'/'monomers.zip') as archive:
         return archive.read(f'frame{frame}.mol{molecule}.xyz').decode('utf-8')
 
 
-def load_frame(path, data=None):
+def load_frame(path, data=None, *, frame=None):
     """Load centered molecular coordinates for existing QM, embedding and DOS clients."""
+    if is_archive(path):
+        from .hdf_archive import read_frame
+        return read_frame(Path(path), path.frame if isinstance(path, ArchiveFrame) else frame)
     path = Path(path)
     if data is None:
         data = json.loads(path.read_text())

@@ -2,7 +2,6 @@
 """Export one whole-molecule QM/MM cluster from a single-frame GROMACS manifest."""
 import argparse
 from dataclasses import replace
-import hashlib
 import json
 from pathlib import Path
 import shutil
@@ -95,7 +94,7 @@ def _round_trip(directory, record, environment):
     return check
 
 
-def export_cluster(manifest_file, molecule, directory, *, cutoff=None, lj=False, gmx='gmx'):
+def export_cluster(manifest_file, molecule, directory, *, frame_id=None, cutoff=None, lj=False, gmx='gmx'):
     from wren.workflow.embedding import cluster_from_frame, load_gromacs_environment
     from wren.workflow.lj import bind_gromacs_lj, read_gromacs_lj
 
@@ -103,8 +102,7 @@ def export_cluster(manifest_file, molecule, directory, *, cutoff=None, lj=False,
     directory = Path(directory).resolve()
     if directory.exists():
         raise FileExistsError(f'output must be a new directory: {directory}')
-    raw = path.read_bytes()
-    data = load_frame(path, json.loads(raw))
+    data = load_frame(path, frame=frame_id)
     selected = [m for m in data['monomers'] if str(m['id']) == str(molecule)]
     if len(selected) != 1:
         raise ValueError('molecule must identify exactly one monomer in the frame')
@@ -130,7 +128,7 @@ def export_cluster(manifest_file, molecule, directory, *, cutoff=None, lj=False,
         report = {'schema': 'wren-qmmm-cluster-export-1', 'frame': data['frame'], 'molecule': str(molecule),
                   'cutoff_angstrom': cutoff, 'qm_atom_count': len(record['elements']), 'mm_atom_count': len(env.charges_e),
                   'mm_molecular_image_count': len(env.provenance['molecular_images']), 'mm_charge_e': sum(env.charges_e),
-                  'bare_qm_mm_lj': lj, 'manifest_sha256': hashlib.sha256(raw).hexdigest(),
+                  'bare_qm_mm_lj': lj, 'manifest_sha256': file_hash(path),
                   'source_sha256': frame['provenance']['sha256'],
                   'file_sha256': {p.name: file_hash(p) for p in sorted(stage.iterdir())}, 'verification': verification}
         _write_json(stage/'export.json', report)
@@ -158,7 +156,7 @@ def _legacy_export(args):
     from wren.quantum.geometry import read_xyz
     from wren.workflow.embedding import load_gromacs_environment, cluster_from_frame, read_charges, snapshot
     from wren.workflow.lj import read_gromacs_lj, bind_gromacs_lj, geometry_key, sites_key
-    manifest = load_frame(args.manifest)
+    manifest = load_frame(args.manifest, frame=getattr(args, 'frame', None))
     records = [r for r in manifest['monomers'] if str(r['id']) == args.molecule]
     if len(records) != 1:
         raise ValueError('molecule must identify exactly one extracted full molecule')
@@ -188,7 +186,8 @@ def _legacy_export(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('frame_manifest', nargs='?', help='single-frame manifest.json with accessible original TPR/GRO/XTC')
+    parser.add_argument('frame_manifest', nargs='?', help='geometry HDF5 or single-frame manifest, with accessible original TPR/GRO/XTC')
+    parser.add_argument('--frame', type=int, help='original MD frame ID for HDF5 input')
     parser.add_argument('--manifest', type=Path, help='legacy invocation; defaults to XYZ + charge list + bound LJ')
     parser.add_argument('--format', choices=('legacy', 'separated'), help='override default export format')
     parser.add_argument('--molecule', required=True, help='manifest molecule ID')
@@ -208,7 +207,7 @@ def main():
             _legacy_export(args)
             return
         result = export_cluster(args.manifest, args.molecule, args.output, cutoff=args.cutoff, lj=args.lj,
-                                gmx=args.gmx_executable)
+                                frame_id=args.frame, gmx=args.gmx_executable)
     except (ValueError, OSError, KeyError, RuntimeError) as exc:
         parser.exit(1, f'wren: {exc}\n')
     print(json.dumps(result, indent=2))

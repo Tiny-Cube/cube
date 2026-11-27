@@ -7,7 +7,7 @@ import re
 
 from wren.quantum.cli import _write_result
 from wren.quantum.geometry import normalize_atoms, read_xyz
-from .frame_geometry import load_frame, pair_geometry
+from .frame_geometry import ArchiveFrame, is_archive, load_frame, pair_geometry
 from .control import EXTRACTION, scf_config, needs_extraction
 from .calculations import CALCULATIONS, KMC, DOS, SURFACE_DYNAMICS, QUANTUM_SECTIONS
 
@@ -50,10 +50,12 @@ def _load_dataset(settings, extracted, control_dir):
     source = Path(settings['input']) if 'input' in settings else extracted
     if source is None:
         raise ValueError('a quantum task needs an extraction manifest or xyz inputs')
+    if isinstance(extracted, ArchiveFrame):
+        source = extracted
     data = load_frame(source)
     _select(data['monomers'], None, 'molecules')
     _select(data['dimers'], None, 'dimers')
-    data['root'] = source.parent
+    data['root'] = (source.path.parent/f'frame{source.frame:04d}' if isinstance(source, ArchiveFrame) else source.parent)
     return data
 
 
@@ -63,6 +65,9 @@ def _dataset_sources(settings, extracted):
     source = Path(settings['input']) if 'input' in settings else extracted
     if source is None:
         raise ValueError('a quantum task needs an extraction manifest or xyz inputs')
+    if is_archive(source):
+        from .hdf_archive import frame_summary
+        return [ArchiveFrame(source, r['frame']) for r in frame_summary(source)]
     index = json.loads(source.read_text())
     if index.get('schema') != 'cube-frames-1':
         return [source]
@@ -120,13 +125,23 @@ def run_workflow(control, *, only=None, resume=False):
             print('wren: extracting complete molecules/dimers', flush=True)
             extracted = extract_dimers_monomers(sections[EXTRACTION], resume=resume)
             summary_path = extracted.parent/'workflow.json'
-            manifest = json.loads(extracted.read_text())
-            if manifest['schema'] == 'cube-frames-1':
+            if is_archive(extracted):
+                from .hdf_archive import frame_summary
+                frames = frame_summary(extracted)
+                manifest = {'schema':'wren-geometry/1','frames':frames,'frame_count':len(frames)}
+            else:
+                manifest = json.loads(extracted.read_text())
+            if manifest['schema'] in ('cube-frames-1','wren-geometry/1'):
                 report['tasks'][EXTRACTION] = {'status': 'completed', 'manifest': str(extracted),
                     'frame_count': manifest['frame_count'], 'frames': manifest['frames']}
             else:
                 report['tasks'][EXTRACTION] = {'status': 'completed', 'manifest': str(extracted),
                     'frame': manifest['frame'], 'molecule_count': manifest['molecule_count'], 'dimer_count': manifest['dimer_count']}
+            if is_archive(extracted):
+                task_report = report['tasks'][EXTRACTION]
+                task_report.update(archive=str(extracted), schema=manifest['schema'])
+                if len(frames) == 1:
+                    task_report.update(frames[0])
             _write_result(summary_path, report)
         for task in tasks:
             if task == EXTRACTION:
@@ -172,7 +187,7 @@ def run_workflow(control, *, only=None, resume=False):
             for source in sources:
                 settings = dict(original_settings)
                 if source is not None:
-                    settings['input'] = str(source)
+                    settings['input'] = str(Path(source))
                 data = _load_dataset(settings, source, control.path.parent)
                 frame_label = f"frame{data['frame']:04d}" if 'frame' in data else 'dataset'
                 if multi and 'output' in settings:

@@ -2381,6 +2381,7 @@ transport-cuda13 = [
 ]
 workflow = [
     { name = "geometric" },
+    { name = "h5py" },
     { name = "mdanalysis" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -2396,6 +2397,7 @@ requires-dist = [
     { name = "furo", marker = "extra == 'docs'", specifier = ">=2024.8" },
     { name = "geometric", marker = "extra == 'workflow'", specifier = ">=1.1,<2" },
     { name = "gpu4pyscf-cuda13x", marker = "extra == 'quantum-cuda13'", specifier = "==1.9.1" },
+    { name = "h5py", marker = "extra == 'workflow'", specifier = ">=3.11,<4" },
     { name = "jieba", marker = "extra == 'docs'", specifier = ">=0.42,<1" },
     { name = "mdanalysis", marker = "extra == 'workflow'", specifier = ">=2.11,<3" },
     { name = "myst-parser", marker = "extra == 'docs'", specifier = ">=4,<6" },

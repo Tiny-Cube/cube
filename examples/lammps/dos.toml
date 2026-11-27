@@ -1,6 +1,6 @@
 [dos]
 mode = "monomer-orbitals"
-input = "../../build/lammps/mol/frames.json"
+input = "../../build/lammps/mol/geometry.wren.h5"
 output = "../../build/lammps/dos"
 qc-engine = "pyscf"
 method = "hf"

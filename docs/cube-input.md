@@ -48,7 +48,7 @@ dimers_cutoff = 6  # 单位 Å
 fragment-file = ../core.txt
 monomers-qmmm-cutoff =  # 空值默认 12 Å
 output = mol
-format = xyz
+format = hdf5
 $end
 
 $two-mol
@@ -140,7 +140,11 @@ $end
 - `dimers_cutoff` 单位为 **Å**，判据与提供的参考脚本一致：两组所选 core 原子的最短距离 **严格小于 dimers_cutoff**。这不是无限平面间距或质心距离；清单还记录所选 core 的质量中心距离。
 - 用 TPR 键拓扑还原完整分子，以整体分子晶胞平移搜索接触，包括跨周期边界接触和多个有效镜像；支持非退化三斜盒。只枚举不同分子 ID 的组合，不包含同一分子的自镜像。
 - 输出完整分子及侧链，不把 core 选择当成截断 QM 区域。当前要求电中性分子，量化任务采用闭壳层中性参考。
-- `format = xyz` 将每个完整单体存为一个独立压缩的 XYZ 条目。坐标为该帧解开分子内周期边界后的原位坐标，单位为 Å，保留原子顺序和浮点往返精度。同一帧的所有单体共用一个标准 ZIP/DEFLATE 文件。
+- 默认 `format = hdf5`。设置 `output = mol` 时生成 `mol/geometry.wren.h5`。单帧与多帧使用同一结构，每帧均保存单体、dimer 和两类 MM 环境。量化子模块可直接使用 `input = mol/geometry.wren.h5`。详见 [HDF5 数据集及索引示例](hdf5-geometry.md)。
+
+### 兼容输出和 XYZ 导出
+
+- 显式设置 `format = xyz` 将每个完整单体存为一个独立压缩的 XYZ 条目。坐标为该帧解开分子内周期边界后的原位坐标，单位为 Å，保留原子顺序和浮点往返精度。同一帧的所有单体共用一个标准 ZIP/DEFLATE 文件。
 
 ```text
 mol/frame2000/
@@ -163,7 +167,7 @@ python scripts/xyz2gjf.py frame2000.mol8 mol8.gjf --root mol
 
 `wren-xyz` 直接定位归档成员，省略 `-o` 时输出到标准输出。`xyz2gjf` 生成全 QM 单点输入，默认电荷 0、多重度 1，可用 `--charge`、`--multiplicity` 指定；冻结 MM 点电荷及力场仍由 QM/MM 工作流构建。
 
-选择多帧时，各帧目录并列，例如 `mol/frame0000/`、`mol/frame0020/`，顶层另写 `mol/frames.json` 帧清单（包含各帧清单 SHA256）。后续单体、dimer 和重组能阶段遍历所有选定帧，结果默认留在各自帧目录；显式 `output = results/one` 等输出则自动再加 `frame0000/` 等子目录，避免跨帧覆盖。独立运行量化也可用 `input = mol/frames.json`，或指定某帧的 `manifest.json` 只运行该帧。只选择一帧仍直接使用该帧的 `manifest.json`。
+在兼容模式下选择多帧时，各帧目录并列，例如 `mol/frame0000/`、`mol/frame0020/`，顶层另写 `mol/frames.json` 帧清单（包含各帧清单 SHA256）。后续单体、dimer 和重组能阶段遍历所有选定帧，结果默认留在各自帧目录；显式 `output = results/one` 等输出则自动再加 `frame0000/` 等子目录，避免跨帧覆盖。独立运行量化也可用 `input = mol/frames.json`，或指定某帧的 `manifest.json` 只运行该帧。只选择一帧仍直接使用该帧的 `manifest.json`。
 
 旧 `$get_dimer`、提取字段 `cutoff` 及 `--only get_dimer` 仍作为语法别名接受，报告统一使用新名称；同一字段同时写新旧名称会报重复。新增簇文件和帧指纹后，旧版输出不能直接当成新版提取成功结果续算；保留旧数据，选择新输出目录重新提取。新版 `--resume` 校验单体压缩包和两张 CSV 的 SHA256。已有旧格式清单仍可直接作为下游计算输入。
 

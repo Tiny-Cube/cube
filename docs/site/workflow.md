@@ -15,7 +15,7 @@ dimers_cutoff = 6
 fragment-file = ../core.txt
 monomers-qmmm-cutoff = 6
 output = mol
-format = xyz
+format = hdf5
 $end
 ```
 
@@ -23,7 +23,7 @@ $end
 `fragment-file` 用分子内部从 1 开始的编号定义 core。dimer 判据为两个 core 的最短原子距离严格小于阈值。
 QM/MM 环境判据为完整中央分子与完整邻居分子的最短全原子距离，选中后保留整个邻居及周期镜像。
 
-每帧保存 `monomers.zip`（每个成员是一个单体 XYZ）、`dimers.csv`、`clusters.csv` 和记录周期镜像的 `manifest.json`。用 `wren-xyz frame2000.mol8 --root mol -o mol8.xyz` 按帧和分子读取，用 `xyz2gjf mol8.xyz mol8.gjf` 转为 Gaussian 单点输入。多帧输出还包含 `frames.json`。
+默认输出为 `mol/geometry.wren.h5`，含每个选中帧的单体坐标、dimer 和各自的 MM 索引。用 `wren-xyz frame2000.mol8 --root mol -o mol8.xyz` 导出指定单体，用 `xyz2gjf mol8.xyz mol8.gjf` 转为 Gaussian 输入。兼容输出可显式指定 `format = xyz`。
 提取要求同种中性完整分子和一致的分子内原子顺序。
 
 ## 从 LAMMPS data 和 dump 提取
@@ -40,14 +40,14 @@ frame = 0
 frame_step = 1
 dimers_cutoff = 2
 monomers-qmmm-cutoff = 2
-format = xyz
+format = hdf5
 output = ../../build/lammps/mol
 $end
 ```
 
-`lammps-data` 提供 `atom_style full` 的 Atoms（atom-ID、molecule-ID、type、q、x、y、z）、Masses 与 Bonds。每个分子需要一个正的 molecule-ID，多原子分子需连成一个共价片段。使用固定拓扑及固定电荷。每行元素映射给出数字类型和化学元素，例如 `1 H`、`2 F`。同一元素可有多个力场类型。分子内以 atom-ID 递增排序，`core.txt` 写这个顺序下从 1 开始的局部序号。输出文件名保留原始 molecule-ID。manifest 的 `lammps_atom_ids` 记录原始 atom-ID，`global_atom_indices_zero_based` 是将全体系按 atom-ID 排序后的索引。[LAMMPS data 格式](https://docs.lammps.org/read_data.html)
+`lammps-data` 提供 `atom_style full` 的 Atoms（atom-ID、molecule-ID、type、q、x、y、z）、Masses 与 Bonds。每个分子需要一个正的 molecule-ID，多原子分子需连成一个共价片段。使用固定拓扑及固定电荷。每行元素映射给出数字类型和化学元素，例如 `1 H`、`2 F`。同一元素可有多个力场类型。分子内以 atom-ID 递增排序，`core.txt` 写这个顺序下从 1 开始的局部序号。HDF5 的 `topology/molecule_id` 和 `atom_id` 保留原始编号，`global_atom_index` 是将全体系按 atom-ID 排序后的索引。[LAMMPS data 格式](https://docs.lammps.org/read_data.html)
 
-输入轨迹为单个未压缩原生文本 `dump custom`，每帧含全体系的 `id type`，以及 `x y z`、`xs ys zs`、`xu yu zu` 或 `xsu ysu zsu` 中的一组坐标。如提供多组，按上列顺序取第一组。帧内原子行可乱序。支持三个方向均为周期的正交盒与 restricted triclinic 斜盒。解析器从斜盒的 bounding bounds 和 xy/xz/yz 还原晶格，按键连接恢复跨边界分子。每个分子以最小 atom-ID 的原子定位在参考晶胞，镜像平移沿该帧的晶格矢量。要求每条键在最短周期镜像上可唯一确定。manifest 单独保存盒原点，单体中心相对于该原点。[LAMMPS dump 坐标](https://docs.lammps.org/dump.html) · [三斜盒约定](https://docs.lammps.org/Howto_triclinic.html)
+输入轨迹为单个未压缩原生文本 `dump custom`，每帧含全体系的 `id type`，以及 `x y z`、`xs ys zs`、`xu yu zu` 或 `xsu ysu zsu` 中的一组坐标。如提供多组，按上列顺序取第一组。帧内原子行可乱序。支持三个方向均为周期的正交盒与 restricted triclinic 斜盒。解析器从斜盒的 bounding bounds 和 xy/xz/yz 还原晶格，按键连接恢复跨边界分子。每个分子以最小 atom-ID 的原子定位在参考晶胞，镜像平移沿该帧的晶格矢量。要求每条键在最短周期镜像上可唯一确定。`frames/origin` 保存盒原点，单体中心相对于该原点。[LAMMPS dump 坐标](https://docs.lammps.org/dump.html) · [三斜盒约定](https://docs.lammps.org/Howto_triclinic.html)
 
 `lammps-units` 显式指定 `real` 或 `metal`。两者距离均为 Å，时间分别为 fs、ps。使用可变时间步时，可用以下 LAMMPS 命令保存实际经过时间。
 
@@ -79,7 +79,7 @@ do = 1
 $end
 $dos
 mode = monomer-orbitals
-input = mol/frames.json
+input = mol/geometry.wren.h5
 qc-engine = pyscf
 method = b3lyp
 basis-set = 6-31G(d,p)
