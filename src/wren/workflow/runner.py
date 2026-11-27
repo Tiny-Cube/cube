@@ -7,6 +7,7 @@ import re
 
 from wren.quantum.cli import _write_result
 from wren.quantum.geometry import normalize_atoms, read_xyz
+from .frame_geometry import load_frame, pair_geometry
 from .control import EXTRACTION, scf_config, needs_extraction
 from .calculations import CALCULATIONS, KMC, DOS, SURFACE_DYNAMICS, QUANTUM_SECTIONS
 
@@ -49,9 +50,7 @@ def _load_dataset(settings, extracted, control_dir):
     source = Path(settings['input']) if 'input' in settings else extracted
     if source is None:
         raise ValueError('a quantum task needs an extraction manifest or xyz inputs')
-    data = json.loads(source.read_text())
-    if data.get('schema') != 'cube-dimers-1' or data.get('coordinate_unit') != 'Angstrom':
-        raise ValueError('input must refer to a cube-dimers-1 Angstrom manifest')
+    data = load_frame(source)
     _select(data['monomers'], None, 'molecules')
     _select(data['dimers'], None, 'dimers')
     data['root'] = source.parent
@@ -119,8 +118,7 @@ def run_workflow(control, *, only=None, resume=False):
         if EXTRACTION in sections and (EXTRACTION in tasks or any(needs_extraction(sections[t]) for t in tasks if t in QUANTUM_SECTIONS)):
             from .dimers import extract_dimers_monomers
             print('wren: extracting complete molecules/dimers', flush=True)
-            extracted = extract_dimers_monomers(sections[EXTRACTION], one_settings=sections.get('one-mol'),
-                                       two_settings=sections.get('two-mol'), resume=resume)
+            extracted = extract_dimers_monomers(sections[EXTRACTION], resume=resume)
             summary_path = extracted.parent/'workflow.json'
             manifest = json.loads(extracted.read_text())
             if manifest['schema'] == 'cube-frames-1':
@@ -204,6 +202,7 @@ def run_workflow(control, *, only=None, resume=False):
                         a = single(monomers[a_id], mono_settings, mono_directory/a_id)
                         b = single(monomers[b_id], mono_settings, mono_directory/b_id)
                         pair_dir = directory/pair['id']
+                        pair = pair_geometry(pair, monomers, data.get('lattice_angstrom'))
                         dimer = single(pair, settings, pair_dir/'ab')
                         atoms = _atoms(pair)
                         n_a = pair['atom_count_a']

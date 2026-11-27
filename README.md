@@ -22,12 +22,14 @@ Wren 提供四语言通用 KMC、MD 帧提取、CPU/GPU 转移积分、冻结 MM
 
 ## wren input 统一入口
 
-提供可执行脚本 `wren`，默认读取 `$get_dimers_monomers/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 轨迹按起始帧/帧间隔提取单体、core 距离 dimer 和完整冻结 MM 簇、按 `format` 选择 XYZ/GJF、CPU/GPU 单体与 dimer 量化、DIPRO，以及 vacuum / 冻结 MM 静电嵌入四点法。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
+提供可执行脚本 `wren`，默认读取 `$get_dimers_monomers/$one-mol/$two-mol/$reorganization-energy ... $end` 格式的 `input`。支持 GROMACS 轨迹按起始帧/帧间隔保存单体 XYZ 压缩包，按 core 距离筛选 dimer，并把 dimer 和完整分子 MM 邻居写入两张 CSV。支持 CPU/GPU 单体与 dimer 量化、DIPRO，以及 vacuum / 冻结 MM 静电嵌入四点法。原始数据路径已填入仓库根目录 `input`，可直接先做预检/提取：
 
 ```bash
 uv sync --locked --extra workflow
 ./wren input --plan
 ./wren input --only get_dimers_monomers
+uv run --locked wren-xyz frame2000.mol8 --root mol -o mol8.xyz
+uv run --locked xyz2gjf mol8.xyz mol8.gjf
 ```
 
 [控制文件与所有字段说明](docs/cube-input.md)。实际 anneal_a 最后一帧已提取 100 个完整分子和 550 个 dimer，并与参考脚本逐项一致。`--resume` 复用选定且已实现阶段的一致成功结果；GPU 引擎需要安装 `quantum-cuda13` 可选依赖。

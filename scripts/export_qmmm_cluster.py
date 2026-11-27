@@ -8,6 +8,7 @@ from pathlib import Path
 import shutil
 import tempfile
 
+from wren.workflow.frame_geometry import load_frame
 from wren.workflow.dimers import file_hash
 
 
@@ -103,9 +104,7 @@ def export_cluster(manifest_file, molecule, directory, *, cutoff=None, lj=False,
     if directory.exists():
         raise FileExistsError(f'output must be a new directory: {directory}')
     raw = path.read_bytes()
-    data = json.loads(raw)
-    if data.get('schema') != 'cube-dimers-1' or data.get('coordinate_unit') != 'Angstrom':
-        raise ValueError('select a single frame manifest.json with cube-dimers-1 and Angstrom coordinates')
+    data = load_frame(path, json.loads(raw))
     selected = [m for m in data['monomers'] if str(m['id']) == str(molecule)]
     if len(selected) != 1:
         raise ValueError('molecule must identify exactly one monomer in the frame')
@@ -159,9 +158,7 @@ def _legacy_export(args):
     from wren.quantum.geometry import read_xyz
     from wren.workflow.embedding import load_gromacs_environment, cluster_from_frame, read_charges, snapshot
     from wren.workflow.lj import read_gromacs_lj, bind_gromacs_lj, geometry_key, sites_key
-    manifest = json.loads(args.manifest.read_text())
-    if manifest.get('schema') != 'cube-dimers-1' or manifest.get('coordinate_unit') != 'Angstrom':
-        raise ValueError('expected cube-dimers-1 Angstrom manifest')
+    manifest = load_frame(args.manifest)
     records = [r for r in manifest['monomers'] if str(r['id']) == args.molecule]
     if len(records) != 1:
         raise ValueError('molecule must identify exactly one extracted full molecule')

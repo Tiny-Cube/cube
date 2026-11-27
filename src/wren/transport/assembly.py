@@ -15,8 +15,8 @@ def assemble(manifest_path,couplings_path,reorganization,settings,sources):
     from .runner import read_source
     manifest_path=Path(manifest_path)
     manifest=read_source(manifest_path,sources)
-    if manifest.get('schema')!='cube-dimers-1' or manifest.get('coordinate_unit')!='Angstrom':
-        raise ValueError('KMC assembly requires one cube-dimers-1 Angstrom manifest per calculation')
+    if manifest.get('schema') not in ('cube-dimers-1','wren-dimers-2') or manifest.get('coordinate_unit')!='Angstrom':
+        raise ValueError('KMC assembly requires one Angstrom extraction manifest per calculation')
     ids=[str(m['id']) for m in manifest['monomers']]
     if len(ids)!=len(set(ids)):raise ValueError('duplicate monomer IDs in KMC manifest')
     positions={}

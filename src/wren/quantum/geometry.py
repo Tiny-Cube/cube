@@ -15,7 +15,11 @@ def normalize_atoms(atoms):
 
 def read_xyz(path):
     """Read exactly one XYZ frame, retaining its atom ordering."""
-    lines = Path(path).read_text().splitlines()
+    return parse_xyz(Path(path).read_text())
+
+
+def parse_xyz(text):
+    lines = text.splitlines()
     if len(lines) < 3:
         raise ValueError('XYZ needs an atom count, comment line, and atoms')
     n = int(lines[0])

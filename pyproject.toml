@@ -23,6 +23,8 @@ workflow = ["numpy>=2.0,<2.6", "MDAnalysis>=2.11,<3", "pyscf>=2.8,<3", "geometri
 quantum-cuda13 = ["numpy>=2.0,<2.6", "pyscf>=2.8,<3", "gpu4pyscf-cuda13x==1.9.1", "cupy-cuda13x==13.6.0", "cuda-toolkit[cublas,cudart,cufft,curand,cusolver,cusparse,nvrtc]==13.5.0"]
 
 [project.scripts]
+wren-xyz = "wren.workflow.frame_geometry:main"
+xyz2gjf = "wren.quantum.xyz2gjf:main"
 wren = "wren.workflow.cli:main"
 wren-dos = "wren.dos.cli:main"
 wren-transfer = "wren.quantum.cli:main"

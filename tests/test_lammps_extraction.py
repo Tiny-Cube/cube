@@ -1,5 +1,7 @@
 """LAMMPS text I/O, periodic image identity and independent geometry checks."""
+import csv
 import importlib.util
+import itertools
 import json
 from pathlib import Path
 import shutil
@@ -8,6 +10,7 @@ import tempfile
 import unittest
 
 from wren.workflow.control import load_input
+from wren.workflow.frame_geometry import load_frame, pair_geometry
 
 EXAMPLE = Path(__file__).resolve().parents[1] / 'examples/lammps'
 
@@ -28,7 +31,7 @@ class LammpsExtractionTests(unittest.TestCase):
     def extract(self):
         from wren.workflow.dimers import extract_dimers_monomers
         index = json.loads(extract_dimers_monomers(self.settings).read_text())
-        return [json.loads((self.root/'mol'/f['manifest']).read_text()) for f in index['frames']]
+        return [load_frame(self.root/'mol'/f['manifest']) for f in index['frames']]
 
     def test_triclinic_two_frames_downstream_and_resume(self):
         import numpy as np
@@ -49,8 +52,10 @@ class LammpsExtractionTests(unittest.TestCase):
             np.testing.assert_allclose(np.subtract(atoms[1][1], atoms[0][1]), [.9,0,0])
             env = load_manifest_environment(frame)
             sites = select_mm_sites(env, frame['monomers'][0], 2.)
-            cluster = json.loads((self.root / f'mol/frame{i:04d}/monomers/7_cluster.json').read_text())
-            self.assertEqual(json.loads(json.dumps(sites)), cluster['mm'])
+            with (self.root/f'mol/frame{i:04d}/clusters.csv').open() as table:
+                self.assertEqual(list(csv.reader(table))[1], ['7','19'])
+            offset = frame['monomers'][0]['cluster']['mm_image_offsets']['0']
+            self.assertEqual(list(sites['provenance']['molecular_images'][0]['image']), offset)
             self.assertEqual(sites['charges_e'], [.4, -.4])
             self.assertEqual(sites['provenance']['molecular_images'][0]['molecule_id'], '19')
         self.assertEqual(extract_dimers_monomers(self.settings, resume=True).name, 'frames.json')
@@ -58,6 +63,30 @@ class LammpsExtractionTests(unittest.TestCase):
             f.write('\n')
         with self.assertRaisesRegex(ValueError, 'changed since extraction'):
             load_manifest_environment(frames[0])
+
+    def test_dimer_mm_lists_match_direct_all_atom_distances_in_triclinic_box(self):
+        import numpy as np
+        from scipy.spatial.distance import cdist
+        self.settings.update(dimers_cutoff=10., **{'monomers-qmmm-cutoff': 11.})
+        frames = self.extract()
+        for frame in frames:
+            cutoff = self.settings['monomers-qmmm-cutoff']
+            lattice = np.array(frame['lattice_angstrom'])
+            coords = {m['id']: np.asarray(m['coordinates_angstrom']) + m['transport_position_angstrom']
+                      for m in frame['monomers']}
+            with (self.root/f"mol/frame{frame['frame']:04d}/dimers.csv").open() as table:
+                for row, pair in zip(csv.DictReader(table), frame['dimers'], strict=True):
+                    a, b = row['dimer_qm'].split('-')
+                    image = tuple(pair['image'])
+                    qm = np.concatenate((coords[a], coords[b] + image @ lattice))
+                    qm_sites = {(a, (0,0,0)), (b, image)}
+                    expected = {(m, shift) for m, xyz in coords.items()
+                                for shift in itertools.product(range(-3,4), repeat=3)
+                                if (m, shift) not in qm_sites and cdist(qm, xyz + shift @ lattice).min() < cutoff}
+                    listed = [(m, tuple(pair['mm_image_offsets'].get(str(i), (0,0,0))))
+                              for i, m in enumerate(row['dimer_mm'].split('-'))]
+                    self.assertCountEqual(expected, listed)
+                    self.assertGreater(len(listed), len(coords))  # Several images of the same molecule.
 
     def test_cartesian_and_scaled_wrapped_and_unwrapped_with_metal_time(self):
         import numpy as np
@@ -168,14 +197,16 @@ MOL 2
         settings.update({'frame':0, 'fragment-file':self.settings['fragment-file'],
                          'output':str(self.root/'gromacs'), 'format':['xyz'],
                          'dimers_cutoff':2., 'monomers-qmmm-cutoff':2.})
-        gromacs = json.loads(extract_dimers_monomers(settings).read_text())
+        gromacs = load_frame(extract_dimers_monomers(settings))
         lammps = self.extract()[0]
-        ga, la = gromacs['dimers'][0], lammps['dimers'][0]
+        ga, la = [pair_geometry(f['dimers'][0], {m['id']:m for m in f['monomers']}, f['lattice_angstrom'])
+                  for f in (gromacs, lammps)]
         self.assertEqual(ga['image'], la['image'])
         for key in ('core_min_angstrom','core_com_angstrom','coordinates_angstrom'):
             np.testing.assert_allclose(ga[key], la[key], rtol=0, atol=2e-5)
         frame = load_gromacs_environment(gromacs)
         gm = select_mm_sites(frame, gromacs['monomers'][0], 2.)
-        lm = json.loads((self.root/'mol/frame0000/monomers/7_cluster.json').read_text())['mm']
+        from wren.workflow.embedding import load_manifest_environment
+        lm = select_mm_sites(load_manifest_environment(lammps), lammps['monomers'][0], 2.)
         np.testing.assert_allclose(gm['charges_e'], lm['charges_e'], atol=1e-7)
         np.testing.assert_allclose(gm['coordinates_angstrom'], lm['coordinates_angstrom'], atol=2e-5)

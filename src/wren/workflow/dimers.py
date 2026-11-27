@@ -1,10 +1,6 @@
-"""Full-molecule dimer extraction with explicit whole-molecule PBC images.
-
-The user's extract_dimers.py defines strict minimum selected-core atom
-distance. This implementation retains that criterion, independently writes
-the extraction/manifest layer, and needs no Gaussian/Slurm/MOMAP templates.
-"""
+"""Extract indexed monomer geometries and lists of periodic QM/MM neighbours."""
 from contextlib import contextmanager
+import csv
 import hashlib
 import itertools
 import json
@@ -13,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import tempfile
+from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 import numpy as np
 
@@ -40,7 +37,7 @@ def read_core(path):
     return indices
 
 
-def contact_images(cores, lattice, cutoff):
+def contact_images(cores, lattice, cutoff, *, include_self=False):
     """All i<j and integer images with min(core_i, core_j+image@cell)<cutoff.
 
     If contact is possible, |center_j+image@cell-center_i|<Ri+Rj+cutoff.
@@ -60,7 +57,8 @@ def contact_images(cores, lattice, cutoff):
     radii = [np.linalg.norm(c-center, axis=1).max() for c, center in zip(cores, centers)]
     inverse = np.linalg.inv(lattice)
     reciprocal_norm = np.linalg.norm(inverse, axis=0)
-    for i, j in itertools.combinations(range(len(cores)), 2):
+    pairs = itertools.combinations_with_replacement if include_self else itertools.combinations
+    for i, j in pairs(range(len(cores)), 2):
         fraction = (centers[j]-centers[i])@inverse
         bounds = (radii[i]+radii[j]+cutoff)*reciprocal_norm
         lower = np.ceil(-fraction-bounds-1e-12).astype(int)
@@ -71,6 +69,8 @@ def contact_images(cores, lattice, cutoff):
         if math.prod(map(int, counts)) > 100000:
             raise ValueError('periodic image search exceeds 100000 candidates per pair; inspect box/core/cutoff')
         for shift in itertools.product(*(range(int(lo), int(hi)+1) for lo, hi in zip(lower, upper))):
+            if i == j and shift <= (0, 0, 0):
+                continue  # Reverse images are supplied by the neighbour list.
             shift = np.asarray(shift, dtype=int)
             distance = float(cdist(cores[i], cores[j]+shift@lattice).min())
             if distance < cutoff:
@@ -82,29 +82,6 @@ def xyz_text(elements, coordinates, title):
         f'{e:2s} {x:.10f} {y:.10f} {z:.10f}\n' for e, (x, y, z) in zip(elements, coordinates))
 
 
-def gjf_text(elements, coordinates, title, settings):
-    method, basis = settings.get('method', 'b3lyp'), settings.get('basis-set', '6-31G(d,p)')
-    threads, memory = settings.get('threads', 4), settings.get('max-memory-mb', 4000)
-    return (f'%chk={title}.chk\n%nprocshared={threads}\n%mem={memory}MB\n'
-            f'#p {method}/{basis} SP NoSymm SCF=(XQC,MaxCycle=512)\n\n'
-            f'{title}; full frozen MD molecules; Angstrom\n\n0 1\n'+''.join(
-                f'{e:2s} {x:.10f} {y:.10f} {z:.10f}\n' for e, (x, y, z) in zip(elements, coordinates))+'\n')
-
-
-def _write_formats(directory, stem, elements, coordinates, formats, settings):
-    files = {}
-    for extension in formats:
-        relative = f'{stem}.{extension}'
-        renderer = xyz_text if extension == 'xyz' else gjf_text
-        args = (elements, coordinates, Path(stem).name)
-        text = renderer(*args) if extension == 'xyz' else renderer(*args, settings)
-        target = directory/relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(text)
-        files[extension] = relative
-    return files
-
-
 def selected_frames(start, step, count):
     """-1 selects only the last frame; otherwise sample from start to the end."""
     if type(start) is not int or start < -1 or type(step) is not int or step <= 0:
@@ -114,52 +91,29 @@ def selected_frames(start, step, count):
     return [count-1] if start == -1 else list(range(start, count, step))
 
 
-def _write_cluster(stage, record, frame, cutoff, formats, settings):
-    from .embedding import select_mm_sites
-    sites = select_mm_sites(frame, record, cutoff)
-    identity = record['id']
-    stem = f'monomers/{identity}_cluster'
-    qm_count, mm_count = len(record['elements']), len(sites['charges_e'])
-    files = {}
-    if 'xyz' in formats:
-        files['xyz'] = f'{stem}.xyz'
-        (stage/files['xyz']).write_text(xyz_text(
-            record['elements']+sites['elements'],
-            record['coordinates_angstrom']+sites['coordinates_angstrom'],
-            f'{identity}_cluster; first {qm_count} atoms QM; next {mm_count} atoms frozen MM; geometry only'))
-    if 'gjf' in formats:
-        files['gjf'] = f'{stem}.gjf'
-        # A Gaussian external-charge SP, never an all-QM calculation of the shell.
-        text = gjf_text(record['elements'], record['coordinates_angstrom'], f'{identity}_cluster', settings)
-        text = text.replace(' SP NoSymm', ' SP Charge NoSymm' if mm_count else ' SP NoSymm', 1)
-        text = text.replace('full frozen MD molecules',
-                            'central molecule QM; frozen MM external charges; electrostatic SP only, no LJ')
-        if mm_count:
-            text += ''.join(f'{x:.17g} {y:.17g} {z:.17g} {q:.17g}\n'
-                            for (x,y,z),q in zip(sites['coordinates_angstrom'], sites['charges_e']))+'\n'
-        (stage/files['gjf']).write_text(text)
-    files['mm_charges'] = f'monomers/{identity}_mm.pc'
-    (stage/files['mm_charges']).write_text('# x y z q; Angstrom/e; frozen MM only\n'+''.join(
-        f'{x:.17g} {y:.17g} {z:.17g} {q:.17g}\n'
-        for (x,y,z),q in zip(sites['coordinates_angstrom'], sites['charges_e'])))
-    files['metadata'] = f'{stem}.json'
-    payload = {'schema': 'cube-monomer-cluster-1', 'molecule_id': identity,
-               'frame': frame['provenance']['frame'], 'coordinate_unit': 'Angstrom',
-               'qm_atom_count': qm_count, 'mm_atom_count': mm_count, 'cutoff_angstrom': cutoff,
-               'qm': {k: record[k] for k in ('elements', 'coordinates_angstrom', 'global_atom_indices_zero_based')},
-               'mm': sites, 'mm_frozen': True, 'files': files,
-               'gjf_scope': 'central_QM_external_point_charge_SP_no_LJ_no_optimization'}
-    key = fingerprint(payload)
-    payload['fingerprint'] = key
-    (stage/files['metadata']).write_text(json.dumps(payload, indent=2, allow_nan=False)+'\n')
-    return {'cutoff_angstrom': cutoff, 'qm_atom_count': qm_count, 'mm_atom_count': mm_count,
-            'mm_molecular_images': len(sites['provenance']['molecular_images']), 'fingerprint': key, 'files': files}
+def _mm_shells(positions, lattice, cutoff):
+    """Both directions of every whole-molecule contact, including self images."""
+    shells = [set() for _ in positions]
+    for i, j, shift, distance in contact_images(positions, lattice, cutoff, include_self=True):
+        if distance < 0.5:
+            raise ValueError('QM atom is within 0.5 Angstrom of an MM site; check QM exclusion/coordinates')
+        shells[i].add((j, tuple(map(int, shift))))
+        shells[j].add((i, tuple(map(int, -shift))))
+    return shells
 
 
-def _extract_frame(frame, frame_count, read_frame, labels, atom_ids, settings, provenance, one_settings, two_settings, resume):
+def _write_members(writer, qm, shell, mol_ids):
+    # CSV contains only molecule numbers. Offsets refer to positions in that row,
+    # so even two images of the same molecule can be reconstructed uniquely.
+    members = sorted(shell)
+    writer.writerow([qm, '-'.join(str(mol_ids[j]) for j, _ in members)])
+    return {k: offset for k, (_, offset) in enumerate(members) if any(offset)}
+
+
+def _extract_frame(frame, frame_count, read_frame, labels, atom_ids, settings, provenance, resume):
     base = Path(settings['output'])
     out = base/f'frame{frame:04d}'
-    key = fingerprint({'provenance': provenance, 'frame': frame, 'extraction_version': 3})
+    key = fingerprint({'provenance': provenance, 'frame': frame, 'extraction_version': 4})
     if out.exists():
         manifest_path = out/'manifest.json'
         if not resume or not manifest_path.is_file():
@@ -184,60 +138,63 @@ def _extract_frame(frame, frame_count, read_frame, labels, atom_ids, settings, p
     cores = [p[local] for p in positions]
     cutoff = settings.get('dimers_cutoff', settings.get('cutoff', 6.))
     contacts = list(contact_images(cores, lattice, cutoff))
-    manifest = {'schema': 'cube-dimers-1', 'fingerprint': key, 'provenance': provenance,
+    manifest = {'schema': 'wren-dimers-2', 'fingerprint': key, 'provenance': provenance,
                 'frame': frame, 'frame_count': frame_count, 'time_ps': float(time_ps), **details,
                 'coordinate_unit': 'Angstrom', 'distance_criterion': 'strict_minimum_selected_core_atom_distance',
                 'cutoff_angstrom': cutoff, 'core_atom_numbers_one_based': [i+1 for i in local],
                 'lattice_angstrom': lattice.tolist(), 'molecule_count': len(molecules),
+                'monomer_archive': 'monomers.zip', 'cluster_table': 'clusters.csv', 'dimer_table': 'dimers.csv',
                 'dimer_count': len(contacts), 'monomers': [], 'dimers': [], 'output_sha256': {}}
-    environment_frame = _environment_frame(frame, lattice, molecules, provenance, labels)
+    mm_cutoff = settings.get('monomers-qmmm-cutoff', 12.)
+    shells = _mm_shells(positions, lattice, mm_cutoff)
     base.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix='.cube-extract-', dir=base) as temporary:
+    with tempfile.TemporaryDirectory(prefix='.wren-extract-', dir=base) as temporary:
         stage = Path(temporary)/'frame'
         stage.mkdir()
-        for i, mol, position in zip(mol_ids, molecules, positions):
-            xyz = position-position.mean(axis=0)
-            elements = mol.elements.tolist()
-            files = _write_formats(stage, f'monomers/{i}', elements, xyz, settings['format'], one_settings)
-            record = {'id': str(i), 'elements': elements, 'coordinates_angstrom': xyz.tolist(),
-                      'transport_position_angstrom': position.mean(axis=0).tolist(),
-                      'global_atom_indices_zero_based': mol.indices.tolist(), 'files': files}
-            if atom_ids is not None:
-                record['lammps_atom_ids'] = [atom_ids[j] for j in mol.indices]
-                record['lammps_molecule_id'] = i
-            if 'monomers-qmmm-cutoff' in settings:
-                record['cluster'] = _write_cluster(stage, record, environment_frame,
-                    settings['monomers-qmmm-cutoff'], settings['format'], one_settings)
-            manifest['monomers'].append(record)
-        for i, j, image, distance in contacts:
-            identity = f'{mol_ids[i]}_{mol_ids[j]}'
-            if np.any(image):
-                identity += '_img_'+'_'.join(str(int(n)) for n in image)
-            a, b = positions[i].copy(), positions[j]+image@lattice
-            center = np.concatenate((a, b)).mean(axis=0)
-            a, b = a-center, b-center
-            elements = molecules[i].elements.tolist()+molecules[j].elements.tolist()
-            xyz = np.concatenate((a, b))
-            files = _write_formats(stage, f'dimers/{identity}', elements, xyz, settings['format'], two_settings)
-            masses_a, masses_b = molecules[i].masses[local], molecules[j].masses[local]
-            if not np.all(masses_a > 0) or not np.all(masses_b > 0):
-                raise ValueError('positive topology core masses are required for core COM reporting')
-            com = np.linalg.norm(np.average(a[local], axis=0, weights=masses_a)-np.average(b[local], axis=0, weights=masses_b))
-            manifest['dimers'].append({'id': identity, 'mol_i': str(mol_ids[i]), 'mol_j': str(mol_ids[j]),
-                'image': image.tolist(), 'core_min_angstrom': distance, 'core_com_angstrom': float(com),
-                'elements': elements, 'coordinates_angstrom': xyz.tolist(), 'atom_count_a': len(a), 'files': files})
-        import csv
-        with (stage/'dimers.csv').open('w', newline='') as file:
-            keys = ('id', 'mol_i', 'mol_j', 'image_a', 'image_b', 'image_c', 'core_min_angstrom', 'core_com_angstrom')
-            writer = csv.DictWriter(file, fieldnames=keys)
-            writer.writeheader()
-            for pair in manifest['dimers']:
-                writer.writerow({**{k: pair[k] for k in ('id','mol_i','mol_j','core_min_angstrom','core_com_angstrom')},
-                                 **dict(zip(('image_a','image_b','image_c'), pair['image']))})
+        with (ZipFile(stage/'monomers.zip', 'w', ZIP_DEFLATED) as archive,
+              (stage/'clusters.csv').open('w', newline='') as table):
+            writer = csv.writer(table)
+            writer.writerow(['cluster_qm', 'cluster_mm'])
+            for i, (identity, mol, xyz) in enumerate(zip(mol_ids, molecules, positions, strict=True)):
+                member = f'frame{frame}.mol{identity}.xyz'
+                # Store unwrapped MD positions once, at round-trip precision.
+                lines = [str(len(xyz)), f'frame{frame}.mol{identity}; Angstrom']
+                lines.extend(f'{e} {x:.17g} {y:.17g} {z:.17g}'
+                             for e, (x, y, z) in zip(mol.elements, xyz, strict=True))
+                archive.writestr(ZipInfo(member), '\n'.join(lines)+'\n', compress_type=ZIP_DEFLATED)
+                offsets = _write_members(writer, str(identity), shells[i], mol_ids)
+                record = {'id': str(identity), 'xyz_member': member,
+                          'transport_position_angstrom': xyz.mean(axis=0).tolist(),
+                          'global_atom_indices_zero_based': mol.indices.tolist(),
+                          'cluster': {'cutoff_angstrom': mm_cutoff, 'mm_image_offsets': offsets}}
+                if atom_ids is not None:
+                    record['lammps_atom_ids'] = [atom_ids[j] for j in mol.indices]
+                    record['lammps_molecule_id'] = identity
+                manifest['monomers'].append(record)
+        with (stage/'dimers.csv').open('w', newline='') as table:
+            writer = csv.writer(table)
+            writer.writerow(['dimer_qm', 'dimer_mm'])
+            for i, j, image, distance in contacts:
+                identity = f'{mol_ids[i]}_{mol_ids[j]}'
+                shift = tuple(map(int, image))
+                if any(shift):
+                    identity += '_img_'+'_'.join(map(str, shift))
+                shell = shells[i].union((k, tuple(a+b for a, b in zip(offset, shift)))
+                                        for k, offset in shells[j])
+                shell.difference_update([(i, (0, 0, 0)), (j, shift)])
+                offsets = _write_members(writer, f'{mol_ids[i]}-{mol_ids[j]}', shell, mol_ids)
+                ma, mb = molecules[i].masses[local], molecules[j].masses[local]
+                if not np.all(ma > 0) or not np.all(mb > 0):
+                    raise ValueError('positive topology core masses are required for core COM reporting')
+                ca = np.average(cores[i], axis=0, weights=ma)
+                cb = np.average(cores[j], axis=0, weights=mb) + image@lattice
+                manifest['dimers'].append({'id': identity, 'mol_i': str(mol_ids[i]), 'mol_j': str(mol_ids[j]),
+                    'image': shift, 'core_min_angstrom': distance, 'core_com_angstrom': float(np.linalg.norm(ca-cb)),
+                    'atom_count_a': len(positions[i]), 'mm_image_offsets': offsets})
         for file in stage.rglob('*'):
             if file.is_file():
                 manifest['output_sha256'][str(file.relative_to(stage))] = file_hash(file)
-        (stage/'manifest.json').write_text(json.dumps(manifest, indent=2, allow_nan=False)+'\n')
+        (stage/'manifest.json').write_text(json.dumps(manifest, separators=(',', ':'), allow_nan=False)+'\n')
         os.replace(stage, out)
     return out/'manifest.json'
 
@@ -289,17 +246,16 @@ def molecular_trajectory(settings):
 
 
 def extract_dimers_monomers(settings, *, one_settings=None, two_settings=None, resume=False):
-    """Extract a sampled frame series, with complete monomers, MM shells and dimers."""
-    header_keys = ('method', 'basis-set', 'threads', 'max-memory-mb')
-    one_settings = {k: v for k, v in (one_settings or {}).items() if k in header_keys}
-    two_settings = {k: v for k, v in (two_settings or {}).items() if k in header_keys}
+    """Store monomer XYZs and membership tables; legacy GJF settings are ignored."""
+    if settings.get('format', ['xyz']) != ['xyz']:
+        raise ValueError('extraction requires format = xyz; use xyz2gjf for Gaussian files')
     source_files = ('lammps-data', 'lammps-dump', 'element-map') if 'lammps-data' in settings else ('tpr','gro','xtc')
-    provenance = {'settings': settings, 'one_gjf': one_settings, 'two_gjf': two_settings,
+    provenance = {'settings': settings,
                   'sha256': {k: file_hash(settings[k]) for k in (*source_files, 'fragment-file')}}
     with molecular_trajectory(settings) as (count, read_frame, labels, atom_ids):
         frames = selected_frames(settings['frame'], settings.get('frame_step', 1), count)
         index_path = Path(settings['output'])/'frames.json'
-        index_key = fingerprint({'provenance': provenance, 'frames': frames, 'extraction_version': 3})
+        index_key = fingerprint({'provenance': provenance, 'frames': frames, 'extraction_version': 4})
         if len(frames) > 1 and index_path.exists():
             previous = json.loads(index_path.read_text())
             if not resume or previous.get('fingerprint') != index_key:
@@ -307,8 +263,7 @@ def extract_dimers_monomers(settings, *, one_settings=None, two_settings=None, r
         entries = []
         for frame in frames:
             print(f'wren: extracting frame {frame}', flush=True)
-            manifest_path = _extract_frame(frame, count, read_frame, labels, atom_ids, settings, provenance,
-                                           one_settings, two_settings, resume)
+            manifest_path = _extract_frame(frame, count, read_frame, labels, atom_ids, settings, provenance, resume)
             manifest = json.loads(manifest_path.read_text())
             entries.append({'frame': frame, 'time_ps': manifest['time_ps'],
                             'manifest': str(manifest_path.relative_to(index_path.parent)),

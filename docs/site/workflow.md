@@ -15,7 +15,7 @@ dimers_cutoff = 6
 fragment-file = ../core.txt
 monomers-qmmm-cutoff = 6
 output = mol
-format = xyz,gjf
+format = xyz
 $end
 ```
 
@@ -23,7 +23,7 @@ $end
 `fragment-file` 用分子内部从 1 开始的编号定义 core。dimer 判据为两个 core 的最短原子距离严格小于阈值。
 QM/MM 环境判据为完整中央分子与完整邻居分子的最短全原子距离，选中后保留整个邻居及周期镜像。
 
-输出包括每帧的 `manifest.json`、单体、簇及 dimer；多帧还生成 `frames.json` 索引。
+每帧保存 `monomers.zip`（每个成员是一个单体 XYZ）、`dimers.csv`、`clusters.csv` 和记录周期镜像的 `manifest.json`。用 `wren-xyz frame2000.mol8 --root mol -o mol8.xyz` 按帧和分子读取，用 `xyz2gjf mol8.xyz mol8.gjf` 转为 Gaussian 单点输入。多帧输出还包含 `frames.json`。
 提取要求同种中性完整分子和一致的分子内原子顺序。
 
 ## 从 LAMMPS data 和 dump 提取
@@ -40,7 +40,7 @@ frame = 0
 frame_step = 1
 dimers_cutoff = 2
 monomers-qmmm-cutoff = 2
-format = xyz,gjf
+format = xyz
 output = ../../build/lammps/mol
 $end
 ```
@@ -65,7 +65,7 @@ uv run --locked --extra workflow wren examples/lammps/input
 uv run --locked --extra workflow wren-dos examples/lammps/dos.toml
 ```
 
-首帧的 `dimers/7_19_img_0_-1_0.xyz` 由分子 7 和沿 −b 平移的分子 19 组成，两个 core 原子的距离为 1.382932 Å。两帧的物理时间为 0 和 0.1 ps。该示例的 HF/STO-3G 轨道 DOS 积分为每个 HF 分子 12 个自旋态。对首帧的独立 GROMACS TPR/GRO/XTC 输入，测试逐项比较了镜像、二聚体几何和冻结邻居电荷位置，坐标容差为 0.00002 Å。输出 `monomers/7_mm.pc` 保留冻结邻居的电荷。QM/MM 的 `mm-source=manifest, mm-vdw=none` 可按同一原始文件哈希恢复 LAMMPS 静电环境。LAMMPS pair style、混合规则和 Pair/PairIJ Coeffs 目前没有转换，`mm-vdw=tpr` 需要真实 GROMACS TPR。带色散排斥的 LAMMPS 模型可用显式分离的坐标、拓扑和完整 LJ 参数输入。[冻结 QM/MM 输入](reorganization.md)
+首帧的 dimer `7_19_img_0_-1_0` 由分子 7 和沿 −b 平移的分子 19 组成，两个 core 原子的距离为 1.382932 Å。两帧的物理时间为 0 和 0.1 ps。该示例的 HF/STO-3G 轨道 DOS 积分为每个 HF 分子 12 个自旋态。对首帧的独立 GROMACS TPR/GRO/XTC 输入，测试逐项比较了镜像、二聚体几何和冻结邻居电荷位置，坐标容差为 0.00002 Å。邻居编号写在 `clusters.csv`，原子电荷来自原始拓扑。QM/MM 的 `mm-source=manifest, mm-vdw=none` 可按同一原始文件哈希恢复 LAMMPS 静电环境。LAMMPS pair style、混合规则和 Pair/PairIJ Coeffs 目前没有转换，`mm-vdw=tpr` 需要真实 GROMACS TPR。带色散排斥的 LAMMPS 模型可用显式分离的坐标、拓扑和完整 LJ 参数输入。[冻结 QM/MM 输入](reorganization.md)
 
 ## 模块独立与主流程
 

@@ -48,7 +48,7 @@ dimers_cutoff = 6  # 单位 Å
 fragment-file = ../core.txt
 monomers-qmmm-cutoff =  # 空值默认 12 Å
 output = mol
-format = xyz,gjf
+format = xyz
 $end
 
 $two-mol
@@ -140,32 +140,32 @@ $end
 - `dimers_cutoff` 单位为 **Å**，判据与提供的参考脚本一致：两组所选 core 原子的最短距离 **严格小于 dimers_cutoff**。这不是无限平面间距或质心距离；清单还记录所选 core 的质量中心距离。
 - 用 TPR 键拓扑还原完整分子，以整体分子晶胞平移搜索接触，包括跨周期边界接触和多个有效镜像；支持非退化三斜盒。只枚举不同分子 ID 的组合，不包含同一分子的自镜像。
 - 输出完整分子及侧链，不把 core 选择当成截断 QM 区域。当前要求电中性分子，量化任务采用闭壳层中性参考。
-- `format = xyz` 只写 XYZ；`format = gjf` 只写 GJF；`format = xyz,gjf` 写两种格式。单体和 dimer 的两种格式保持相同坐标及原子顺序；簇 GJF 使用下面说明的外部点电荷形式。另写 manifest/距离 CSV，不额外写未选的结构格式。
-- GJF 的单体/二聚体 route 分别取 `$one-mol/$two-mol` 的泛函和基组；当前 GJF 为中性单重态冻结构型单点输入，不自动运行 Gaussian、Slurm 或 MOMAP。
-
-例如真实输入最后一帧输出在：
+- `format = xyz` 将每个完整单体存为一个独立压缩的 XYZ 条目。坐标为该帧解开分子内周期边界后的原位坐标，单位为 Å，保留原子顺序和浮点往返精度。同一帧的所有单体共用一个标准 ZIP/DEFLATE 文件。
 
 ```text
 mol/frame2000/
-  manifest.json                # 几何、原子编号、镜像、源文件/输出 SHA256
-  dimers.csv                   # 每个有效镜像一行
-  monomers/1.xyz, 1.gjf, ...    # 真空单分子
-  monomers/1_cluster.xyz        # 完整簇几何：先 QM 分子，再完整 MM 分子
-  monomers/1_cluster.gjf        # 中央 QM + 冻结 MM 外部点电荷单点
-  monomers/1_mm.pc              # 只有 MM 的 x y z q，Å/e
-  monomers/1_cluster.json       # QM/MM 区域、完整元素/坐标/电荷、分子及周期镜像映射
-  dimers/1_8_img_0_-1_0.xyz     # 镜像保存在 ID 中，防止覆盖
-  dimers/1_8_img_0_-1_0.gjf
-  workflow.json                # 最近一次调用的任务状态
+  monomers.zip     # frame2000.mol1.xyz、frame2000.mol2.xyz、…
+  dimers.csv       # dimer_qm,dimer_mm
+  clusters.csv     # cluster_qm,cluster_mm
+  manifest.json    # 晶格、镜像、拓扑索引、core 距离和校验和
 ```
 
-`monomers-qmmm-cutoff` 省略或留空默认为 **12 Å**，按完整中央分子与完整邻近分子的最短原子距离严格小于该值筛选 MM 环境，和 dimer 的 core 判据分别控制。环境复用 QM/MM 的三斜盒整分子镜像选择；排除中央分子的零平移副本，保留范围内其他周期副本，按整个分子纳入。每个单体均写簇及点电荷/映射文件；没有邻居时保存空 MM 壳层，实际 QM/MM 计算仍要求非空环境。
+`clusters.csv` 每个单体一行，第二列是与完整中央分子的最短原子距离严格小于 `monomers-qmmm-cutoff` 的完整分子镜像。示例显式取 6 Å，省略或留空时沿用 12 Å。`dimers.csv` 每个满足 core 判据的分子对镜像一行，第一列形如 `1-8`。第二列取分别靠近两个 QM 分子的 MM 环境的并集。两个 QM 镜像从集合中移除。同一分子在不同镜像位置可多次出现，无 MM 邻居时第二列为空。
 
-`*_cluster.xyz` 按 QM 在前、MM 在后的顺序保存完整原子几何。`*_cluster.gjf` 使用 Gaussian `Charge` 选项：只有中央单分子进入 QM 原子区，MM 坐标/电荷作为外部点电荷写在后面，不会把整个环境算成全 QM。这个 GJF 仅是固定点电荷单点模板，没有 LJ、几何优化或四点法；cube 的 PySCF/GPU4PySCF 四点法仍由 `$reorganization-energy` 执行，可加入原力场 LJ。只生成 `format` 指定的 XYZ/GJF，`.pc/.json` 为独立环境数据。
+CSV 均只写数字编号，以连字符分隔。去掉表头后，第 n 行对应清单 `monomers` 或 `dimers` 的第 n 项。对单体，QM 位于原位；对 dimer，第一个 QM 位于原位，第二个按 `image` 平移。`cluster.mm_image_offsets`（单体）和 `mm_image_offsets`（dimer）给出 MM 列中需要平移的项，键是**从 0 开始的位置**，省略项取 `[0,0,0]`。镜像坐标等于归档 XYZ 坐标加 `[a,b,c] @ lattice_angstrom`。即使编号重复，此规则也能区分每一个镜像。
+
+```bash
+uv run --locked wren-xyz frame2000.mol8 --root mol -o mol8.xyz
+uv run --locked xyz2gjf mol8.xyz mol8.gjf --method B3LYP --basis '6-31G(d,p)'
+# 也可从索引直接生成 GJF
+python scripts/xyz2gjf.py frame2000.mol8 mol8.gjf --root mol
+```
+
+`wren-xyz` 直接定位归档成员，省略 `-o` 时输出到标准输出。`xyz2gjf` 生成全 QM 单点输入，默认电荷 0、多重度 1，可用 `--charge`、`--multiplicity` 指定；冻结 MM 点电荷及力场仍由 QM/MM 工作流构建。
 
 选择多帧时，各帧目录并列，例如 `mol/frame0000/`、`mol/frame0020/`，顶层另写 `mol/frames.json` 帧清单（包含各帧清单 SHA256）。后续单体、dimer 和重组能阶段遍历所有选定帧，结果默认留在各自帧目录；显式 `output = results/one` 等输出则自动再加 `frame0000/` 等子目录，避免跨帧覆盖。独立运行量化也可用 `input = mol/frames.json`，或指定某帧的 `manifest.json` 只运行该帧。只选择一帧仍直接使用该帧的 `manifest.json`。
 
-旧 `$get_dimer`、提取字段 `cutoff` 及 `--only get_dimer` 仍作为语法别名接受，报告统一使用新名称；同一字段同时写新旧名称会报重复。新增簇文件和帧指纹后，旧版输出不能直接当成新版提取成功结果续算；保留旧数据，选择新输出目录重新提取。新版本自身的 `--resume` 核验单体、dimer、簇和点电荷文件，内容变化时拒绝复用。
+旧 `$get_dimer`、提取字段 `cutoff` 及 `--only get_dimer` 仍作为语法别名接受，报告统一使用新名称；同一字段同时写新旧名称会报重复。新增簇文件和帧指纹后，旧版输出不能直接当成新版提取成功结果续算；保留旧数据，选择新输出目录重新提取。新版 `--resume` 校验单体压缩包和两张 CSV 的 SHA256。已有旧格式清单仍可直接作为下游计算输入。
 
 这份实际数据含 100 个 86 原子分子；最后一帧编号 2000，时间 20000 ps，6 Å 判据得到 550 个 dimer。与参考 `extract_dimers.py` 的分子对、镜像、距离逐项一致。完整原始轨迹不加入 Git。
 
@@ -175,7 +175,7 @@ mol/frame2000/
 
 `method` 为 RKS 泛函，或 `hf`；默认 `b3lyp`。`basis-set` 默认 `6-31G(d,p)`。可选公共字段：`auxbasis`（默认 def2-universal-jkfit，采用密度拟合）、`threads`（4）、`grid-level`（3）、`conv-tol`（1e-10）、`max-cycle`（100）、`max-memory-mb`（4000）、`output`。DIPRO 需要单体/dimer 的方法、基组、辅助基、网格、收敛阈值一致。
 
-同一个真空单体只算一次。提取文件各自居中，pair 的两个片段与 dimer 在共同坐标框架内；对单体 checkpoint 只允许经逐原子检查的**整体平移**，保留 MO/Fock 并记录源 SHA256，不能通过该功能旋转、优化或改变单体内部构型。嵌入 Hamiltonian 不在这项平移复用的范围。
+同一个真空单体只算一次。量化时从归档坐标还原并居中，pair 的两个片段与 dimer 在共同坐标框架内；对单体 checkpoint 只允许经逐原子检查的**整体平移**，保留 MO/Fock 并记录源 SHA256，不能通过该功能旋转、优化或改变单体内部构型。嵌入 Hamiltonian 不在这项平移复用的范围。
 
 默认 `transfer-integrals-method = DIPRO`，也可逗号选择 `ESID`、`orbital_gmh`；ESID 还须明确 `assume-equivalent = true` 并通过适用性检查。`carriers = hole,electron` 可选择载流子。逐 pair 结果是 JSON；汇总 `qc/two-mol/transfer_integrals.csv` 的 VH/VL 单位为 meV。一维 DIPRO 值按固定显示轨道规范保留符号，多轨道子空间不压成标量，CSV 留空并保留 JSON 矩阵。
 

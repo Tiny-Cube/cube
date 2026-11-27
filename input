@@ -35,7 +35,7 @@ dimers_cutoff = 6               # Å；两个分子的 core 原子最短距离�
 fragment-file = ../core.txt
 monomers-qmmm-cutoff = 6        # Å；完整 QM 分子与完整 MM 分子的最短距离
 output = mol
-format = xyz,gjf
+format = xyz
 $end
 
 # core.txt 填写分子内部从 1 开始的原子编号，例如：1 2 3 4 5。
@@ -81,7 +81,7 @@ carriers = hole,electron
 assume-equivalent = false       # 使用 ESID 时须明确为 true 并满足等价片段条件
 
 # 其他已支持方法：orbital_gmh；多个方法用逗号分隔。
-# 默认处理全部 dimer；指定 ID 需与 manifest.json/dimers.csv 一致：
+# 默认处理全部 dimer；指定含镜像的 ID 见 manifest.json 的 dimers[].id：
 # dimers = 1_8_img_0_-1_0
 # input = mol/frame2000/manifest.json
 # 默认输出为提取帧目录下的 qc/two-mol：

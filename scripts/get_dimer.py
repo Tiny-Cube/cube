@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract formats selected by $get_dimers_monomers in the supplied input control."""
+"""Write indexed monomer XYZs and dimer/cluster membership tables."""
 import sys
 from wren.workflow.cli import main
 

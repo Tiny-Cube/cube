@@ -126,13 +126,12 @@ def _dataset(settings):
         return [{'monomers': [{'id': Path(settings['xyz']).stem,
                               'elements': [e for e, r in atoms],
                               'coordinates_angstrom': [r for e, r in atoms]}]}]
+    from wren.workflow.frame_geometry import load_frame
     from wren.workflow.runner import _dataset_sources
     sources = _dataset_sources({'input': settings['input']}, None)
     result = []
     for source in sources:
-        data = json.loads(source.read_text())
-        if data.get('schema') != 'cube-dimers-1' or data.get('coordinate_unit') != 'Angstrom':
-            raise ValueError('DOS requires an Angstrom extraction manifest')
+        data = load_frame(source)
         data['_source_sha256'] = file_hash(source)
         result.append(data)
     return result

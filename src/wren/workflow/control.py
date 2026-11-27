@@ -314,8 +314,8 @@ def load_input(filename='input'):
         n['monomers-qmmm-cutoff'] = _positive(s.get('monomers-qmmm-cutoff') or '12', 'monomers-qmmm-cutoff')
         n['output'] = str(resolve_path(s.get('output', 'mol'), path.parent, 'output'))
         n['format'] = [v.lower() for v in _csv(s.get('format', 'xyz'))]
-        if len(set(n['format'])) != len(n['format']) or not set(n['format']) <= {'xyz', 'gjf'}:
-            raise ValueError('format must select xyz and/or gjf')
+        if n['format'] != ['xyz']:
+            raise ValueError('extraction requires format = xyz; use xyz2gjf for Gaussian files')
         if any(Path(n['output']) == Path(n[k]) for k in (*source_files, 'fragment-file')):
             raise ValueError('output directory must not overwrite an input file')
         normalized[EXTRACTION] = n

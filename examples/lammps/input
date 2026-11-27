@@ -9,6 +9,6 @@ frame = 0
 frame_step = 1
 dimers_cutoff = 2
 monomers-qmmm-cutoff = 2
-format = xyz,gjf
+format = xyz
 output = ../../build/lammps/mol
 $end

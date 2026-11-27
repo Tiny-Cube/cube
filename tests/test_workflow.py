@@ -1,5 +1,6 @@
 """Section controls and scientifically meaningful extraction/workflow checks."""
 from contextlib import redirect_stdout
+import csv
 import io
 import json
 import os
@@ -26,7 +27,7 @@ frame =
 dimers_cutoff = 6 # Angstrom
 fragment-file = core.txt
 output = mol
-format = xyz,gjf
+format = xyz
 $end
 $two-mol
 method = b3lyp
@@ -60,7 +61,7 @@ class SectionControlTests(unittest.TestCase):
         control = load_input(self.path)
         self.assertEqual(control.plan()['tasks'], ['get_dimers_monomers','one-mol','two-mol','reorganization-energy'])
         self.assertEqual(control.sections['get_dimers_monomers']['frame'], -1)
-        self.assertEqual(control.sections['get_dimers_monomers']['format'], ['xyz','gjf'])
+        self.assertEqual(control.sections['get_dimers_monomers']['format'], ['xyz'])
         self.assertEqual(control.sections['get_dimers_monomers']['dimers_cutoff'], 6.)
         self.assertEqual(control.sections['two-mol']['basis-set'], '6-31G(d,p)')
         self.assertEqual(control.sections['two-mol']['qc-engine'], 'gpu-pyscf')
@@ -81,7 +82,7 @@ assert all(x not in sys.modules for x in ('numpy','pyscf','cupy','MDAnalysis'))
 
     def test_invalid_or_ambiguous_controls_rejected(self):
         changes = [('$two-mol','$typo'), ('dimers_cutoff = 6','cutoff = nan'), ('frame =\n','frame = -2\n'),
-                   ('format = xyz,gjf','format = xyz,XYZ'), ('format = xyz,gjf','format = pdb'),
+                   ('format = xyz','format = xyz,XYZ'), ('format = xyz','format = pdb'), ('format = xyz','format = gjf'),
                    ('qc-engine = gpu-pyscf','qc-engine = gaussian'),
                    ('re-method = 4-points','re-method = approximate'),
                    ('re-method = 4-points','re-method = 4-points\nenvironment = qmmm\nmm-frozen = false'),
@@ -371,26 +372,30 @@ class ExtractionTests(unittest.TestCase):
                 (root/name).write_bytes(b'fixture')
             (root/'core.txt').write_text('1 # local carbon\n')
             settings={k:str(root/v) for k,v in {'tpr':'a.tpr','gro':'a.gro','xtc':'a.xtc','fragment-file':'core.txt','output':'mol'}.items()}
-            settings.update(frame=0,cutoff=1.,format=['gjf'])
-            with patch.object(mda,'Universe',side_effect=[self.universe(),self.universe()]):
+            settings.update(frame=0,cutoff=1.5,format=['xyz'])
+            def source():
+                u = self.universe()
+                u.atoms[3:].positions += [.8, 0, 0]
+                return u
+            with patch.object(mda,'Universe',side_effect=[source(),self.universe()]):
                 manifest_path=extract_dimers(settings,one_settings={'method':'hf','basis-set':'sto-3g'})
             manifest=json.loads(manifest_path.read_text())
             self.assertEqual(manifest['molecule_count'],2)
             self.assertEqual(manifest['dimer_count'],1)
             self.assertEqual(manifest['dimers'][0]['image'],[1,0,0])
             self.assertFalse(list(manifest_path.parent.rglob('*.xyz')))
-            self.assertEqual(len(list(manifest_path.parent.rglob('*.gjf'))),3)
-            self.assertIn('hf/sto-3g',(manifest_path.parent/'monomers/1.gjf').read_text())
-            with patch.object(mda,'Universe',side_effect=[self.universe(),self.universe()]):
+            self.assertFalse(list(manifest_path.parent.rglob('*.gjf')))
+            self.assertTrue((manifest_path.parent/'monomers.zip').is_file())
+            with patch.object(mda,'Universe',side_effect=[source(),self.universe()]):
                 self.assertEqual(extract_dimers(settings,one_settings={'method':'hf','basis-set':'sto-3g','molecules':['1']},resume=True),manifest_path)
-            (manifest_path.parent/'monomers/1.gjf').write_text('changed')
-            with patch.object(mda,'Universe',side_effect=[self.universe(),self.universe()]),self.assertRaisesRegex(ValueError,'changed'):
+            (manifest_path.parent/'monomers.zip').write_text('changed')
+            with patch.object(mda,'Universe',side_effect=[source(),self.universe()]),self.assertRaisesRegex(ValueError,'changed'):
                 extract_dimers(settings,one_settings={'method':'hf','basis-set':'sto-3g'},resume=True)
 
 
     def test_multiple_frames_full_cluster_mapping_formats_and_resume_integrity(self):
         from wren.workflow.dimers import extract_dimers_monomers
-        from wren.workflow.embedding import read_charges
+        from wren.workflow.frame_geometry import indexed_xyz, load_frame, pair_geometry
         def trajectory():
             u = self.universe()
             xyz = u.atoms.positions.copy()
@@ -405,7 +410,7 @@ class ExtractionTests(unittest.TestCase):
             (root/'core.txt').write_text('1\n')
             settings = {k:str(root/v) for k,v in {'tpr':'a.tpr','gro':'a.gro','xtc':'a.xtc',
                         'fragment-file':'core.txt','output':'mol'}.items()}
-            settings.update(frame=1, frame_step=2, dimers_cutoff=2., format=['xyz','gjf'], **{'monomers-qmmm-cutoff': 2.})
+            settings.update(frame=1, frame_step=2, dimers_cutoff=2., format=['xyz'], **{'monomers-qmmm-cutoff': 2.})
             with patch.object(mda,'Universe',side_effect=[trajectory(), self.universe()]):
                 index_path = extract_dimers_monomers(settings)
             index = json.loads(index_path.read_text())
@@ -416,39 +421,34 @@ class ExtractionTests(unittest.TestCase):
                 frame_dir = index_path.parent/Path(f['manifest']).parent
                 manifest = json.loads((frame_dir/'manifest.json').read_text())
                 self.assertEqual(manifest['frame'], f['frame'])
-                cluster = json.loads((frame_dir/'monomers/1_cluster.json').read_text())
-                self.assertEqual((cluster['qm_atom_count'], cluster['mm_atom_count']), (3,3))
-                mapping = cluster['mm']['provenance']['molecular_images']
-                self.assertEqual(mapping[0]['global_atom_indices_zero_based'], [3,4,5])
-                self.assertEqual(mapping[0]['image'], [1,0,0])
-                self.assertEqual(mapping[0]['molecule_id'], '2')
-                qm = np.asarray(cluster['qm']['coordinates_angstrom'])
-                mm = np.asarray(cluster['mm']['coordinates_angstrom'])
-                pc = read_charges(frame_dir/'monomers/1_mm.pc')
-                np.testing.assert_allclose(pc.coordinates_angstrom, mm, atol=1e-14)
-                self.assertEqual(int((frame_dir/'monomers/1.xyz').read_text().splitlines()[0]), 3)
-                self.assertEqual(int((frame_dir/'monomers/1_cluster.xyz').read_text().splitlines()[0]), 6)
-                gjf = (frame_dir/'monomers/1_cluster.gjf').read_text()
-                self.assertIn(' SP Charge ', gjf)
-                self.assertEqual(sum(line.startswith(('C ', 'H ')) for line in gjf.splitlines()), 3)
-                self.assertAlmostEqual(mm[0,0]-qm[0,0], 1.4+f['frame']*.1, places=5)
-                cluster_files.append(frame_dir/'monomers/1_cluster.xyz')
+                with (frame_dir/'clusters.csv').open() as table:
+                    self.assertEqual(list(csv.reader(table)), [['cluster_qm','cluster_mm'], ['1','2'], ['2','1']])
+                with (frame_dir/'dimers.csv').open() as table:
+                    self.assertEqual(list(csv.reader(table)), [['dimer_qm','dimer_mm'], ['1-2','']])
+                self.assertEqual(manifest['monomers'][0]['cluster']['mm_image_offsets'], {'0':[1,0,0]})
+                self.assertNotIn('coordinates_angstrom', manifest['dimers'][0])
+                data = load_frame(frame_dir/'manifest.json')
+                molecules = {m['id']: m for m in data['monomers']}
+                pair = pair_geometry(data['dimers'][0], molecules, data['lattice_angstrom'])
+                xyz = np.array(pair['coordinates_angstrom'])
+                self.assertAlmostEqual(xyz[3,0]-xyz[0,0], 1.4+f['frame']*.1, places=5)
+                self.assertEqual(indexed_xyz(root/'mol', f"frame{f['frame']}.mol1").splitlines()[0], '3')
+                cluster_files.append(frame_dir/'monomers.zip')
             self.assertNotEqual(cluster_files[0].read_bytes(), cluster_files[1].read_bytes())
             times = {p:p.stat().st_mtime_ns for p in cluster_files}
             with patch.object(mda,'Universe',side_effect=[trajectory(), self.universe()]):
                 self.assertEqual(extract_dimers_monomers(settings,resume=True), index_path)
             self.assertTrue(all(p.stat().st_mtime_ns == t for p,t in times.items()))
-            (cluster_files[0].parent/'1_mm.pc').write_text('0 0 0 99\n')
+            (cluster_files[0].parent/'clusters.csv').write_text('changed\n')
             with patch.object(mda,'Universe',side_effect=[trajectory(), self.universe()]), self.assertRaisesRegex(ValueError,'changed'):
                 extract_dimers_monomers(settings,resume=True)
-            settings.update(frame=-1, frame_step=20, output=str(root/'last'), format=['gjf'], **{'monomers-qmmm-cutoff': .01})
+            settings.update(frame=-1, frame_step=20, output=str(root/'last'), format=['xyz'], **{'monomers-qmmm-cutoff': .01})
             with patch.object(mda,'Universe',side_effect=[trajectory(), self.universe()]):
                 last = extract_dimers_monomers(settings)
             self.assertEqual(json.loads(last.read_text())['frame'], 4)
             self.assertFalse(list(last.parent.rglob('*.xyz')))
-            empty = json.loads((last.parent/'monomers/1_cluster.json').read_text())
-            self.assertEqual(empty['mm_atom_count'], 0)
-            self.assertNotIn(' SP Charge ', (last.parent/'monomers/1_cluster.gjf').read_text())
+            with (last.parent/'clusters.csv').open() as table:
+                self.assertEqual(list(csv.reader(table))[1:], [['1',''], ['2','']])
 
 
 if __name__ == '__main__':
